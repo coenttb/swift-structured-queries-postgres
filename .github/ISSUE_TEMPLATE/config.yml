@@ -1,0 +1,15 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Project Discussion
+    url: https://github.com/pointfreeco/swift-structured-queries/discussions
+    about: Sharing Q&A, ideas, and more
+  - name: Documentation
+    url: https://swiftpackageindex.com/pointfreeco/swift-structured-queries/~/documentation/structuredqueriescore/
+    about: Read Sharing's documentation
+  - name: Videos
+    url: https://www.pointfree.co/
+    about: Watch videos to get a behind-the-scenes look at how Sharing was motivated and built
+  - name: Slack
+    url: https://www.pointfree.co/slack-invite
+    about: Community chat
