@@ -114,6 +114,21 @@ for index in package.targets.indices {
   package.targets[index].swiftSettings = swiftSettings
 }
 
+#if !os(Darwin)
+  package.targets.append(
+    .systemLibrary(
+      name: "StructuredQueriesSQLite3",
+      providers: [.apt(["libsqlite3-dev"])]
+    )
+  )
+
+  for index in package.targets.indices {
+    if package.targets[index].name == "StructuredQueriesSQLite" {
+      package.targets[index].dependencies.append("StructuredQueriesSQLite3")
+    }
+  }
+#endif
+
 #if !os(Windows)
   // Add the documentation compiler plugin if possible
   package.dependencies.append(
