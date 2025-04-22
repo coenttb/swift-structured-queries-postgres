@@ -190,7 +190,7 @@ enum Referrer: AliasName {}
 let usersWithReferrers = User
   .leftJoin(User.as(Referrer.self).all) { $0.referrerID == $1.id }
   .select { ($0.name, $1.name) }
-// SELECT "users"."name", "referrers.name"
+// SELECT "users"."name", "referrers"."name"
 //   FROM "users"
 // JOIN "users" AS "referrers"
 //   ON "users"."referrerID" = "referrers"."id"
