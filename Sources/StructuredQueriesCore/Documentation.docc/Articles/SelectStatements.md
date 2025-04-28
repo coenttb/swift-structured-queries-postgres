@@ -682,8 +682,8 @@ enum Ordering {
   @Column {
     ```sql
     SELECT … FROM "reminders"
-    ORDER BY 
-      "reminders"."isCompleted", 
+    ORDER BY
+      "reminders"."isCompleted",
       "reminders"."date"
     ```
   }
