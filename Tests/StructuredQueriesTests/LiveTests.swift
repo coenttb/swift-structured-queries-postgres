@@ -189,7 +189,7 @@ extension SnapshotTests {
         JOIN "reminders" ON ("remindersLists"."id" = "reminders"."remindersListID")
         GROUP BY "remindersLists"."id"
         """
-      }results: {
+      } results: {
         """
         ┌─────────────────────┬───┐
         │ RemindersList(      │ 5 │
@@ -229,7 +229,7 @@ extension SnapshotTests {
         JOIN "tags" ON ("remindersTags"."tagID" = "tags"."id")
         GROUP BY "reminders"."id"
         """
-      }results: {
+      } results: {
         """
         ┌────────────────────────────────────────────┬────────────────────┐
         │ Reminder(                                  │ "someday,optional" │

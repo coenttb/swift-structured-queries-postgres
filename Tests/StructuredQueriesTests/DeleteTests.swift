@@ -137,7 +137,7 @@ extension SnapshotTests {
         WHERE ("rs"."id" = 1)
         RETURNING "id", "color", "title"
         """
-      }results: {
+      } results: {
         """
         ┌─────────────────────┐
         │ RemindersList(      │

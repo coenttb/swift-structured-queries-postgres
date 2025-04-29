@@ -21,7 +21,7 @@ extension SnapshotTests {
         SELECT 'tag', "tags"."title"
         FROM "tags"
         """
-      }results: {
+      } results: {
         """
         ┌────────────┬────────────────────────────┐
         │ "list"     │ "Business"                 │
@@ -71,7 +71,7 @@ extension SnapshotTests {
         FROM "names"
         ORDER BY "names"."type" DESC, "names"."value" ASC
         """
-      }results: {
+      } results: {
         """
         ┌─────────────────────────────────────┐
         │ Name(                               │

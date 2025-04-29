@@ -253,7 +253,7 @@ extension SnapshotTests {
         FROM "tags"
         ORDER BY "tags"."title"
         """
-      }results: {
+      } results: {
         """
         ┌─────────────────────────────┐
         │ "car,kids,someday,optional" │
@@ -272,7 +272,7 @@ extension SnapshotTests {
         FROM "tags"
         ORDER BY "tags"."title"
         """
-      }results: {
+      } results: {
         """
         ┌────────────────────┐
         │ "someday,optional" │
@@ -293,7 +293,7 @@ extension SnapshotTests {
         FROM "tags"
         ORDER BY "tags"."title"
         """
-      }results: {
+      } results: {
         """
         ┌────────────────────┐
         │ "someday,optional" │
@@ -315,7 +315,7 @@ extension SnapshotTests {
         FROM "tags"
         ORDER BY "tags"."title"
         """
-      }results: {
+      } results: {
         """
         ┌───────────┐
         │ "someday" │
@@ -354,7 +354,7 @@ extension SnapshotTests {
         SELECT group_concat(("tags"."title" || '!'), ', ')
         FROM "tags"
         """
-      }results: {
+      } results: {
         """
         ┌────────────────────────────────────┐
         │ "car!, kids!, someday!, optional!" │

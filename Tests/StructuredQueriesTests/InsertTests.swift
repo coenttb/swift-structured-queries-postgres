@@ -207,7 +207,7 @@ extension SnapshotTests {
         FROM "remindersLists"
         RETURNING "id", "title"
         """
-      }results: {
+      } results: {
         """
         ┌─────────────────────┐
         │ Tag(                │
@@ -411,7 +411,7 @@ extension SnapshotTests {
         ON CONFLICT ("id") DO UPDATE SET "color" = "excluded"."color", "title" = "excluded"."title"
         RETURNING "id", "color", "title"
         """
-      }results: {
+      } results: {
         """
         UNIQUE constraint failed: remindersLists.title
         """
@@ -434,7 +434,7 @@ extension SnapshotTests {
         VALUES ('office')
         RETURNING "tags"."id", "tags"."title"
         """
-      }results: {
+      } results: {
         """
         table tags has no column named name
         """
@@ -458,7 +458,7 @@ extension SnapshotTests {
         ('cruise')
         RETURNING "id", "color", "title"
         """
-      }results: {
+      } results: {
         """
         ┌───────────────────┐
         │ RemindersList(    │

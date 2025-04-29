@@ -141,7 +141,7 @@ extension SnapshotTests {
         JOIN "remindersLists" ON ("reminders"."remindersListID" = "remindersLists"."id")
         WHERE ("reminders"."id" = 2)
         """
-      }results: {
+      } results: {
         """
         ┌───────────┬────────────┐
         │ "Haircut" │ "Personal" │

@@ -25,7 +25,7 @@ extension SnapshotTests {
         GROUP BY "remindersLists"."id"
         LIMIT 2
         """
-      }results: {
+      } results: {
         """
         ┌─────────────────────────────────┐
         │ RemindersListAndReminderCount(  │
@@ -60,7 +60,7 @@ extension SnapshotTests {
         GROUP BY "remindersLists"."id"
         LIMIT 2
         """
-      }results: {
+      } results: {
         """
         ┌─────────────────────────────────┐
         │ RemindersListAndReminderCount(  │

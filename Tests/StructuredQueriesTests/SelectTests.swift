@@ -24,7 +24,7 @@ extension SnapshotTests {
         SELECT "tags"."id", "tags"."title"
         FROM "tags"
         """
-      }results: {
+      } results: {
         """
         ┌─────────────────────┐
         │ Tag(                │
@@ -99,7 +99,7 @@ extension SnapshotTests {
         SELECT "tags"."title"
         FROM "tags"
         """
-      }results: {
+      } results: {
         """
         ┌────────────┐
         │ "car"      │
@@ -117,7 +117,7 @@ extension SnapshotTests {
         SELECT "tags"."id", "tags"."title"
         FROM "tags"
         """
-      }results: {
+      } results: {
         """
         ┌───┬────────────┐
         │ 1 │ "car"      │
@@ -168,7 +168,7 @@ extension SnapshotTests {
         FROM "reminders"
         JOIN "remindersLists" ON ("reminders"."remindersListID" = "remindersLists"."id")
         """
-      }results: {
+      } results: {
         #"""
         ┌────────────────────────────────────────────┬─────────────────────┐
         │ Reminder(                                  │ RemindersList(      │
@@ -308,7 +308,7 @@ extension SnapshotTests {
         FROM "remindersLists"
         JOIN "reminders" ON ("remindersLists"."id" = "reminders"."remindersListID")
         """
-      }results: {
+      } results: {
         """
         ┌────────────┬────────────────────────────┐
         │ "Personal" │ "Groceries"                │
@@ -919,7 +919,7 @@ extension SnapshotTests {
           GROUP BY "remindersLists"."id"
           LIMIT 1
           """
-        }results: {
+        } results: {
           """
           ┌────────────┬───┐
           │ "Personal" │ 5 │
@@ -1046,7 +1046,7 @@ extension SnapshotTests {
         LEFT JOIN "reminders" ON ("remindersLists"."id" = "reminders"."remindersListID")
         WHERE ifnull(("reminders"."priority" = 3), 0)
         """
-      }results: {
+      } results: {
         """
         ┌─────────────────────┬────────────────────────────────────────────┐
         │ RemindersList(      │ Reminder(                                  │

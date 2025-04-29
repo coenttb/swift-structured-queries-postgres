@@ -66,7 +66,7 @@ extension SnapshotTests {
           ON "reminders"."remindersListID" = "remindersLists"."id"
         LIMIT 1
         """
-      }results: {
+      } results: {
         """
         ┌────────────────────────────────────────────┬─────────────────────┐
         │ Reminder(                                  │ RemindersList(      │
@@ -102,7 +102,7 @@ extension SnapshotTests {
         SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "remindersLists"."id", "remindersLists"."color", "remindersLists"."title" 
         FROM "reminders" JOIN "remindersLists" ON "reminders"."remindersListID" = "remindersLists"."id" LIMIT 1
         """
-      }results: {
+      } results: {
         """
         ┌──────────────────────────────────────────────┐
         │ ReminderWithList(                            │

@@ -18,7 +18,7 @@ extension SnapshotTests {
         JOIN "remindersLists" ON ("reminders"."remindersListID" = "remindersLists"."id")
         ORDER BY "reminders"."dueDate" DESC
         """
-      }results: {
+      } results: {
         """
         ┌────────────────────────────┬────────────┐
         │ "Take out trash"           │ "Family"   │
