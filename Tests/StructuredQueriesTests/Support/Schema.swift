@@ -4,7 +4,7 @@ import StructuredQueries
 import StructuredQueriesSQLite
 
 @Table
-struct RemindersList: Equatable, Identifiable {
+struct RemindersList: Codable, Equatable, Identifiable {
   static let withReminderCount = group(by: \.id)
     .join(Reminder.all) { $0.id.eq($1.remindersListID) }
     .select { $1.id.count() }
@@ -15,7 +15,7 @@ struct RemindersList: Equatable, Identifiable {
 }
 
 @Table
-struct Reminder: Equatable, Identifiable {
+struct Reminder: Codable, Equatable, Identifiable {
   static let incomplete = Self.where { !$0.isCompleted }
 
   let id: Int
@@ -37,12 +37,12 @@ struct Reminder: Equatable, Identifiable {
 }
 
 @Table
-struct User: Equatable, Identifiable {
+struct User: Codable, Equatable, Identifiable {
   let id: Int
   var name = ""
 }
 
-enum Priority: Int, QueryBindable {
+enum Priority: Int, Codable, QueryBindable {
   case low = 1
   case medium
   case high
@@ -55,7 +55,7 @@ extension Reminder.TableColumns {
 }
 
 @Table
-struct Tag: Equatable, Identifiable {
+struct Tag: Codable, Equatable, Identifiable {
   let id: Int
   var title = ""
 }
