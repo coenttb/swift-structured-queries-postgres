@@ -16,7 +16,7 @@ extension QueryExpression {
   }
 }
 
-extension QueryExpression where QueryValue: Codable & Sendable {
+extension QueryExpression where QueryValue: Codable & QueryBindable & Sendable {
   /// A JSON array aggregate of this expression
   ///
   /// Concatenates all of the values in a group.
@@ -92,7 +92,7 @@ extension PrimaryKeyedTableDefinition where QueryValue: Codable & Sendable {
     order: (some QueryExpression)? = Bool?.none,
     filter: (some QueryExpression<Bool>)? = Bool?.none
   ) -> some QueryExpression<[QueryValue].JSONRepresentation> {
-    jsonObject.jsonGroupArray(order: order, filter: filter)
+    AggregateFunction("json_group_array", jsonObject, order: order, filter: filter)
   }
 
   private var jsonObject: some QueryExpression<QueryValue> {
