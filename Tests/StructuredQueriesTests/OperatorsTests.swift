@@ -422,7 +422,8 @@ extension SnapshotTests {
             Reminder.select { $0.id.min() } ?? 0,
             and: (Reminder.select { $0.id.max() } ?? 0) / 3
           )
-        }) {
+        }
+      ) {
         """
         SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title"
         FROM "reminders"
@@ -434,7 +435,7 @@ extension SnapshotTests {
           FROM "reminders"
         ), 0) / 3))
         """
-      }results: {
+      } results: {
         """
         ┌────────────────────────────────────────────┐
         │ Reminder(                                  │
