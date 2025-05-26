@@ -422,7 +422,7 @@ extension SnapshotTests {
         """
         @Table
         struct Foo {
-          @Column(as: Date.ISO8601Representation.self)
+          @Column(as: Date.UnixTimeRepresentation.self)
           var bar: Date
         }
         """
@@ -435,7 +435,7 @@ extension SnapshotTests {
         extension Foo: StructuredQueriesCore.Table {
           public struct TableColumns: StructuredQueriesCore.TableDefinition {
             public typealias QueryValue = Foo
-            public let bar = StructuredQueriesCore.TableColumn<QueryValue, Date.ISO8601Representation>("bar", keyPath: \QueryValue.bar)
+            public let bar = StructuredQueriesCore.TableColumn<QueryValue, Date.UnixTimeRepresentation>("bar", keyPath: \QueryValue.bar)
             public static var allColumns: [any StructuredQueriesCore.TableColumnExpression] {
               [QueryValue.columns.bar]
             }
@@ -443,7 +443,7 @@ extension SnapshotTests {
           public static let columns = TableColumns()
           public static let tableName = "foos"
           public init(decoder: inout some StructuredQueriesCore.QueryDecoder) throws {
-            let bar = try decoder.decode(Date.ISO8601Representation.self)
+            let bar = try decoder.decode(Date.UnixTimeRepresentation.self)
             guard let bar else {
               throw QueryDecodingError.missingRequiredColumn
             }
@@ -524,218 +524,6 @@ extension SnapshotTests {
               throw QueryDecodingError.missingRequiredColumn
             }
             self.bar = bar
-          }
-        }
-        """#
-      }
-    }
-
-    @Test func dateDiagnostic() {
-      assertMacro {
-        """
-        @Table
-        struct Foo {
-          var bar: Date
-        }
-        """
-      } diagnostics: {
-        """
-        @Table
-        struct Foo {
-          var bar: Date
-          ┬────────────
-          ╰─ 🛑 'Date' column requires a query representation
-             ✏️ Insert '@Column(as: Date.ISO8601Representation.self)'
-             ✏️ Insert '@Column(as: Date.UnixTimeRepresentation.self)'
-             ✏️ Insert '@Column(as: Date.JulianDayRepresentation.self)'
-        }
-        """
-      } fixes: {
-        """
-        @Table
-        struct Foo {
-          @Column(as: Date.ISO8601Representation.self)
-          var bar: Date
-        }
-        """
-      } expansion: {
-        #"""
-        struct Foo {
-          var bar: Date
-        }
-
-        extension Foo: StructuredQueriesCore.Table {
-          public struct TableColumns: StructuredQueriesCore.TableDefinition {
-            public typealias QueryValue = Foo
-            public let bar = StructuredQueriesCore.TableColumn<QueryValue, Date.ISO8601Representation>("bar", keyPath: \QueryValue.bar)
-            public static var allColumns: [any StructuredQueriesCore.TableColumnExpression] {
-              [QueryValue.columns.bar]
-            }
-          }
-          public static let columns = TableColumns()
-          public static let tableName = "foos"
-          public init(decoder: inout some StructuredQueriesCore.QueryDecoder) throws {
-            let bar = try decoder.decode(Date.ISO8601Representation.self)
-            guard let bar else {
-              throw QueryDecodingError.missingRequiredColumn
-            }
-            self.bar = bar
-          }
-        }
-        """#
-      }
-    }
-
-    @Test func optionalDateDiagnostic() {
-      assertMacro {
-        """
-        @Table
-        struct Foo {
-          var bar: Date?
-        }
-        """
-      } diagnostics: {
-        """
-        @Table
-        struct Foo {
-          var bar: Date?
-          ┬─────────────
-          ╰─ 🛑 'Date' column requires a query representation
-             ✏️ Insert '@Column(as: Date.ISO8601Representation?.self)'
-             ✏️ Insert '@Column(as: Date.UnixTimeRepresentation?.self)'
-             ✏️ Insert '@Column(as: Date.JulianDayRepresentation?.self)'
-        }
-        """
-      } fixes: {
-        """
-        @Table
-        struct Foo {
-          @Column(as: Date.ISO8601Representation?.self)
-          var bar: Date?
-        }
-        """
-      } expansion: {
-        #"""
-        struct Foo {
-          var bar: Date?
-        }
-
-        extension Foo: StructuredQueriesCore.Table {
-          public struct TableColumns: StructuredQueriesCore.TableDefinition {
-            public typealias QueryValue = Foo
-            public let bar = StructuredQueriesCore.TableColumn<QueryValue, Date.ISO8601Representation?>("bar", keyPath: \QueryValue.bar)
-            public static var allColumns: [any StructuredQueriesCore.TableColumnExpression] {
-              [QueryValue.columns.bar]
-            }
-          }
-          public static let columns = TableColumns()
-          public static let tableName = "foos"
-          public init(decoder: inout some StructuredQueriesCore.QueryDecoder) throws {
-            self.bar = try decoder.decode(Date.ISO8601Representation.self)
-          }
-        }
-        """#
-      }
-    }
-
-    @Test func optionalTypeDateDiagnostic() {
-      assertMacro {
-        """
-        @Table
-        struct Foo {
-          var bar: Optional<Date>
-        }
-        """
-      } diagnostics: {
-        """
-        @Table
-        struct Foo {
-          var bar: Optional<Date>
-          ┬──────────────────────
-          ╰─ 🛑 'Date' column requires a query representation
-             ✏️ Insert '@Column(as: Date.ISO8601Representation?.self)'
-             ✏️ Insert '@Column(as: Date.UnixTimeRepresentation?.self)'
-             ✏️ Insert '@Column(as: Date.JulianDayRepresentation?.self)'
-        }
-        """
-      } fixes: {
-        """
-        @Table
-        struct Foo {
-          @Column(as: Date.ISO8601Representation?.self)
-          var bar: Optional<Date>
-        }
-        """
-      } expansion: {
-        #"""
-        struct Foo {
-          var bar: Optional<Date>
-        }
-
-        extension Foo: StructuredQueriesCore.Table {
-          public struct TableColumns: StructuredQueriesCore.TableDefinition {
-            public typealias QueryValue = Foo
-            public let bar = StructuredQueriesCore.TableColumn<QueryValue, Date.ISO8601Representation?>("bar", keyPath: \QueryValue.bar)
-            public static var allColumns: [any StructuredQueriesCore.TableColumnExpression] {
-              [QueryValue.columns.bar]
-            }
-          }
-          public static let columns = TableColumns()
-          public static let tableName = "foos"
-          public init(decoder: inout some StructuredQueriesCore.QueryDecoder) throws {
-            self.bar = try decoder.decode(Date.ISO8601Representation.self)
-          }
-        }
-        """#
-      }
-    }
-
-    @Test func defaultDateDiagnostic() {
-      assertMacro {
-        """
-        @Table
-        struct Foo {
-          var bar = Date()
-        }
-        """
-      } diagnostics: {
-        """
-        @Table
-        struct Foo {
-          var bar = Date()
-          ┬───────────────
-          ╰─ 🛑 'Date' column requires a query representation
-             ✏️ Insert '@Column(as: Date.ISO8601Representation.self)'
-             ✏️ Insert '@Column(as: Date.UnixTimeRepresentation.self)'
-             ✏️ Insert '@Column(as: Date.JulianDayRepresentation.self)'
-        }
-        """
-      } fixes: {
-        """
-        @Table
-        struct Foo {
-          @Column(as: Date.ISO8601Representation.self)
-          var bar = Date()
-        }
-        """
-      } expansion: {
-        #"""
-        struct Foo {
-          var bar = Date()
-        }
-
-        extension Foo: StructuredQueriesCore.Table {
-          public struct TableColumns: StructuredQueriesCore.TableDefinition {
-            public typealias QueryValue = Foo
-            public let bar = StructuredQueriesCore.TableColumn<QueryValue, Date.ISO8601Representation>("bar", keyPath: \QueryValue.bar, default: Date())
-            public static var allColumns: [any StructuredQueriesCore.TableColumnExpression] {
-              [QueryValue.columns.bar]
-            }
-          }
-          public static let columns = TableColumns()
-          public static let tableName = "foos"
-          public init(decoder: inout some StructuredQueriesCore.QueryDecoder) throws {
-            self.bar = try decoder.decode(Date.ISO8601Representation.self) ?? Date()
           }
         }
         """#
