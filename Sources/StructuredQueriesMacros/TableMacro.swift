@@ -34,9 +34,8 @@ extension TableMacro: ExtensionMacro {
     var diagnostics: [Diagnostic] = []
 
     // NB: A compiler bug prevents us from applying the '@_Draft' macro directly
-    var draftBindings: [
-      (PatternBindingSyntax, queryOutputType: TypeSyntax?, optionalize: Bool)
-    ] = []
+    var draftBindings: [(PatternBindingSyntax, queryOutputType: TypeSyntax?, optionalize: Bool)] =
+      []
     // NB: End of workaround
 
     var draftProperties: [DeclSyntax] = []
