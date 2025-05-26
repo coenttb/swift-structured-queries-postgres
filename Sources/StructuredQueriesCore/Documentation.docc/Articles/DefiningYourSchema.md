@@ -309,8 +309,8 @@ And StructuredQueries will take care of formatting the value for the database:
   }
 }
 
-If you use the non-default date representation in your schema, then while querying against a 
-date column with a Swift Date, you will need to explicitly bundle up the Swift date into the 
+If you use the non-default date representation in your schema, then while querying against a
+date column with a Swift Date, you will need to explicitly bundle up the Swift date into the
 appropriate representation to use various query helpers. This can be done using the `#bind` macro:
 
 ```swift
@@ -319,7 +319,7 @@ Reminder.where { $0.created > #bind(startDate) }
 
 > Note: When using the default representation for dates (ISO-8601 text) you do not need to use
 > the `#bind` macro:
-> 
+>
 > ```swift
 > Reminder.where { $0.created > startDate }
 > ```
@@ -352,7 +352,7 @@ Reminder.where { $0.id != #bind(reminder.id) }
 
 > Note: When using the default representation for UUID (lower-cased text) you do not need to use
 > the `#bind` macro:
-> 
+>
 > ```swift
 > Reminder.where { $0.id != reminder.id }
 > ```
