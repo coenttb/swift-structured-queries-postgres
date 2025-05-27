@@ -74,7 +74,7 @@ extension SnapshotTests {
               unixTimeDate: Date(timeIntervalSince1970: 24 * 60 * 60),
               julianDayDate: Date(timeIntervalSinceReferenceDate: 7 * 24 * 60 * 60),
               jsonArray: ["Hello", "world"],
-              jsonArrayOfDates: [Date(timeIntervalSinceReferenceDate: 1234567890)]
+              jsonArrayOfDates: [Date(timeIntervalSinceReferenceDate: 1_234_567_890)]
             ),
             KitchenSink(
               id: 3,
@@ -97,7 +97,7 @@ extension SnapshotTests {
               optionalJulianDayDate: Date(timeIntervalSinceReferenceDate: 2 * 7 * 24 * 60 * 60),
               jsonArray: ["Hello", "world"],
               optionalJSONArray: ["Goodnight", "moon"],
-              jsonArrayOfDates: [Date(timeIntervalSinceReferenceDate: 1234567890)]
+              jsonArrayOfDates: [Date(timeIntervalSinceReferenceDate: 1_234_567_890)]
             ),
           ]
         )
@@ -112,7 +112,7 @@ extension SnapshotTests {
         SELECT "kitchenSinks"."id", "kitchenSinks"."kitchenID", "kitchenSinks"."bool", "kitchenSinks"."optionalBool", "kitchenSinks"."string", "kitchenSinks"."optionalString", "kitchenSinks"."int", "kitchenSinks"."optionalInt", "kitchenSinks"."double", "kitchenSinks"."optionalDouble", "kitchenSinks"."rawRepresentable", "kitchenSinks"."optionalRawRepresentable", "kitchenSinks"."iso8601Date", "kitchenSinks"."optionalISO8601Date", "kitchenSinks"."unixTimeDate", "kitchenSinks"."optionalUnixTimeDate", "kitchenSinks"."julianDayDate", "kitchenSinks"."optionalJulianDayDate", "kitchenSinks"."jsonArray", "kitchenSinks"."optionalJSONArray", "kitchenSinks"."jsonArrayOfDates"
         FROM "kitchenSinks"
         """
-      }results: {
+      } results: {
         """
         ┌──────────────────────────────────────────────────────────┐
         │ KitchenSink(                                             │
@@ -215,7 +215,7 @@ extension SnapshotTests {
         FROM "kitchens"
         FULL JOIN "kitchenSinks" ON ("kitchens"."id" IS "kitchenSinks"."kitchenID")
         """
-      }results: {
+      } results: {
         """
         ┌────────────────┬────────────────────────────────────────────────────────────┐
         │ Kitchen(id: 1) │ [                                                          │
