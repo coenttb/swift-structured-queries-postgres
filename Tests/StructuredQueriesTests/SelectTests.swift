@@ -999,7 +999,7 @@ extension SnapshotTests {
         GROUP BY "r1s"."id"
         LIMIT 1
         """
-      }results: {
+      } results: {
         """
         ┌────────────────────────────────────────────┬────────────────────────────────────────────────┐
         │ Reminder(                                  │ [                                              │
