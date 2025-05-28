@@ -403,14 +403,14 @@ struct Book {
 ### Table definition tools
 
 This library does not come with any tools for actually constructing table definition queries,
-such as `CREATE TABLE`, `ALTER TABLE`, and so on. That is, there are no APIs for performing the 
+such as `CREATE TABLE`, `ALTER TABLE`, and so on. That is, there are no APIs for performing the
 following kinds of queries:
 
 @Row {
   @Column {
     ```swift
     Reminder.createTable()
-    // ⚠️ Theoretical API that does 
+    // ⚠️ Theoretical API that does
     //    not actually exist.
     ```
   }
@@ -460,7 +460,7 @@ table could be as simple as this:
   var name = ""
 }
 
-migrator.migrate("Create 'reminders' table") { db in 
+migrator.migrate("Create 'reminders' table") { db in
   // ⚠️ Theoretical 'createTable' API. Does not actually exist.
   try Reminder.createTable().execute(db)
 }
@@ -479,12 +479,12 @@ migration:
 -  var name = ""
 +  var title = ""
  }
- 
- migrator.migrate("Create 'reminders' table") { db in 
+
+ migrator.migrate("Create 'reminders' table") { db in
    // ⚠️ Theoretical 'createTable' API. Does not actually exist.
    try Reminder.createTable().execute(db)
  }
-+migrator.migrate("Rename 'name' to 'title'") { db in 
++migrator.migrate("Rename 'name' to 'title'") { db in
 +  // ⚠️ Theoretical 'rename(from:)' API. Does not actually exist.
 +  try Reminder.title.rename(from: "name").execute(db)
 +}
