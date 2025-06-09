@@ -22,7 +22,7 @@ extension Table {
     _ rows: [Self],
     onConflict doUpdate: ((inout Updates<Self>) -> Void)? = nil
   ) -> InsertOf<Self> {
-    insert(or: conflictResolution, values: { rows }, onConflict: doUpdate )
+    insert(or: conflictResolution, values: { rows }, onConflict: doUpdate)
   }
 
   @available(*, deprecated, renamed: "insert(or:_:values:onConflictDoUpdate:)")
