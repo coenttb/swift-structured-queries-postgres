@@ -1,5 +1,6 @@
 /// A type representing a database table with a primary key.
-public protocol PrimaryKeyedTable<PrimaryKey>: Table where TableColumns: PrimaryKeyedTableDefinition<PrimaryKey> {
+public protocol PrimaryKeyedTable<PrimaryKey>: Table
+where TableColumns: PrimaryKeyedTableDefinition<PrimaryKey> {
   /// A type representing this table's primary key.
   ///
   /// For auto-incrementing tables, this is typically `Int`.
