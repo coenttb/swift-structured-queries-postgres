@@ -168,13 +168,13 @@ extension PrimaryKeyedTableDefinition {
     order: (some QueryExpression)? = Bool?.none,
     filter: (some QueryExpression<Bool>)? = Bool?.none
   ) -> some QueryExpression<[Wrapped].JSONRepresentation>
-  where QueryValue == Wrapped?
-  {
-    let filterQueryFragment = if let filter {
-      self.primaryKey.isNot(nil).and(filter).queryFragment
-    } else {
-      self.primaryKey.isNot(nil).queryFragment
-    }
+  where QueryValue == Wrapped? {
+    let filterQueryFragment =
+      if let filter {
+        self.primaryKey.isNot(nil).and(filter).queryFragment
+      } else {
+        self.primaryKey.isNot(nil).queryFragment
+      }
     return AggregateFunction(
       "json_group_array",
       isDistinct: isDistinct,
@@ -216,8 +216,8 @@ extension PrimaryKeyedTableDefinition {
       } else if Value.self == Date.JulianDayRepresentation.self {
         return "\(quote: column.name, delimiter: .text), datetime(\(column), 'julianday')"
       } else if let codableType = TableColumn.QueryValue.QueryOutput.self
-                  as? any (Codable & Sendable).Type,
-                isJSONRepresentation(codableType)
+        as? any (Codable & Sendable).Type,
+        isJSONRepresentation(codableType)
       {
         return "\(quote: column.name, delimiter: .text), json(\(column))"
       } else {

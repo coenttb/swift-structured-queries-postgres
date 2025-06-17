@@ -425,7 +425,7 @@ RemindersList
 
 > Note: There are 2 important things to note about this query:
 >
-> * Since not every reminders list will have a reminder associated with it, we are using a 
+> * Since not every reminders list will have a reminder associated with it, we are using a
 >   ``Select/leftJoin(_:on:)``. That will make sure to select all lists no matter what.
 > * The left join introduces _optional_ reminders, but we are using a special overload of
 >   `jsonGroupArray` on optionals that automatically filters out `nil` reminders and unwraps them.
@@ -436,13 +436,13 @@ but that cost may be smaller than executing multiple SQLite requests and transfo
 into `Row` manually, not to mention the additional code you need to write and maintain to process
 the data.
 
-It is even possible to load multiple associations at once. For example, suppose that there is a 
+It is even possible to load multiple associations at once. For example, suppose that there is a
 `Milestone` table that is associated with a `RemindersList`:
 
 ```swift
 @Table
 struct Milestone: Identifiable, Codable {
-  let id: Int 
+  let id: Int
   var title = ""
   var remindersListID: RemindersList.ID
 }
@@ -478,7 +478,7 @@ RemindersList
 ```
 
 > Note: Because we are now joining two independent tables to `RemindersList`, we will get duplicate
-> entries for all pairs of reminders with milestones. To remove those duplicates we use the 
+> entries for all pairs of reminders with milestones. To remove those duplicates we use the
 > `isDistinct` option for `jsonGroupArray`.
 
 This will now load all reminders lists with all of their reminders and milestones in one single
