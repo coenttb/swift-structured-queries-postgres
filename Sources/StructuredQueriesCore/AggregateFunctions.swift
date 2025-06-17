@@ -100,7 +100,6 @@ extension QueryExpression where QueryValue: QueryBindable & _OptionalPromotable 
     AggregateFunction("max", [queryFragment], filter: filter?.queryFragment)
   }
 
-
   /// A minimum aggregate of this expression.
   ///
   /// ```swift
