@@ -913,12 +913,21 @@ extension Statement where QueryValue: QueryBindable {
   }
 }
 
-extension Statement {
+extension PartialSelectStatement {
   /// Returns a predicate expression indicating whether this subquery contains any element.
   ///
   /// - Returns: A predicate expression indicating whether this subquery contains any element.
   public func exists() -> some QueryExpression<Bool> {
-    SQLQueryExpression("EXISTS \(self)")
+    SQLQueryExpression("EXISTS \(self.queryFragment)")
+  }
+}
+
+extension Table {
+  /// Returns a predicate expression indicating whether this table contains any element.
+  ///
+  /// - Returns: A predicate expression indicating whether this subquery contains any element.
+  public static func exists() -> some QueryExpression<Bool> {
+    all.exists()
   }
 }
 
