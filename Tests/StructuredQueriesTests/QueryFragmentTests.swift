@@ -63,7 +63,7 @@ extension SnapshotTests {
           """,
           [
             .int(1),
-            .text("%get%")
+            .text("%get%"),
           ]
         )
       )
