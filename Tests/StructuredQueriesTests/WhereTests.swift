@@ -47,11 +47,11 @@ extension SnapshotTests {
         assertQuery(
           Reminder.where { $0.isCompleted && !$0.isCompleted }
         ) {
-        """
-        SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title"
-        FROM "reminders"
-        WHERE ("reminders"."isCompleted") AND ("reminders"."isFlagged")
-        """
+          """
+          SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title"
+          FROM "reminders"
+          WHERE ("reminders"."isCompleted") AND ("reminders"."isFlagged")
+          """
         } results: {
           """
           Results
