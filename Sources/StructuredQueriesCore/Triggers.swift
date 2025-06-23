@@ -247,7 +247,7 @@ public struct TemporaryTrigger<On: Table>: Statement {
     case before = "BEFORE"
     case after = "AFTER"
   }
-  
+
   /// The database event used in a trigger.
   ///
   /// To learn more, see <doc:Triggers>.
