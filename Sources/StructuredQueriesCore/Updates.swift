@@ -8,9 +8,6 @@
 public struct Updates<Base: Table> {
   private var updates: [(String, QueryFragment)] = []
 
-  init() {
-  }
-
   init(_ body: (inout Self) -> Void) {
     body(&self)
   }
