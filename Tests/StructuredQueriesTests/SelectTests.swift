@@ -1077,7 +1077,7 @@ extension SnapshotTests {
         └─────────────────────────────────────────────┴─────────────────────────────────────────────────┘
         """
       }
-      
+
       // force empty join
       assertQuery(
         Reminder.as(R1.self)

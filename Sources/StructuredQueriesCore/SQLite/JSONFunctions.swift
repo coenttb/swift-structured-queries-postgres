@@ -179,8 +179,7 @@ extension PrimaryKeyedTableDefinition where QueryValue: _OptionalProtocol & Coda
     order: (some QueryExpression)? = Bool?.none,
     filter: (some QueryExpression<Bool>)? = Bool?.none
   ) -> some QueryExpression<[Wrapped].JSONRepresentation>
-  where QueryValue == Wrapped?
-  {
+  where QueryValue == Wrapped? {
     let filterQueryFragment =
       if let filter {
         self.primaryKey.isNot(nil).and(filter).queryFragment
