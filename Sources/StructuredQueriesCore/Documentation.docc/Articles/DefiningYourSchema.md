@@ -450,14 +450,14 @@ struct Book {
 
 ### Generated columns
 
-Some databases, including SQLite, support [generated columns](https://www.sqlite.org/gencol.html), 
-which are columns whose values are computed from other columns in the same row. Since these columns 
+Some databases, including SQLite, support [generated columns](https://www.sqlite.org/gencol.html),
+which are columns whose values are computed from other columns in the same row. Since these columns
 are read-only from an application's perspective, they should be included in `SELECT` statements but
 excluded from `INSERT` or `UPDATE` statements.
 
-You can mark a property as a generated column by using the `generated` parameter of the `@Column` 
+You can mark a property as a generated column by using the `generated` parameter of the `@Column`
 macro with a value of `.stored` or `.virtual`. This ensures the property is decoded when
-fetching data but is not included in the `Draft` type used for creating or updating records. 
+fetching data but is not included in the `Draft` type used for creating or updating records.
 
 For example, if your database computes a stored `endAt` timestamp, you can model it like this:
 
