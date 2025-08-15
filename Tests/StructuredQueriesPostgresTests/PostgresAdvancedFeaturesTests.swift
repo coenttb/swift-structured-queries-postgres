@@ -1,15 +1,15 @@
-import Testing
+import Foundation
+import PostgresNIO
 import StructuredQueries
 import StructuredQueriesPostgres
-import PostgresNIO
-import Foundation
+import Testing
 
 @Suite("PostgreSQL Advanced Features Tests")
 struct PostgresAdvancedFeaturesTests {
-  
+
   @Suite("PostgreSQL-Specific Features Supported by StructuredQueries")
   struct SupportedFeatures {
-    
+
     @Test("PostgreSQL-specific aggregates in grouped queries")
     func postgresAggregatesInGroupedQueries() {
       assertPostgresQuery(
@@ -26,7 +26,7 @@ struct PostgresAdvancedFeaturesTests {
         sql: #"SELECT "reminders"."remindersListID", string_agg("reminders"."title", $1), array_agg("reminders"."title"), stddev("reminders"."id") FROM "reminders" GROUP BY "reminders"."remindersListID""#
       )
     }
-    
+
     @Test("Boolean column transformation in complex queries")
     func booleanHandlingInComplexQueries() {
       assertPostgresQuery(
@@ -35,7 +35,7 @@ struct PostgresAdvancedFeaturesTests {
           .select { ($0.id, $0.title, $0.isCompleted) },
         sql: #"SELECT "reminders"."id", "reminders"."title", "reminders"."isCompleted" FROM "reminders" WHERE "reminders"."isCompleted" != 0"#
       )
-      
+
       // Complex boolean conditions with grouping
       assertPostgresQuery(
         Reminder
@@ -50,7 +50,7 @@ struct PostgresAdvancedFeaturesTests {
         sql: #"SELECT "reminders"."remindersListID", count("reminders"."id") FROM "reminders" WHERE ("reminders"."isCompleted" != 0 AND NOT ("reminders"."isFlagged" != 0)) GROUP BY "reminders"."remindersListID""#
       )
     }
-    
+
     @Test("PostgreSQL-specific aggregates in filtered queries")
     func aggregatesInFilteredQueries() {
       assertPostgresQuery(
@@ -59,7 +59,7 @@ struct PostgresAdvancedFeaturesTests {
           .select { reminder in reminder.title.stringAgg(", ") },
         sql: #"SELECT string_agg("reminders"."title", $1) FROM "reminders" GROUP BY "reminders"."remindersListID""#
       )
-      
+
       // Complex aggregation with multiple PostgreSQL functions
       assertPostgresQuery(
         Reminder
@@ -76,7 +76,7 @@ struct PostgresAdvancedFeaturesTests {
         sql: #"SELECT "reminders"."remindersListID", array_agg("reminders"."title"), variance("reminders"."id"), stddev("reminders"."id") FROM "reminders" WHERE "reminders"."isCompleted" != 0 GROUP BY "reminders"."remindersListID""#
       )
     }
-    
+
     @Test("PostgreSQL INSERT with RETURNING")
     func insertWithReturning() {
       assertPostgresQuery(
@@ -89,7 +89,7 @@ struct PostgresAdvancedFeaturesTests {
         sql: #"INSERT INTO "reminders" ("id", "remindersListID", "title", "isCompleted", "updatedAt") VALUES ($1, $2, $3, $4, $5)"#
       )
     }
-    
+
     @Test("Complex query with PostgreSQL aggregates and HAVING")
     func complexWithHaving() {
       assertPostgresQuery(
@@ -110,10 +110,10 @@ struct PostgresAdvancedFeaturesTests {
       )
     }
   }
-  
+
   @Suite("PostgreSQL CTE and Advanced SQL Pattern Documentation")
   struct CTEPatternDocumentation {
-    
+
     @Test("RECURSIVE CTE SQL Pattern")
     func recursiveCTEPattern() {
       let expectedSQL = """
@@ -121,9 +121,9 @@ struct PostgresAdvancedFeaturesTests {
           SELECT id, remindersListID, title, 1 as level
           FROM reminders
           WHERE remindersListID = $1
-          
+
           UNION ALL
-          
+
           SELECT r.id, r.remindersListID, r.title, h.level + 1
           FROM reminders r
           JOIN hierarchy h ON r.remindersListID = h.id
@@ -131,16 +131,16 @@ struct PostgresAdvancedFeaturesTests {
         )
         SELECT * FROM hierarchy
         """
-      
+
       #expect(expectedSQL.contains("WITH RECURSIVE"))
       #expect(expectedSQL.contains("UNION ALL"))
     }
-    
+
     @Test("MATERIALIZED CTE SQL Pattern")
     func materializedCTEPattern() {
       let expectedSQL = """
         WITH expensive_calculation AS MATERIALIZED (
-          SELECT 
+          SELECT
             remindersListID,
             string_agg(title, ', ') as all_titles,
             array_agg(id) as all_ids,
@@ -155,7 +155,7 @@ struct PostgresAdvancedFeaturesTests {
       #expect(expectedSQL.contains("array_agg"))
       #expect(expectedSQL.contains("stddev"))
     }
-    
+
     @Test("Data-modifying CTE SQL Pattern")
     func dataModifyingCTEPattern() {
       let expectedSQL = """
@@ -170,7 +170,7 @@ struct PostgresAdvancedFeaturesTests {
           SELECT id, $3 FROM updated
           RETURNING reminder_id
         )
-        SELECT 
+        SELECT
           (SELECT COUNT(*) FROM updated) as updated_count,
           (SELECT COUNT(*) FROM archived) as archived_count
         """
@@ -179,7 +179,7 @@ struct PostgresAdvancedFeaturesTests {
       #expect(expectedSQL.contains("RETURNING"))
       #expect(expectedSQL.contains("FROM updated"))
     }
-    
+
     @Test("LATERAL join SQL Pattern")
     func lateralJoinPattern() {
       let expectedSQL = """
@@ -188,14 +188,14 @@ struct PostgresAdvancedFeaturesTests {
           FROM remindersLists
           WHERE position < $1
         )
-        SELECT 
+        SELECT
           l.title as list_title,
           r.reminder_count,
           r.completed_count,
           r.title_agg
         FROM list_info l,
         LATERAL (
-          SELECT 
+          SELECT
             COUNT(*) as reminder_count,
             SUM(CASE WHEN isCompleted = 1 THEN 1 ELSE 0 END) as completed_count,
             string_agg(title, ', ') as title_agg
@@ -207,19 +207,19 @@ struct PostgresAdvancedFeaturesTests {
       #expect(expectedSQL.contains("WHERE remindersListID = l.id"))
       #expect(expectedSQL.contains("string_agg"))
     }
-    
+
     @Test("VALUES clause SQL Pattern")
     func valuesCTEPattern() {
       let expectedSQL = """
         WITH priority_names (priority_value, name, description) AS (
-          VALUES 
+          VALUES
             (0, 'Low', 'Low priority tasks'),
             (1, 'Medium', 'Normal priority tasks'),
             (2, 'High', 'Urgent tasks')
         )
-        SELECT 
-          r.id, 
-          r.title, 
+        SELECT
+          r.id,
+          r.title,
           p.name as priority_name,
           p.description,
           string_agg(r.title, ', ') OVER (PARTITION BY r.priority) as similar_tasks

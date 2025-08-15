@@ -1,12 +1,12 @@
-import Testing
+import Foundation
+import PostgresNIO
 import StructuredQueries
 import StructuredQueriesPostgres
-import PostgresNIO
-import Foundation
+import Testing
 
 @Suite("PostgreSQL DELETE Tests")
 struct PostgresDeleteTests {
-    
+
     @Test("Basic DELETE all rows")
     func deleteAll() {
         assertPostgresQuery(
@@ -14,7 +14,7 @@ struct PostgresDeleteTests {
             sql: #"DELETE FROM "reminders""#
         )
     }
-    
+
     @Test("DELETE with WHERE clause")
     func deleteWithWhere() {
         assertPostgresQuery(
@@ -24,7 +24,7 @@ struct PostgresDeleteTests {
             sql: #"DELETE FROM "reminders" WHERE ("reminders"."id" = $1)"#
         )
     }
-    
+
     @Test("DELETE with complex WHERE")
     func deleteComplexWhere() {
         assertPostgresQuery(
@@ -34,7 +34,7 @@ struct PostgresDeleteTests {
             sql: #"DELETE FROM "reminders" WHERE ("reminders"."isCompleted" != 0 AND ("reminders"."updatedAt" < $1))"#
         )
     }
-    
+
     @Test("DELETE with RETURNING clause")
     func deleteReturning() {
         assertPostgresQuery(
@@ -45,7 +45,7 @@ struct PostgresDeleteTests {
             sql: #"DELETE FROM "reminders" WHERE ("reminders"."id" = $1) RETURNING "reminders"."id""#
         )
     }
-    
+
     @Test("DELETE with RETURNING multiple columns")
     func deleteReturningMultiple() {
         assertPostgresQuery(
@@ -56,13 +56,13 @@ struct PostgresDeleteTests {
             sql: #"DELETE FROM "reminders" WHERE "reminders"."isCompleted" != 0 RETURNING "reminders"."id", "reminders"."title""#
         )
     }
-    
+
     @Test("DELETE with IN subquery")
     func deleteWithInSubquery() {
         let completedIDs = Reminder
             .where { $0.isCompleted }
             .select(\.id)
-        
+
         assertPostgresQuery(
             ReminderTag
                 .where { $0.reminderID.in(completedIDs) }
@@ -70,20 +70,20 @@ struct PostgresDeleteTests {
             sql: #"DELETE FROM "remindersTags" WHERE ("remindersTags"."reminderID" IN (SELECT "reminders"."id" FROM "reminders" WHERE "reminders"."isCompleted" != 0))"#
         )
     }
-    
+
     @Test("DELETE with primary key")
     func deleteWithPrimaryKey() {
         let reminder = Reminder(
             id: 1,
             remindersListID: 1
         )
-        
+
         assertPostgresQuery(
             Reminder.delete(reminder),
             sql: #"DELETE FROM "reminders" WHERE ("reminders"."id" = $1)"#
         )
     }
-    
+
     @Test("DELETE with WHERE using key path")
     func deleteWhereKeyPath() {
         assertPostgresQuery(
@@ -93,14 +93,14 @@ struct PostgresDeleteTests {
             sql: #"DELETE FROM "reminders" WHERE "reminders"."isCompleted" != 0"#
         )
     }
-    
+
     @Test("DELETE with LIMIT (through subquery)")
     func deleteWithLimit() {
         let oldestReminders = Reminder
             .order(by: \.updatedAt)
             .limit(10)
             .select(\.id)
-        
+
         assertPostgresQuery(
             Reminder
                 .where { $0.id.in(oldestReminders) }
@@ -108,7 +108,7 @@ struct PostgresDeleteTests {
             sql: #"DELETE FROM "reminders" WHERE ("reminders"."id" IN (SELECT "reminders"."id" FROM "reminders" ORDER BY "reminders"."updatedAt" LIMIT $1))"#
         )
     }
-    
+
     @Test("Cascading DELETE")
     func cascadingDelete() {
         assertPostgresQuery(
@@ -118,21 +118,21 @@ struct PostgresDeleteTests {
             sql: #"DELETE FROM "remindersLists" WHERE ("remindersLists"."id" = $1)"#
         )
     }
-    
+
     @Test("DELETE with multiple conditions")
     func deleteMultipleConditions() {
         assertPostgresQuery(
             Reminder
-                .where { 
-                    $0.isCompleted && 
-                    $0.priority == nil && 
-                    $0.updatedAt < Date(timeIntervalSince1970: 0) 
+                .where {
+                    $0.isCompleted &&
+                    $0.priority == nil &&
+                    $0.updatedAt < Date(timeIntervalSince1970: 0)
                 }
                 .delete(),
             sql: #"DELETE FROM "reminders" WHERE (("reminders"."isCompleted" != 0 AND ("reminders"."priority" IS NULL)) AND ("reminders"."updatedAt" < $1))"#
         )
     }
-    
+
     @Test("DELETE none")
     func deleteNone() {
         assertPostgresQuery(
@@ -140,7 +140,7 @@ struct PostgresDeleteTests {
             sql: ""
         )
     }
-    
+
     @Test("DELETE with RETURNING full row")
     func deleteReturningFull() {
         assertPostgresQuery(

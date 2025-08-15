@@ -1,17 +1,17 @@
 import Foundation
+import NIOCore
 import PostgresNIO
 import StructuredQueries
-import NIOCore
 
 /// Converts StructuredQueries QueryFragments to PostgreSQL-compatible SQL
 public struct PostgresStatement {
   public let query: PostgresQuery
-  
+
   public init(queryFragment: QueryFragment) {
     var parameterIndex = 0
     var bindings = PostgresBindings()
     var sqlParts: [String] = []
-    
+
     // Process segments to build SQL and bindings
     for segment in queryFragment.segments {
       switch segment {
@@ -23,31 +23,31 @@ public struct PostgresStatement {
         Self.appendBinding(binding, to: &bindings)
       }
     }
-    
+
     // Join the SQL parts and normalize whitespace (replace newlines with spaces)
     var sql = sqlParts.joined()
       .replacingOccurrences(of: "\n", with: " ")
       .replacingOccurrences(of: "  ", with: " ")  // Clean up any double spaces
-    
+
     // Transform boolean columns in WHERE clauses for PostgreSQL compatibility
     // Since we're using INTEGER columns for booleans, we need explicit comparisons
     sql = Self.transformBooleanWhereClause(sql)
-    
+
     self.query = PostgresQuery(unsafeSQL: sql, binds: bindings)
   }
-  
+
   private static func transformBooleanWhereClause(_ sql: String) -> String {
     // Only transform boolean columns that appear in WHERE/HAVING/ON clauses
     // Skip any that appear in UPDATE SET clauses
-    
+
     let booleanColumns = ["isCompleted", "isFlagged"]
     var result = sql
-    
+
     // Only process the part after WHERE (if it exists)
     if let whereRange = result.range(of: " WHERE ", options: .caseInsensitive) {
       let beforeWhere = String(result[..<whereRange.upperBound])
       let afterWhere = String(result[whereRange.upperBound...])
-      
+
       var transformed = afterWhere
       for column in booleanColumns {
         // Match boolean column used as a condition (not followed by comparison operator)
@@ -58,13 +58,13 @@ public struct PostgresStatement {
           options: .regularExpression
         )
       }
-      
+
       result = beforeWhere + transformed
     }
-    
+
     return result
   }
-  
+
   private static func appendBinding(_ binding: QueryBinding, to bindings: inout PostgresBindings) {
     switch binding {
     case .null:

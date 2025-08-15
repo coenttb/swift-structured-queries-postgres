@@ -1,11 +1,11 @@
-//import Testing
-//import StructuredQueries
-//import StructuredQueriesPostgres
-//import PostgresNIO
-//import Foundation
+// import Testing
+// import StructuredQueries
+// import StructuredQueriesPostgres
+// import PostgresNIO
+// import Foundation
 //
-//@Suite("PostgreSQL Scalar Functions Tests")
-//struct PostgresScalarFunctionsTests {
+// @Suite("PostgreSQL Scalar Functions Tests")
+// struct PostgresScalarFunctionsTests {
 //  
 //  @Test("COALESCE function")
 //  func coalesceFunction() {
@@ -306,4 +306,4 @@
 //      sql: #"SELECT CASE WHEN "reminders"."isCompleted" THEN $1 ELSE $2 END FROM "reminders""#
 //    )
 //  }
-//}
+// }

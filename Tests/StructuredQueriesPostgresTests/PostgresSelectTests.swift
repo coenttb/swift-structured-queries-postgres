@@ -1,12 +1,12 @@
-import Testing
+import Foundation
+import PostgresNIO
 import StructuredQueries
 import StructuredQueriesPostgres
-import PostgresNIO
-import Foundation
+import Testing
 
 @Suite("PostgreSQL SELECT Tests")
 struct PostgresSelectTests {
-    
+
     @Test("Basic SELECT all columns")
     func selectAll() {
         assertPostgresQuery(
@@ -14,7 +14,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "tags"."id", "tags"."title" FROM "tags""#
         )
     }
-    
+
     @Test("SELECT with DISTINCT")
     func selectDistinct() {
         assertPostgresQuery(
@@ -22,7 +22,7 @@ struct PostgresSelectTests {
             sql: #"SELECT DISTINCT "reminders"."priority" FROM "reminders""#
         )
     }
-    
+
     @Test("SELECT specific columns")
     func selectColumns() {
         assertPostgresQuery(
@@ -30,7 +30,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."id", "reminders"."title" FROM "reminders""#
         )
     }
-    
+
     @Test("SELECT with WHERE clause")
     func selectWithWhere() {
         assertPostgresQuery(
@@ -38,7 +38,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" WHERE "reminders"."isCompleted" != 0"#
         )
     }
-    
+
     @Test("SELECT with complex WHERE")
     func selectWithComplexWhere() {
         assertPostgresQuery(
@@ -46,7 +46,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" WHERE ("reminders"."isCompleted" != 0 AND ("reminders"."priority" IS $1))"#
         )
     }
-    
+
     @Test("SELECT with ORDER BY")
     func selectWithOrderBy() {
         assertPostgresQuery(
@@ -54,7 +54,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" ORDER BY "reminders"."title""#
         )
     }
-    
+
     @Test("SELECT with ORDER BY DESC")
     func selectWithOrderByDesc() {
         assertPostgresQuery(
@@ -62,7 +62,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" ORDER BY "reminders"."title" DESC"#
         )
     }
-    
+
     @Test("SELECT with LIMIT")
     func selectWithLimit() {
         assertPostgresQuery(
@@ -70,7 +70,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" LIMIT $1"#
         )
     }
-    
+
     @Test("SELECT with LIMIT and OFFSET")
     func selectWithLimitOffset() {
         assertPostgresQuery(
@@ -78,7 +78,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" LIMIT $1 OFFSET $2"#
         )
     }
-    
+
     @Test("SELECT with GROUP BY")
     func selectWithGroupBy() {
         assertPostgresQuery(
@@ -86,20 +86,20 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."remindersListID" FROM "reminders" GROUP BY "reminders"."remindersListID""#
         )
     }
-    
+
     @Test("SELECT with aggregate functions")
     func selectWithAggregates() {
         assertPostgresQuery(
             Reminder.select { $0.id.count() },
             sql: #"SELECT count("reminders"."id") FROM "reminders""#
         )
-        
+
         assertPostgresQuery(
             Reminder.select { $0.priority.max() },
             sql: #"SELECT max("reminders"."priority") FROM "reminders""#
         )
     }
-    
+
     @Test("SELECT with HAVING clause")
     func selectWithHaving() {
         assertPostgresQuery(
@@ -110,7 +110,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."remindersListID", count("reminders"."id") FROM "reminders" GROUP BY "reminders"."remindersListID" HAVING (count("reminders"."id") > $1)"#
         )
     }
-    
+
     @Test("SELECT with subquery")
     func selectWithSubquery() {
         let maxPriority = Reminder.select { $0.priority.max() }
@@ -119,20 +119,20 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" WHERE ("reminders"."priority" IS (  SELECT max("reminders"."priority")  FROM "reminders" ))"#
         )
     }
-    
+
     @Test("SELECT with NULL checks")
     func selectWithNullChecks() {
         assertPostgresQuery(
             Reminder.where { $0.assignedUserID == nil },
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" WHERE ("reminders"."assignedUserID" IS NULL)"#
         )
-        
+
         assertPostgresQuery(
             Reminder.where { $0.assignedUserID != nil },
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" WHERE ("reminders"."assignedUserID" IS NOT NULL)"#
         )
     }
-    
+
     @Test("SELECT with IN clause")
     func selectWithIn() {
         let priorities: [Priority?] = [.low, .high]
@@ -141,7 +141,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" WHERE ("reminders"."priority" IN ($1, $2))"#
         )
     }
-    
+
     @Test("SELECT with BETWEEN")
     func selectWithBetween() {
         assertPostgresQuery(
@@ -149,7 +149,7 @@ struct PostgresSelectTests {
             sql: #"SELECT "reminders"."id", "reminders"."assignedUserID", "reminders"."dueDate", "reminders"."isCompleted", "reminders"."isFlagged", "reminders"."notes", "reminders"."priority", "reminders"."remindersListID", "reminders"."title", "reminders"."updatedAt" FROM "reminders" WHERE ("reminders"."id" BETWEEN $1 AND $2)"#
         )
     }
-    
+
     @Test("SELECT with LIKE pattern")
     func selectWithLike() {
         assertPostgresQuery(
