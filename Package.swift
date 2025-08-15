@@ -52,3 +52,6 @@ let swiftSettings: [SwiftSetting] = [
 for index in package.targets.indices {
     package.targets[index].swiftSettings = swiftSettings
 }
+
+
+
