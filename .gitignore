@@ -4,7 +4,7 @@
 Package.resolved
 
 # Environment files
-.env*
+.env.*
 
 # Xcode
 *.xcodeproj

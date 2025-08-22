@@ -1,8 +1,8 @@
 import Dependencies
 import Foundation
+import PostgresNIO
 import StructuredQueries
 import StructuredQueriesPostgres
-import PostgresNIO
 import Testing
 
 // Helper to assert SQL generation for any statement
@@ -20,7 +20,7 @@ func assertPostgresQuery<S: Statement>(
         let queryFragment = statement.query
         let postgresStatement = PostgresStatement(queryFragment: queryFragment)
         let actualSQL = postgresStatement.query.sql
-        
+
         #expect(
             actualSQL == expectedSQL,
             "SQL mismatch:\nExpected: \(expectedSQL)\nActual: \(actualSQL)",
@@ -46,7 +46,7 @@ func assertPostgresQuery(
     column: UInt = #column
 ) {
     let postgresStatement = PostgresStatement(queryFragment: fragment)
-    
+
     if let expectedSQL = expectedSQL {
         let actualSQL = postgresStatement.query.sql
         #expect(
@@ -60,7 +60,7 @@ func assertPostgresQuery(
             )
         )
     }
-    
+
     if let expectedBindings = expectedBindings {
         // PostgresBindings doesn't expose count directly, but we can validate the SQL parameters
         let paramCount = postgresStatement.query.sql.components(separatedBy: "$").count - 1
@@ -80,20 +80,20 @@ func assertPostgresQuery(
 // Helper to format results for testing
 func formatResults<T: CustomStringConvertible>(_ items: [T]) -> String {
     guard !items.isEmpty else { return "┌─────┐\n│ (empty) │\n└─────┘" }
-    
+
     var lines: [String] = []
     lines.append("┌─────────────────────┐")
-    
+
     for (index, item) in items.enumerated() {
         let description = String(describing: item)
         let formattedLines = description.split(separator: "\n").map { "│ \($0)" }
         lines.append(contentsOf: formattedLines)
-        
+
         if index < items.count - 1 {
             lines.append("├─────────────────────┤")
         }
     }
-    
+
     lines.append("└─────────────────────┘")
     return lines.joined(separator: "\n")
 }

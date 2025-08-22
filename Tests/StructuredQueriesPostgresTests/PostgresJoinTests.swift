@@ -1,12 +1,12 @@
-import Testing
+import Foundation
+import PostgresNIO
 import StructuredQueries
 import StructuredQueriesPostgres
-import PostgresNIO
-import Foundation
+import Testing
 
 @Suite("PostgreSQL JOIN Tests")
 struct PostgresJoinTests {
-    
+
     @Test("Basic INNER JOIN")
     func innerJoin() {
         assertPostgresQuery(
@@ -16,7 +16,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "reminders"."title", "remindersLists"."title" FROM "reminders" JOIN "remindersLists" ON ("reminders"."remindersListID" = "remindersLists"."id")"#
         )
     }
-    
+
     @Test("LEFT JOIN with optional handling")
     func leftJoin() {
         assertPostgresQuery(
@@ -26,7 +26,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "reminders"."title" AS "reminderTitle", "users"."name" AS "userName" FROM "reminders" LEFT JOIN "users" ON ("reminders"."assignedUserID" = "users"."id")"#
         )
     }
-    
+
     @Test("Multiple JOINs")
     func multipleJoins() {
         assertPostgresQuery(
@@ -37,7 +37,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "reminders"."title" AS "reminderTitle", "remindersLists"."title" AS "listTitle", "users"."name" AS "userName" FROM "reminders" JOIN "remindersLists" ON ("reminders"."remindersListID" = "remindersLists"."id") LEFT JOIN "users" ON ("reminders"."assignedUserID" = "users"."id")"#
         )
     }
-    
+
     @Test("JOIN with WHERE clause")
     func joinWithWhere() {
         assertPostgresQuery(
@@ -48,7 +48,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "reminders"."title" FROM "reminders" JOIN "remindersLists" ON ("reminders"."remindersListID" = "remindersLists"."id") WHERE (NOT ("reminders"."isCompleted" != 0) AND ("remindersLists"."title" = $1))"#
         )
     }
-    
+
     @Test("JOIN with complex conditions")
     func joinComplexConditions() {
         assertPostgresQuery(
@@ -58,7 +58,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "reminders"."title" FROM "reminders" JOIN "remindersLists" ON (("reminders"."remindersListID" = "remindersLists"."id") AND ("remindersLists"."position" > $1))"#
         )
     }
-    
+
     @Test("JOIN with aggregates")
     func joinWithAggregates() {
         assertPostgresQuery(
@@ -69,7 +69,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "remindersLists"."title" AS "title", count("reminders"."id") AS "count" FROM "remindersLists" LEFT JOIN "reminders" ON ("remindersLists"."id" = "reminders"."remindersListID") GROUP BY "remindersLists"."id""#
         )
     }
-    
+
     @Test("JOIN with ORDER BY")
     func joinWithOrderBy() {
         assertPostgresQuery(
@@ -81,7 +81,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "reminders"."title" FROM "reminders" JOIN "remindersLists" ON ("reminders"."remindersListID" = "remindersLists"."id") ORDER BY "remindersLists"."position", "reminders"."title""#
         )
     }
-    
+
     @Test("Many-to-many JOIN through junction table")
     func manyToManyJoin() {
         assertPostgresQuery(
@@ -92,7 +92,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "reminders"."title", "tags"."title" FROM "reminders" JOIN "remindersTags" ON ("reminders"."id" = "remindersTags"."reminderID") JOIN "tags" ON ("remindersTags"."tagID" = "tags"."id")"#
         )
     }
-    
+
     @Test("JOIN with LIMIT")
     func joinWithLimit() {
         assertPostgresQuery(
@@ -103,7 +103,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "reminders"."title", "remindersLists"."title" FROM "reminders" JOIN "remindersLists" ON ("reminders"."remindersListID" = "remindersLists"."id") LIMIT $1"#
         )
     }
-    
+
     @Test("RIGHT JOIN with optional handling")
     func rightJoin() {
         assertPostgresQuery(
@@ -113,7 +113,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "reminders"."title" AS "reminderTitle", "remindersLists"."title" AS "listTitle" FROM "reminders" RIGHT JOIN "remindersLists" ON ("reminders"."remindersListID" = "remindersLists"."id")"#
         )
     }
-    
+
     @Test("FULL OUTER JOIN with optional handling")
     func fullOuterJoin() {
         assertPostgresQuery(
@@ -123,7 +123,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "reminders"."title" AS "reminderTitle", "users"."name" AS "userName" FROM "reminders" FULL JOIN "users" ON ("reminders"."assignedUserID" = "users"."id")"#
         )
     }
-    
+
     @Test("JOIN with HAVING clause")
     func joinWithHaving() {
         assertPostgresQuery(
@@ -135,7 +135,7 @@ struct PostgresJoinTests {
             sql: #"SELECT "remindersLists"."title" AS "title", count("reminders"."id") AS "count" FROM "remindersLists" LEFT JOIN "reminders" ON ("remindersLists"."id" = "reminders"."remindersListID") GROUP BY "remindersLists"."id" HAVING (count("reminders"."id") > $1)"#
         )
     }
-    
+
     @Test("JOIN with DISTINCT")
     func joinWithDistinct() {
         assertPostgresQuery(
