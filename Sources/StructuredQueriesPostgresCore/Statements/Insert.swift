@@ -628,6 +628,37 @@ extension Table {
 }
 
 extension PrimaryKeyedTable {
+  /// An insert statement for one or more draft rows.
+  ///
+  /// Uses Draft.TableColumns.writableColumns which automatically excludes
+  /// the primary key column when it's auto-generated (NULL in drafts).
+  ///
+  /// - Parameters:
+  ///   - values: A builder of draft values to insert.
+  ///   - onConflictDoUpdate: Updates to perform if the insert conflicts.
+  ///   - updateFilter: A filter to apply to the update clause.
+  /// - Returns: An insert statement.
+  public static func insert(
+    @InsertValuesBuilder<Draft> values: () -> [[QueryFragment]],
+    onConflictDoUpdate updates: ((inout Updates<Self>, Excluded) -> Void)? = nil,
+    @QueryFragmentBuilder<Bool>
+    where updateFilter: (TableColumns) -> [QueryFragment] = { _ in [] }
+  ) -> InsertOf<Self> {
+    // Since Draft.TableColumns.writableColumns already excludes the primary key
+    // (when it's NULL/auto-generated), we can use it directly
+    let columnNames = Draft.TableColumns.writableColumns.map(\.name)
+    let draftsAndValues = values()
+    
+    return _insert(
+      columnNames: columnNames,
+      values: .values(draftsAndValues),
+      onConflict: { _ -> ()? in nil },
+      where: { _ in return [] },
+      doUpdate: updates,
+      where: updateFilter
+    )
+  }
+  
   /// An upsert statement for given drafts.
   ///
   /// Generates an insert statement with an upsert clause. Useful for building forms that can both

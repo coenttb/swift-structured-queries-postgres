@@ -800,7 +800,15 @@ extension TableMacro: MemberMacro {
           """
         )
         allColumns.append(identifier)
-        writableColumns.append(identifier)
+        // For Draft types, exclude primary key from writableColumns to avoid NULL insertion in PostgreSQL
+        let isDraft = node.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "_Draft"
+        // In Draft types, the 'id' field should be treated as the primary key for exclusion purposes
+        let shouldExcludeFromWritable = isDraft && identifier.text == "id"
+        
+        if !shouldExcludeFromWritable {
+          writableColumns.append(identifier)
+        }
+
       }
       let decodedType = columnQueryValueType?.asNonOptionalType()
       if let defaultValue {
@@ -1013,6 +1021,9 @@ extension TableMacro: MemberMacro {
     guard !expansionFailed else {
       return []
     }
+    
+    // Debug: Print final writableColumns
+    print("DEBUG TableMacro FINAL: Struct '\(type.name.text)' writableColumns: \(writableColumns.map { $0.text })")
 
     var typeAliases: [DeclSyntax] = []
     if declaration.hasMacroApplication("Selection") {
