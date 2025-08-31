@@ -54,10 +54,42 @@ This fork is designed to work seamlessly with swift-records, which provides the 
 ```swift
 // In your Package.swift
 dependencies: [
-    .package(url: "https://github.com/coenttb/swift-structured-queries-postgres", branch: "main"),
+    .package(url: "https://github.com/coenttb/swift-structured-queries-postgres", exact: "0.0.1"),
     .package(url: "https://github.com/coenttb/swift-records", branch: "main")
 ]
 ```
+
+## Versioning
+
+### Current Version: 0.0.1 (Experimental)
+
+This fork starts fresh at version 0.0.1 with no prior version history. This clearly distinguishes it from:
+- The original Point-Free swift-structured-queries (SQLite-focused)
+- The previous layering approach that attempted runtime SQL translation
+
+**⚠️ Important**: This is experimental software in early development. Breaking changes should be expected in any version update until we reach 1.0.0. We strongly recommend pinning to exact versions in your Package.swift:
+
+```swift
+.package(url: "https://github.com/coenttb/swift-structured-queries-postgres", exact: "0.0.1")
+```
+
+### Version History
+
+- **0.0.1** (2024): Initial experimental release
+  - Complete PostgreSQL-native SQL generation
+  - Not compatible with the original swift-structured-queries
+  - Replaces the failed layering approach
+
+### Roadmap to 1.0.0
+
+We will continue with 0.x.x versions while the API evolves:
+- 0.0.x - Bug fixes and critical issues
+- 0.x.0 - New features and potential breaking changes
+- 1.0.0 - API stability achieved, production-ready
+
+### Previous Approaches
+
+This repository previously hosted a different approach that attempted to translate SQLite SQL to PostgreSQL at runtime. That approach has been discontinued and replaced with this direct PostgreSQL implementation.
 
 ## Future Direction
 
