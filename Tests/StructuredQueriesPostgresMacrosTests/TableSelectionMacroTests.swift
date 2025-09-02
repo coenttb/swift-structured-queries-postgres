@@ -10,14 +10,14 @@ extension SnapshotTests {
         """
         @Table @Selection
         struct ReminderListWithCount {
-          let reminderList: ReminderList 
+          let reminderList: ReminderList
           let remindersCount: Int
         }
         """
       } expansion: {
         #"""
         struct ReminderListWithCount {
-          let reminderList: ReminderList 
+          let reminderList: ReminderList
           let remindersCount: Int
 
           public nonisolated struct TableColumns: StructuredQueriesPostgresCore.TableDefinition {

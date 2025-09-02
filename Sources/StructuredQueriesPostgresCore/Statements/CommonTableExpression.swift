@@ -22,8 +22,7 @@ public struct With<QueryValue>: Statement, Sendable {
   where
     S.QueryValue == (),
     S.Joins == (repeat each J),
-    QueryValue == (S.From, repeat each J)
-  {
+    QueryValue == (S.From, repeat each J) {
     self.ctes = ctes()
     self.statement = statement().query
   }

@@ -24,7 +24,7 @@ extension Table {
     ) -> Where<Self> {
         Where(predicates: [columns[keyPath: keyPath].queryFragment])
     }
-    
+
     /// A where clause filtered by a predicate expression.
     ///
     /// See <doc:WhereClauses> for more.
@@ -37,7 +37,7 @@ extension Table {
     ) -> Where<Self> {
         Where(predicates: [predicate(columns).queryFragment])
     }
-    
+
     /// A where clause filtered by a predicate expression.
     ///
     /// See <doc:WhereClauses> for more.
@@ -62,10 +62,10 @@ public struct Where<From: Table>: Sendable {
     public static func + (lhs: Self, rhs: Self) -> Self {
         Where(predicates: (lhs.predicates + rhs.predicates).removingDuplicates())
     }
-    
+
     var predicates: [QueryFragment] = []
     var scope = Scope.default
-    
+
     public init(
         predicates: [QueryFragment] = [],
         scope: Scope = Scope.default
@@ -73,22 +73,22 @@ public struct Where<From: Table>: Sendable {
         self.predicates = predicates
         self.scope = scope
     }
-    
+
 #if compiler(>=6.1)
     public static subscript(dynamicMember keyPath: KeyPath<From.Type, Self>) -> Self {
         From.self[keyPath: keyPath]
     }
-    
+
     public subscript<each C: QueryRepresentable, each J: Table>(
         dynamicMember keyPath: KeyPath<From.Type, Select<(repeat each C), From, (repeat each J)>>
     ) -> Select<(repeat each C), From, (repeat each J)> {
         self + From.self[keyPath: keyPath]
     }
-    
+
     public subscript(dynamicMember keyPath: KeyPath<From.Type, Self>) -> Self {
         self + From.self[keyPath: keyPath]
     }
-    
+
     public subscript(
         dynamicMember keyPath: KeyPath<From.PrimaryTable.Type, Where<From.PrimaryTable>>
     ) -> Self
@@ -100,7 +100,7 @@ public struct Where<From: Table>: Sendable {
 
 extension Where: SelectStatement {
     public typealias QueryValue = ()
-    
+
     public func asSelect() -> SelectOf<From> {
         let select: SelectOf<From>
         switch scope {
@@ -113,11 +113,11 @@ extension Where: SelectStatement {
         }
         return select.and(self)
     }
-    
+
     public var _selectClauses: _SelectClauses {
         _SelectClauses(isEmpty: scope == .empty, where: predicates)
     }
-    
+
     /// A select statement for a column of the filtered table.
     ///
     /// - Parameter selection: A key path to a column to select.
@@ -128,7 +128,7 @@ extension Where: SelectStatement {
     where C.QueryValue: QueryRepresentable {
         asSelect().select(selection)
     }
-    
+
     /// A select statement for a column of the filtered table.
     ///
     /// - Parameter selection: A closure that selects a result column from the filtered table.
@@ -139,7 +139,7 @@ extension Where: SelectStatement {
     where C.QueryValue: QueryRepresentable {
         asSelect().select(selection)
     }
-    
+
     /// A select statement for columns of the filtered table.
     ///
     /// - Parameter selection: A closure that selects result columns from the filtered table.
@@ -150,11 +150,10 @@ extension Where: SelectStatement {
     where
     C1.QueryValue: QueryRepresentable,
     C2.QueryValue: QueryRepresentable,
-    repeat (each C3).QueryValue: QueryRepresentable
-    {
+    repeat (each C3).QueryValue: QueryRepresentable {
         asSelect().select(selection)
     }
-    
+
     /// A distinct select statement for the filtered table.
     ///
     /// - Parameter isDistinct: Whether or not to `SELECT DISTINCT`.
@@ -162,7 +161,7 @@ extension Where: SelectStatement {
     public func distinct(_ isDistinct: Bool = true) -> SelectOf<From> {
         asSelect().distinct(isDistinct)
     }
-    
+
     /// A select statement for the filtered table joined to another table.
     ///
     /// - Parameters:
@@ -177,7 +176,7 @@ extension Where: SelectStatement {
     ) -> Select<(repeat each C), From, (F, repeat each J)> {
         asSelect().join(other, on: constraint)
     }
-    
+
     // NB: Optimization
     /// A select statement for the filtered table joined to another table.
     ///
@@ -192,7 +191,7 @@ extension Where: SelectStatement {
     ) -> Select<(repeat each C), From, F> {
         asSelect().join(other, on: constraint)
     }
-    
+
     /// A select statement for the filtered table left-joined to another table.
     ///
     /// - Parameters:
@@ -212,7 +211,7 @@ extension Where: SelectStatement {
         let joined = asSelect().leftJoin(other, on: constraint)
         return joined
     }
-    
+
     // NB: Optimization
     /// A select statement for the filtered table left-joined to another table.
     ///
@@ -227,7 +226,7 @@ extension Where: SelectStatement {
     ) -> Select<(repeat (each C)._Optionalized), From, F._Optionalized> {
         asSelect().leftJoin(other, on: constraint)
     }
-    
+
     /// A select statement for the filtered table right-joined to another table.
     ///
     /// - Parameters:
@@ -243,7 +242,7 @@ extension Where: SelectStatement {
         let joined = asSelect().rightJoin(other, on: constraint)
         return joined
     }
-    
+
     // NB: Optimization
     /// A select statement for the filtered table right-joined to another table.
     ///
@@ -258,7 +257,7 @@ extension Where: SelectStatement {
     ) -> Select<(repeat each C), From._Optionalized, F> {
         asSelect().rightJoin(other, on: constraint)
     }
-    
+
     /// A select statement for the filtered table full-joined to another table.
     ///
     /// - Parameters:
@@ -278,7 +277,7 @@ extension Where: SelectStatement {
         let joined = asSelect().fullJoin(other, on: constraint)
         return joined
     }
-    
+
     // NB: Optimization
     /// A select statement for the filtered table full-joined to another table.
     ///
@@ -293,7 +292,7 @@ extension Where: SelectStatement {
     ) -> Select<(repeat (each C)._Optionalized), From._Optionalized, F._Optionalized> {
         asSelect().fullJoin(other, on: constraint)
     }
-    
+
     /// Adds a condition to a where clause.
     ///
     /// ```swift
@@ -314,7 +313,7 @@ extension Where: SelectStatement {
         `where`.predicates.append(From.columns[keyPath: keyPath].queryFragment)
         return `where`
     }
-    
+
     /// Adds a condition to a where clause.
     ///
     /// - Parameter predicate: A predicate to add.
@@ -327,7 +326,7 @@ extension Where: SelectStatement {
         `where`.predicates.append(predicate(From.columns).queryFragment)
         return `where`
     }
-    
+
     /// Adds a condition to a where clause.
     ///
     /// - Parameter predicate: A predicate to add.
@@ -339,7 +338,7 @@ extension Where: SelectStatement {
         `where`.predicates.append(contentsOf: predicate(From.columns))
         return `where`
     }
-    
+
     /// Combines the predicates of two where clauses together using `AND`.
     ///
     /// - Parameters:
@@ -349,7 +348,7 @@ extension Where: SelectStatement {
     public static func && (lhs: Self, rhs: Self) -> Self {
         lhs.and(rhs)
     }
-    
+
     /// Combines the predicates of two where clauses together using `OR`.
     ///
     /// - Parameters:
@@ -359,7 +358,7 @@ extension Where: SelectStatement {
     public static func || (lhs: Self, rhs: Self) -> Self {
         lhs.or(rhs)
     }
-    
+
     /// Negates the predicates of a where clause using `NOT`.
     ///
     /// - Parameter where: A where clause.
@@ -367,7 +366,7 @@ extension Where: SelectStatement {
     public static prefix func ! (where: Self) -> Self {
         `where`.not()
     }
-    
+
     /// Combines the predicates of this where clause and another using `AND`.
     ///
     /// - Parameter other: Another where clause.
@@ -385,7 +384,7 @@ extension Where: SelectStatement {
         ]
         return `where`
     }
-    
+
     /// Combines the predicates of this where clause and another using `OR`.
     ///
     /// - Parameter other: Another where clause.
@@ -403,7 +402,7 @@ extension Where: SelectStatement {
         ]
         return `where`
     }
-    
+
     /// Negates the predicates of a where clause using `NOT`.
     ///
     /// - Returns: A where clause that `NOT`s this where clause.
@@ -414,28 +413,28 @@ extension Where: SelectStatement {
         ]
         return `where`
     }
-    
+
     /// A select statement for the filtered table grouped by the given column.
     public func group<C: QueryExpression>(
         by grouping: (From.TableColumns) -> C
     ) -> Select<(), From, ()> {
         asSelect().group(by: grouping)
     }
-    
+
     /// A select statement for the filtered table grouped by the given columns.
     public func group<C1: QueryExpression, C2: QueryExpression, each C3: QueryExpression>(
         by grouping: (From.TableColumns) -> (C1, C2, repeat each C3)
     ) -> SelectOf<From> {
         asSelect().group(by: grouping)
     }
-    
+
     /// A select statement for the filtered table with the given `HAVING` clause.
     public func having(
         _ predicate: (From.TableColumns) -> some QueryExpression<some _OptionalPromotable<Bool?>>
     ) -> SelectOf<From> {
         asSelect().having(predicate)
     }
-    
+
     /// A select statement for the filtered table ordered by the given column.
     ///
     /// - Parameter ordering: A key path to a column to order by.
@@ -445,7 +444,7 @@ extension Where: SelectStatement {
     ) -> SelectOf<From> {
         asSelect().order(by: ordering)
     }
-    
+
     /// A select statement for the filtered table grouped by the given columns.
     ///
     /// - Parameter ordering: A result builder closure that returns columns to order by.
@@ -456,7 +455,7 @@ extension Where: SelectStatement {
     ) -> SelectOf<From> {
         asSelect().order(by: ordering)
     }
-    
+
     /// A select statement for the filtered table with a limit and optional offset.
     ///
     /// - Parameters:
@@ -469,7 +468,7 @@ extension Where: SelectStatement {
     ) -> SelectOf<From> {
         asSelect().limit(maxLength, offset: offset)
     }
-    
+
     /// A select statement for the filtered table with a limit and optional offset.
     ///
     /// - Parameters:
@@ -479,7 +478,7 @@ extension Where: SelectStatement {
     public func limit(_ maxLength: Int, offset: Int? = nil) -> SelectOf<From> {
         asSelect().limit(maxLength, offset: offset)
     }
-    
+
     /// A delete statement for the filtered table.
     public func delete() -> DeleteOf<From> {
         Delete(
@@ -487,7 +486,7 @@ extension Where: SelectStatement {
             where: scope == .unscoped ? predicates : From.all._selectClauses.where + predicates
         )
     }
-    
+
     /// An update statement for the filtered table.
     ///
     /// - Parameters:
@@ -503,7 +502,7 @@ extension Where: SelectStatement {
             where: scope == .unscoped ? predicates : From.all._selectClauses.where + predicates
         )
     }
-    
+
     public var query: QueryFragment {
         asSelect().query
     }

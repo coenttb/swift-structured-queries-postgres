@@ -1,9 +1,9 @@
+import StructuredQueriesPostgresSupport
 import SwiftBasicFormat
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
-import StructuredQueriesPostgresSupport
 
 public enum SelectionMacro {}
 

@@ -1,10 +1,10 @@
-//import Dependencies
-//import StructuredQueriesPostgres
+// import Dependencies
+// import StructuredQueriesPostgres
 //// TODO: Migrate to PostgreSQL test infrastructure
 //// import StructuredQueriesSQLite
-//import StructuredQueriesPostgresTestSupport
+// import StructuredQueriesPostgresTestSupport
 //
-//func assertQuery<S: SelectStatement, each J: Table>(
+// func assertQuery<S: SelectStatement, each J: Table>(
 //  _ query: S,
 //  sql: (() -> String)? = nil,
 //  results: (() -> String)? = nil,
@@ -13,7 +13,7 @@
 //  function: StaticString = #function,
 //  line: UInt = #line,
 //  column: UInt = #column
-//) where S.QueryValue == (), S.Joins == (repeat each J) {
+// ) where S.QueryValue == (), S.Joins == (repeat each J) {
 //  @Dependency(\.defaultDatabase) var db
 //  StructuredQueriesTestSupport.assertQuery(
 //    query,
@@ -27,9 +27,9 @@
 //    line: line,
 //    column: column
 //  )
-//}
+// }
 //
-//func assertQuery<each V: QueryRepresentable>(
+// func assertQuery<each V: QueryRepresentable>(
 //  _ query: some Statement<(repeat each V)>,
 //  sql: (() -> String)? = nil,
 //  results: (() -> String)? = nil,
@@ -38,7 +38,7 @@
 //  function: StaticString = #function,
 //  line: UInt = #line,
 //  column: UInt = #column
-//) {
+// ) {
 //  @Dependency(\.defaultDatabase) var db
 //  StructuredQueriesTestSupport.assertQuery(
 //    query,
@@ -52,4 +52,4 @@
 //    line: line,
 //    column: column
 //  )
-//}
+// }

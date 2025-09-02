@@ -19,7 +19,7 @@ extension SnapshotTests {
         RETURNING "title", "priority", "isCompleted"
         """
       }
-      
+
       assertInlineSnapshot(
         of: Reminder
           .where { $0.priority == nil }

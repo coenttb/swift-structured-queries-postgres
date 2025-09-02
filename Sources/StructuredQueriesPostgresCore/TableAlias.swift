@@ -78,15 +78,15 @@ public struct TableAlias<
     public static var columns: TableColumns {
         TableColumns()
     }
-    
+
     public static var tableName: String {
         Base.tableName
     }
-    
+
     public static var tableAlias: String? {
         Name.aliasName
     }
-    
+
     public static var all: SelectOf<Self> {
         var select = unsafeBitCast(Base.all.asSelect(), to: SelectOf<Self>.self)
         select.clauses.columns = select.clauses.columns.map {
@@ -102,16 +102,16 @@ public struct TableAlias<
             .map { $0.replacingOccurrences(of: Base.self, with: Name.self) }
         return select
     }
-    
+
     let base: Base
-    
+
     subscript<Member: QueryRepresentable>(
         member _: KeyPath<Member, Member>,
         column keyPath: KeyPath<Base, Member.QueryOutput>
     ) -> Member.QueryOutput {
         base[keyPath: keyPath]
     }
-    
+
     @dynamicMemberLookup
     public struct TableColumns: Sendable, TableDefinition {
         public static var allColumns: [any TableColumnExpression] {
@@ -124,7 +124,7 @@ public struct TableAlias<
             return Base.TableColumns.allColumns.map { open($0) }
 #endif
         }
-        
+
         public static var writableColumns: [any WritableTableColumnExpression] {
 #if compiler(>=6.1)
             return Base.TableColumns.writableColumns.map { $0._aliased(Name.self) }
@@ -137,9 +137,9 @@ public struct TableAlias<
             return Base.TableColumns.writableColumns.map { open($0) }
 #endif
         }
-        
+
         public typealias QueryValue = TableAlias
-        
+
         public subscript<Member>(
             dynamicMember keyPath: KeyPath<Base.TableColumns, TableColumn<Base, Member>>
         ) -> TableColumn<TableAlias, Member> {
@@ -149,7 +149,7 @@ public struct TableAlias<
                 keyPath: \.[member: \Member.self, column: column._keyPath]
             )
         }
-        
+
         public subscript<Member>(
             dynamicMember keyPath: KeyPath<Base.TableColumns, GeneratedColumn<Base, Member>>
         ) -> GeneratedColumn<TableAlias, Member> {
@@ -176,7 +176,7 @@ extension TableAlias: TableDraft where Base: TableDraft {
 extension TableAlias.TableColumns: PrimaryKeyedTableDefinition
 where Base.TableColumns: PrimaryKeyedTableDefinition {
     public typealias PrimaryKey = Base.TableColumns.PrimaryKey
-    
+
     public var primaryKey: TableColumn<TableAlias, Base.TableColumns.PrimaryKey.QueryValue> {
         self[dynamicMember: \.primaryKey]
     }
@@ -184,7 +184,7 @@ where Base.TableColumns: PrimaryKeyedTableDefinition {
 
 extension TableAlias: QueryExpression where Base: QueryExpression {
     public typealias QueryValue = Base.QueryValue
-    
+
     public var queryFragment: QueryFragment {
         base.queryFragment
     }
@@ -204,11 +204,11 @@ extension TableAlias: QueryDecodable where Base: QueryDecodable {
 
 extension TableAlias: QueryRepresentable where Base: QueryRepresentable {
     public typealias QueryOutput = Base
-    
+
     public init(queryOutput: Base) {
         self.init(base: queryOutput)
     }
-    
+
     public var queryOutput: Base {
         base
     }

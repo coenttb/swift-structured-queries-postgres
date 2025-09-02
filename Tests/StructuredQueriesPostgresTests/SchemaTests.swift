@@ -15,7 +15,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func insert() {
             assertInlineSnapshot(
                 of: Reminder.insert { Reminder.Draft(remindersListID: 1) },
@@ -23,13 +23,13 @@ extension SnapshotTests {
             ) {
                 """
                 INSERT INTO "main"."reminders"
-                ("id", "remindersListID")
+                ("remindersListID")
                 VALUES
-                (NULL, 1)
+                (1)
                 """
             }
         }
-        
+
         @Test func update() {
             assertInlineSnapshot(
                 of: Reminder.where { $0.remindersListID.eq(1) }.update { $0.remindersListID = 2 },
@@ -42,7 +42,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func delete() {
             assertInlineSnapshot(
                 of: Reminder.where { $0.remindersListID.eq(1) }.delete(),
@@ -54,7 +54,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Table("reminders", schema: "main")
         fileprivate struct Reminder {
             let id: Int

@@ -33,7 +33,7 @@ private struct Bar {
 func dynamicMemberLookup() {
     _ = Foo.all
         .leftJoin(Bar.all) { $0.barId.eq($1.id) }
-        .where { f, b in
+        .where { _, b in
             b.baz.is(nil)
         }
 }

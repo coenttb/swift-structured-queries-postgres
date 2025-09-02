@@ -5,7 +5,7 @@ import StructuredQueriesPostgres
 import StructuredQueriesPostgresTestSupport
 import Testing
 
-//extension SnapshotTests {
+// extension SnapshotTests {
 //    @Suite struct BindingTests {
 //        @Dependency(\.defaultDatabase) var db
 //        init() throws {
@@ -88,12 +88,12 @@ import Testing
 //            }
 //        }
 //    }
-//}
+// }
 //
-//@Table
-//private struct Record: Equatable {
+// @Table
+// private struct Record: Equatable {
 //    @Column(as: UUID.BytesRepresentation.self)
 //    var id: UUID
 //    var name = ""
 //    var duration: UInt64 = 0
-//}
+// }

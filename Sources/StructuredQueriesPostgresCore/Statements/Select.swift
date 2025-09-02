@@ -11,7 +11,7 @@ extension Table {
     where ResultColumn.QueryValue: QueryRepresentable {
         Where().select(selection)
     }
-    
+
     /// A select statement for a column of this table.
     ///
     /// See <doc:SelectStatements> for more info.
@@ -24,7 +24,7 @@ extension Table {
     where ResultColumn.QueryValue: QueryRepresentable {
         Where().select(selection)
     }
-    
+
     /// A select statement for columns of this table.
     ///
     /// See <doc:SelectStatements> for more info.
@@ -41,11 +41,10 @@ extension Table {
     where
     C1.QueryValue: QueryRepresentable,
     C2.QueryValue: QueryRepresentable,
-    repeat (each C3).QueryValue: QueryRepresentable
-    {
+    repeat (each C3).QueryValue: QueryRepresentable {
         Where().select(selection)
     }
-    
+
     /// A distinct select statement for this table.
     ///
     /// - Parameter isDistinct: Whether or not to `SELECT DISTINCT`.
@@ -53,7 +52,7 @@ extension Table {
     public static func distinct(_ isDistinct: Bool = true) -> SelectOf<Self> {
         Where().distinct(isDistinct)
     }
-    
+
     /// A select statement for this table joined to another table.
     ///
     /// - Parameters:
@@ -72,7 +71,7 @@ extension Table {
     ) -> Select<(repeat each C), Self, (F, repeat each J)> {
         Where().join(other, on: constraint)
     }
-    
+
     // NB: Optimization
     /// A select statement for this table joined to another table.
     ///
@@ -89,7 +88,7 @@ extension Table {
     ) -> Select<(repeat each C), Self, F> {
         Where().join(other, on: constraint)
     }
-    
+
     /// A select statement for this table left-joined to another table.
     ///
     /// - Parameters:
@@ -112,7 +111,7 @@ extension Table {
     > {
         Where().leftJoin(other, on: constraint)
     }
-    
+
     // NB: Optimization
     /// A select statement for this table left-joined to another table.
     ///
@@ -129,7 +128,7 @@ extension Table {
     ) -> Select<(repeat (each C)._Optionalized), Self, F._Optionalized> {
         Where().leftJoin(other, on: constraint)
     }
-    
+
     /// A select statement for this table right-joined to another table.
     ///
     /// - Parameters:
@@ -148,7 +147,7 @@ extension Table {
     ) -> Select<(repeat each C), Self._Optionalized, (F, repeat each J)> {
         Where<Self>().rightJoin(other, on: constraint)
     }
-    
+
     // NB: Optimization
     /// A select statement for this table right-joined to another table.
     ///
@@ -165,7 +164,7 @@ extension Table {
     ) -> Select<(repeat each C), Self._Optionalized, F> {
         Where<Self>().rightJoin(other, on: constraint)
     }
-    
+
     /// A select statement for this table full-joined to another table.
     ///
     /// - Parameters:
@@ -188,7 +187,7 @@ extension Table {
     > {
         Where<Self>().fullJoin(other, on: constraint)
     }
-    
+
     // NB: Optimization
     /// A select statement for this table full-joined to another table.
     ///
@@ -205,7 +204,7 @@ extension Table {
     ) -> Select<(repeat (each C)._Optionalized), Self._Optionalized, F._Optionalized> {
         Where<Self>().fullJoin(other, on: constraint)
     }
-    
+
     /// A select statement for this table grouped by the given column.
     ///
     /// - Parameter grouping: A closure that returns a column to group by from this table's columns.
@@ -215,7 +214,7 @@ extension Table {
     ) -> SelectOf<Self> {
         Where().group(by: grouping)
     }
-    
+
     /// A select statement for this table grouped by the given columns.
     ///
     /// - Parameter grouping: A closure that returns columns to group by from this table's columns.
@@ -229,7 +228,7 @@ extension Table {
     ) -> SelectOf<Self> {
         Where().group(by: grouping)
     }
-    
+
     /// A select statement for this table with the given `HAVING` clause.
     ///
     /// - Parameter predicate: A closure that produces a Boolean query expression from this table's
@@ -240,7 +239,7 @@ extension Table {
     ) -> SelectOf<Self> {
         Where().having(predicate)
     }
-    
+
     /// A select statement for this table ordered by the given column.
     ///
     /// - Parameter ordering: A key path to a column to order by.
@@ -250,7 +249,7 @@ extension Table {
     ) -> SelectOf<Self> {
         Where().order(by: ordering)
     }
-    
+
     /// A select statement for this table ordered by the given columns.
     ///
     /// - Parameter ordering: A result builder closure that returns columns to order by.
@@ -261,7 +260,7 @@ extension Table {
     ) -> SelectOf<Self> {
         Where().order(by: ordering)
     }
-    
+
     /// A select statement for this table with a limit and optional offset.
     ///
     /// - Parameters:
@@ -274,7 +273,7 @@ extension Table {
     ) -> SelectOf<Self> {
         Where().limit(maxLength, offset: offset)
     }
-    
+
     /// A select statement for this table with a limit and optional offset.
     ///
     /// - Parameters:
@@ -311,7 +310,7 @@ public struct _SelectClauses: Sendable {
 public struct Select<Columns, From: Table, Joins>: Sendable {
     // NB: A parameter pack compiler crash forces us to heap-allocate this storage.
     @CopyOnWrite var clauses = _SelectClauses()
-    
+
     fileprivate var isEmpty: Bool {
         get { clauses.isEmpty }
         set { clauses.isEmpty = newValue }
@@ -357,7 +356,7 @@ public struct Select<Columns, From: Table, Joins>: Sendable {
         set { clauses.limit = newValue }
         _modify { yield &clauses.limit }
     }
-    
+
     fileprivate init(
         isEmpty: Bool,
         distinct: Bool,
@@ -379,7 +378,7 @@ public struct Select<Columns, From: Table, Joins>: Sendable {
         self.order = order
         self.limit = limit
     }
-    
+
     init(clauses: _SelectClauses) {
         self.clauses = clauses
     }
@@ -390,7 +389,7 @@ extension Select {
         self.isEmpty = isEmpty
         self.where = `where`
     }
-    
+
 #if DEBUG && compiler(>=6.1)
     // NB: This can cause 'EXC_BAD_ACCESS' when 'C2' or 'J2' contain parameters.
     // TODO: Report issue to Swift team.
@@ -413,7 +412,7 @@ extension Select {
         self + From.self[keyPath: keyPath]
     }
 #endif
-    
+
     /// Creates a new select statement from this one by appending the given result column to its
     /// selection.
     ///
@@ -425,7 +424,7 @@ extension Select {
     where Columns == (repeat each C1), C2.QueryValue: QueryRepresentable, Joins == () {
         select { $0[keyPath: selection] }
     }
-    
+
     // NB: This overload is required for CTEs with join clauses to avoid a compiler bug.
     /// Creates a new select statement from this one by selecting the given result column.
     ///
@@ -438,7 +437,7 @@ extension Select {
     where Columns == (), C.QueryValue: QueryRepresentable, Joins == (repeat each J) {
         _select(selection)
     }
-    
+
     /// Creates a new select statement from this one by selecting the given result column.
     ///
     /// - Parameter selection: A closure that selects a result column from this select's tables.
@@ -450,7 +449,7 @@ extension Select {
     where Columns == (), C.QueryValue: QueryRepresentable, Joins == (repeat each J) {
         _select(selection)
     }
-    
+
     /// Creates a new select statement from this one by appending the given result column to its
     /// selection.
     ///
@@ -462,7 +461,7 @@ extension Select {
     where Columns == (repeat each C1), C2.QueryValue: QueryRepresentable, Joins == () {
         _select(selection)
     }
-    
+
     /// Creates a new select statement from this one by appending the given result column to its
     /// selection.
     ///
@@ -474,7 +473,7 @@ extension Select {
     where Columns == (repeat each C1), C2.QueryValue: QueryRepresentable, Joins == (repeat each J) {
         _select(selection)
     }
-    
+
     /// Creates a new select statement from this one by appending the given result column to its
     /// selection.
     ///
@@ -487,7 +486,7 @@ extension Select {
     where Columns == (repeat each C1), C2.QueryValue: QueryRepresentable, Joins == (repeat each J) {
         _select(selection)
     }
-    
+
     /// Creates a new select statement from this one by appending the given result columns to its
     /// selection.
     ///
@@ -511,11 +510,10 @@ extension Select {
     C2.QueryValue: QueryRepresentable,
     C3.QueryValue: QueryRepresentable,
     repeat (each C4).QueryValue: QueryRepresentable,
-    Joins == (repeat each J)
-    {
+    Joins == (repeat each J) {
         _select(selection)
     }
-    
+
     /// Creates a new select statement from this one by appending the given result columns to its
     /// selection.
     ///
@@ -540,11 +538,10 @@ extension Select {
     C2.QueryValue: QueryRepresentable,
     C3.QueryValue: QueryRepresentable,
     repeat (each C4).QueryValue: QueryRepresentable,
-    Joins == (repeat each J)
-    {
+    Joins == (repeat each J) {
         _select(selection)
     }
-    
+
     private func _select<
         each C1: QueryRepresentable,
         each C2: QueryExpression,
@@ -555,8 +552,7 @@ extension Select {
     where
     Columns == (repeat each C1),
     repeat (each C2).QueryValue: QueryRepresentable,
-    Joins == (repeat each J)
-    {
+    Joins == (repeat each J) {
         Select<(repeat each C1, repeat (each C2).QueryValue), From, (repeat each J)>(
             isEmpty: isEmpty,
             distinct: distinct,
@@ -569,7 +565,7 @@ extension Select {
             limit: limit
         )
     }
-    
+
     /// Creates a new select statement from this one by setting its distinct clause.
     ///
     /// - Parameter isDistinct: Whether or not to `SELECT DISTINCT`.
@@ -579,7 +575,7 @@ extension Select {
         select.distinct = isDistinct
         return select
     }
-    
+
     /// Creates a new select statement from this one by joining another table.
     ///
     /// - Parameters:
@@ -624,7 +620,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     // NB: Optimization
     /// Creates a new select statement from this one by joining another table.
     ///
@@ -665,7 +661,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     /// Creates a new select statement from this one by joining another table.
     ///
     /// - Parameters:
@@ -702,7 +698,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     @_disfavoredOverload
     @_documentation(visibility: private)
     public func join<F: Table>(
@@ -732,7 +728,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     /// Creates a new select statement from this one by left-joining another table.
     ///
     /// - Parameters:
@@ -785,7 +781,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     // NB: Optimization
     /// Creates a new select statement from this one by left-joining another table.
     ///
@@ -834,7 +830,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     // NB: Optimization
     /// Creates a new select statement from this one by left-joining another table.
     ///
@@ -873,7 +869,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     @_disfavoredOverload
     @_documentation(visibility: private)
     public func leftJoin<F: Table>(
@@ -904,7 +900,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     /// Creates a new select statement from this one by right-joining another table.
     ///
     /// - Parameters:
@@ -957,7 +953,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     // NB: Optimization
     /// Creates a new select statement from this one by right-joining another table.
     ///
@@ -1006,7 +1002,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     // NB: Optimization
     /// Creates a new select statement from this one by right-joining another table.
     ///
@@ -1045,7 +1041,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     @_disfavoredOverload
     @_documentation(visibility: private)
     public func rightJoin<F: Table>(
@@ -1076,7 +1072,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     /// Creates a new select statement from this one by full-joining another table.
     ///
     /// - Parameters:
@@ -1129,7 +1125,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     // NB: Optimization
     /// Creates a new select statement from this one by full-joining another table.
     ///
@@ -1178,7 +1174,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     // NB: Optimization
     /// Creates a new select statement from this one by full-joining another table.
     ///
@@ -1217,7 +1213,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     @_disfavoredOverload
     @_documentation(visibility: private)
     public func fullJoin<F: Table>(
@@ -1248,7 +1244,7 @@ extension Select {
             limit: other.limit ?? limit
         )
     }
-    
+
     /// Creates a new select statement from this one by appending a predicate to its `WHERE` clause.
     ///
     /// - Parameter keyPath: A key path from this select's table to a Boolean expression to filter by.
@@ -1261,7 +1257,7 @@ extension Select {
         select.where.append(From.columns[keyPath: keyPath].queryFragment)
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending a predicate to its `WHERE` clause.
     ///
     /// - Parameter predicate: A closure that produces a Boolean query expression from this select's
@@ -1278,7 +1274,7 @@ extension Select {
         select.where.append(predicate(From.columns, repeat (each J).columns).queryFragment)
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending a predicate to its `WHERE` clause.
     ///
     /// - Parameter predicate: A result builder closure that returns a Boolean expression to filter
@@ -1293,7 +1289,7 @@ extension Select {
         select.where.append(contentsOf: predicate(From.columns, repeat (each J).columns))
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending a predicate to its `WHERE` clause.
     ///
     /// - Parameter predicate: A closure that produces a Boolean query expression from this select's
@@ -1310,7 +1306,7 @@ extension Select {
         select.where.append(predicate(From.columns, Joins.columns).queryFragment)
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending a predicate to its `WHERE` clause.
     ///
     /// - Parameter predicate: A result builder closure that returns a Boolean expression to filter
@@ -1325,13 +1321,13 @@ extension Select {
         select.where.append(contentsOf: predicate(From.columns, Joins.columns))
         return select
     }
-    
+
     public func and(_ other: Where<From>) -> Self {
         var select = self
         select.where = (select.where + other.predicates).removingDuplicates()
         return select
     }
-    
+
     public func or(_ other: Where<From>) -> Self {
         var select = self
         if select.where.isEmpty {
@@ -1347,7 +1343,7 @@ extension Select {
         }
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending the given column to its `GROUP BY`
     /// clause.
     ///
@@ -1358,7 +1354,7 @@ extension Select {
     ) -> Self where Joins == (repeat each J) {
         _group(by: grouping)
     }
-    
+
     /// Creates a new select statement from this one by appending the given columns to its `GROUP BY`
     /// clause.
     ///
@@ -1374,7 +1370,7 @@ extension Select {
     ) -> Self where Joins == (repeat each J) {
         _group(by: grouping)
     }
-    
+
     /// Creates a new select statement from this one by appending the given column to its `GROUP BY`
     /// clause.
     ///
@@ -1385,7 +1381,7 @@ extension Select {
     ) -> Self where Joins: Table {
         _group(by: grouping)
     }
-    
+
     /// Creates a new select statement from this one by appending the given columns to its `GROUP BY`
     /// clause.
     ///
@@ -1400,7 +1396,7 @@ extension Select {
     ) -> Self where Joins: Table {
         _group(by: grouping)
     }
-    
+
     private func _group<
         each C: QueryExpression,
         each J: Table
@@ -1414,7 +1410,7 @@ extension Select {
             )
         return select
     }
-    
+
     private func _group<each C: QueryExpression>(
         by grouping: (From.TableColumns, Joins.TableColumns) -> (repeat each C)
     ) -> Self where Joins: Table {
@@ -1425,7 +1421,7 @@ extension Select {
             )
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending a predicate to its `HAVING` clause.
     ///
     /// - Parameter predicate: A closure that produces a Boolean query expression from this select's
@@ -1442,7 +1438,7 @@ extension Select {
         select.having.append(predicate(From.columns, repeat (each J).columns).queryFragment)
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending a predicate to its `HAVING` clause.
     ///
     /// - Parameter predicate: A result builder closure that returns a Boolean expression to filter
@@ -1457,7 +1453,7 @@ extension Select {
         select.having.append(contentsOf: predicate(From.columns, repeat (each J).columns))
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending a predicate to its `HAVING` clause.
     ///
     /// - Parameter predicate: A closure that produces a Boolean query expression from this select's
@@ -1474,7 +1470,7 @@ extension Select {
         select.having.append(predicate(From.columns, Joins.columns).queryFragment)
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending a predicate to its `HAVING` clause.
     ///
     /// - Parameter predicate: A result builder closure that returns a Boolean expression to filter
@@ -1489,7 +1485,7 @@ extension Select {
         select.having.append(contentsOf: predicate(From.columns, Joins.columns))
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending a column to its `ORDER BY` clause.
     ///
     /// - Parameter ordering: A key path to a column to order by.
@@ -1499,7 +1495,7 @@ extension Select {
         select.order.append(From.columns[keyPath: ordering].queryFragment)
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending columns to its `ORDER BY` clause.
     ///
     /// - Parameter ordering: A result builder closure that returns columns to order by.
@@ -1513,7 +1509,7 @@ extension Select {
         select.order.append(contentsOf: ordering(From.columns, repeat (each J).columns))
         return select
     }
-    
+
     /// Creates a new select statement from this one by appending columns to its `ORDER BY` clause.
     ///
     /// - Parameter ordering: A result builder closure that returns columns to order by.
@@ -1527,7 +1523,7 @@ extension Select {
         select.order.append(contentsOf: ordering(From.columns, Joins.columns))
         return select
     }
-    
+
     /// Creates a new select statement from this one by overriding its `LIMIT` and `OFFSET` clauses.
     ///
     /// - Parameters:
@@ -1546,7 +1542,7 @@ extension Select {
         )
         return select
     }
-    
+
     /// Creates a new select statement from this one by overriding its `LIMIT` and `OFFSET` clauses.
     ///
     /// - Parameters:
@@ -1565,7 +1561,7 @@ extension Select {
         )
         return select
     }
-    
+
     /// Creates a new select statement from this one by overriding its `LIMIT` and `OFFSET` clauses.
     ///
     /// - Parameters:
@@ -1581,8 +1577,7 @@ extension Select {
         )
         return select
     }
-   
-    
+
     /// Creates a new select statement from this one by transforming its selected columns to a new
     /// selection.
     ///
@@ -1594,8 +1589,7 @@ extension Select {
     ) -> Select<(repeat (each C2).QueryValue), From, Joins>
     where
     QueryValue == (repeat each C1),
-    repeat (each C2).QueryValue: QueryRepresentable
-    {
+    repeat (each C2).QueryValue: QueryRepresentable {
         var iterator = columns.makeIterator()
         func next<Element>() -> SQLQueryExpression<Element> {
             SQLQueryExpression(iterator.next()!)
@@ -1612,17 +1606,17 @@ extension Select {
             limit: limit
         )
     }
-    
+
     /// Returns a fully unscoped version of this select statement.
     public var unscoped: Where<From> {
         From.unscoped
     }
-    
+
     /// Returns this select statement unchanged.
     public var all: Self {
         self
     }
-    
+
     /// Returns an empty select statement.
     public var none: Self {
         var select = self
@@ -1672,11 +1666,11 @@ public func + <
 
 extension Select: SelectStatement {
     public typealias QueryValue = Columns
-    
+
     public var _selectClauses: _SelectClauses {
         clauses
     }
-    
+
     public var query: QueryFragment {
         guard !isEmpty else { return "" }
         var query: QueryFragment = "SELECT"
@@ -1723,7 +1717,7 @@ Select<(), From, (repeat each Join)>
 
 public struct _JoinClause: QueryExpression, Sendable {
     public typealias QueryValue = Never
-    
+
     struct Operator {
         static let full = Self(queryFragment: "FULL")
         static let inner = Self(queryFragment: "INNER")
@@ -1731,13 +1725,13 @@ public struct _JoinClause: QueryExpression, Sendable {
         static let right = Self(queryFragment: "RIGHT")
         let queryFragment: QueryFragment
     }
-    
+
     let constraint: QueryFragment
     let `operator`: QueryFragment?
     let tableAlias: String?
     let tableColumns: QueryFragment
     let tableName: String
-    
+
     init(
         operator: Operator?,
         table: any Table.Type,
@@ -1749,7 +1743,7 @@ public struct _JoinClause: QueryExpression, Sendable {
         tableColumns = table.columns.queryFragment
         tableName = table.tableName
     }
-    
+
     public var queryFragment: QueryFragment {
         var query: QueryFragment = ""
         if let `operator` {
@@ -1766,10 +1760,10 @@ public struct _JoinClause: QueryExpression, Sendable {
 
 public struct _LimitClause: QueryExpression, Sendable {
     public typealias QueryValue = Never
-    
+
     let maxLength: QueryFragment
     let offset: QueryFragment?
-    
+
     public var queryFragment: QueryFragment {
         var query: QueryFragment = "LIMIT \(maxLength)"
         if let offset {

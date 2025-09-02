@@ -4,8 +4,6 @@ import StructuredQueriesPostgres
 import StructuredQueriesPostgresTestSupport
 import Testing
 
-
-
 extension SnapshotTests {
     @Suite(
         "OperatorsTests",
@@ -96,7 +94,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @available(*, deprecated)
         @Test func deprecatedEquality() {
             assertInlineSnapshot(of: Row.columns.c == nil, as: .sql) {
@@ -110,7 +108,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func comparison() {
             assertInlineSnapshot(of: Row.columns.c < Row.columns.c, as: .sql) {
                 """
@@ -138,7 +136,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func logic() {
             assertInlineSnapshot(of: Row.columns.bool && Row.columns.bool, as: .sql) {
                 """
@@ -162,7 +160,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func arithmetic() {
             assertInlineSnapshot(of: Row.columns.c + Row.columns.c, as: .sql) {
                 """
@@ -237,7 +235,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func bitwise() {
             assertInlineSnapshot(of: Row.columns.c % Row.columns.c, as: .sql) {
                 """
@@ -300,9 +298,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
-        
-        
+
         @Test func collectionIn() async throws {
             assertInlineSnapshot(
                 of: Row.columns.c.in([1, 2, 3]),
@@ -339,9 +335,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
-        
-        
+
         @Test func containsCollectionElement() {
             assertInlineSnapshot(
                 of: Reminder.select { $0.id }.where { [1, 2].contains($0.id) },
@@ -354,7 +348,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func moduloZero() {
             assertInlineSnapshot(
                 of: Reminder.select { $0.id % 0 },
@@ -366,7 +360,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func exists() {
             assertInlineSnapshot(
                 of: Values(Reminder.exists()),
@@ -379,7 +373,7 @@ extension SnapshotTests {
                 )
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Values(Reminder.where { $0.id == 1 }.exists()),
                 as: .sql
@@ -392,7 +386,7 @@ extension SnapshotTests {
                 )
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Values(Reminder.where { $0.id == 100 }.exists()),
                 as: .sql
@@ -406,7 +400,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Table
         struct Row {
             var a: Int?

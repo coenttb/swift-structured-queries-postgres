@@ -186,11 +186,11 @@ extension QueryDecodable where Self: RawRepresentable, RawValue: QueryDecodable 
 @usableFromInline
 struct DataCorruptedError: Error {
     @usableFromInline
-    init() {}
+    internal init() {}
 }
 
 @usableFromInline
 struct OverflowError: Error {
     @usableFromInline
-    init() {}
+    internal init() {}
 }

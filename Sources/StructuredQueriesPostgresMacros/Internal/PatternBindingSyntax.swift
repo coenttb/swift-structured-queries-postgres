@@ -23,7 +23,7 @@ extension PatternBindingSyntax {
 
     annotated.initializer =
       annotated.initializer
-      ?? InitializerClauseSyntax.init(
+      ?? InitializerClauseSyntax(
         equal: .equalToken(leadingTrivia: " ", trailingTrivia: " "),
         value: NilLiteralExprSyntax()
       )

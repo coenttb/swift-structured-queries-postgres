@@ -1,9 +1,10 @@
+internal import Foundation
+import StructuredQueriesPostgresSupport
 import SwiftBasicFormat
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
-import StructuredQueriesPostgresSupport
 
 public enum TableMacro {}
 
@@ -585,7 +586,7 @@ extension TableMacro: ExtensionMacro {
         """,
         """
         public typealias From = Swift.Never
-        """,
+        """
       ])
     } else {
       initDecoder = """
@@ -800,14 +801,10 @@ extension TableMacro: MemberMacro {
           """
         )
         allColumns.append(identifier)
-        // For Draft types, exclude primary key from writableColumns to avoid NULL insertion in PostgreSQL
-        let isDraft = node.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "_Draft"
-        // In Draft types, the 'id' field should be treated as the primary key for exclusion purposes
-        let shouldExcludeFromWritable = isDraft && identifier.text == "id"
-        
-        if !shouldExcludeFromWritable {
-          writableColumns.append(identifier)
-        }
+        // REVERTED: Excluding id from writableColumns breaks UPSERT operations
+        // The issue needs to be handled differently - perhaps with explicit annotations
+        // or by fixing the Insert.swift logic to handle NULL primary keys properly
+        writableColumns.append(identifier)
 
       }
       let decodedType = columnQueryValueType?.asNonOptionalType()
@@ -1021,7 +1018,7 @@ extension TableMacro: MemberMacro {
     guard !expansionFailed else {
       return []
     }
-    
+
     // Debug: Print final writableColumns
     print("DEBUG TableMacro FINAL: Struct '\(type.name.text)' writableColumns: \(writableColumns.map { $0.text })")
 
@@ -1035,7 +1032,7 @@ extension TableMacro: MemberMacro {
         """,
         """
         public typealias From = Swift.Never
-        """,
+        """
       ])
     }
 
@@ -1055,7 +1052,7 @@ extension TableMacro: MemberMacro {
       }
       }
       """,
-      draft,
+      draft
     ]
     .compactMap { $0 }
   }

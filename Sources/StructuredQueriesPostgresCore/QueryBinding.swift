@@ -5,33 +5,33 @@ import StructuredQueriesPostgresSupport
 public enum QueryBinding: Hashable, Sendable {
     /// A value that should be bound to a statement as bytes.
     case blob([UInt8])
-    
+
     case bool(Bool)
-    
+
     /// A value that should be bound to a statement as a double.
     case double(Double)
-    
+
     /// A value that should be bound to a statement as a date.
     case date(Date)
-    
+
     /// A value that should be bound to a statement as an integer.
     case int(Int64)
-    
+
     /// A value that should be bound to a statement as `NULL`.
     case null
-    
+
     /// A value that should be bound to a statement as a string.
     case text(String)
-    
+
     /// A value that should be bound to a statement as a unique identifier.
     case uuid(UUID)
-    
+
     /// A value that should be bound to a statement as PostgreSQL JSONB.
     case jsonb(Data)
-    
+
     /// An error describing why a value cannot be bound to a statement.
     case invalid(QueryBindingError)
-    
+
     @_disfavoredOverload
     public static func invalid(_ error: any Error) -> Self {
         .invalid(QueryBindingError(underlyingError: error))

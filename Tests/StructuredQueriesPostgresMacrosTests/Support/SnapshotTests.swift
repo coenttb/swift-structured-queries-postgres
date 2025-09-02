@@ -15,9 +15,9 @@ import Testing
       "Ephemeral": EphemeralMacro.self,
       "Selection": SelectionMacro.self,
       "sql": SQLMacro.self,
-      "Table": TableMacro.self,
+      "Table": TableMacro.self
     ],
-    record: .failed
+    record: .never
   )
 ) struct SnapshotTests {}
 

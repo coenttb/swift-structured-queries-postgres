@@ -13,22 +13,22 @@ public struct QueryFragment: Hashable, Sendable {
     public enum Segment: Hashable, Sendable {
         /// A raw SQL fragment.
         case sql(String)
-        
+
         /// A binding.
         case binding(QueryBinding)
     }
-    
+
     /// An array of segments backing this query fragment.
     public internal(set) var segments: [Segment] = []
-    
+
     fileprivate init(segments: [Segment]) {
         self.segments = segments
     }
-    
+
     init(_ string: String = "") {
         self.init(segments: [.sql(string)])
     }
-    
+
     /// A Boolean value indicating whether the query fragment is empty.
     public var isEmpty: Bool {
         segments.allSatisfy {
@@ -40,26 +40,26 @@ public struct QueryFragment: Hashable, Sendable {
             }
         }
     }
-    
+
     /// Appends the given fragment to this query fragment.
     ///
     /// - Parameter other: Another query fragment.
     public mutating func append(_ other: Self) {
         segments.append(contentsOf: other.segments)
     }
-    
+
     /// Appends a given query fragment to another fragment.
     public static func += (lhs: inout Self, rhs: Self) {
         lhs.append(rhs)
     }
-    
+
     /// Creates a new query fragment by concatenating two fragments.
     public static func + (lhs: Self, rhs: Self) -> Self {
         var query = lhs
         query += rhs
         return query
     }
-    
+
     /// Returns a prepared SQL string and associated bindings for this query.
     ///
     /// - Parameter template: Prepare a template string for a binding at a given 1-based offset.
@@ -118,11 +118,11 @@ extension QueryFragment: ExpressibleByStringInterpolation {
     public init(stringInterpolation: StringInterpolation) {
         self.init(segments: stringInterpolation.segments)
     }
-    
+
     public init(stringLiteral value: String) {
         self.init(value)
     }
-    
+
     /// Creates a query fragment by quoting the given SQL string.
     ///
     /// ```swift
@@ -143,19 +143,19 @@ extension QueryFragment: ExpressibleByStringInterpolation {
     ) {
         self.init(sql.quoted(delimiter))
     }
-    
+
     public struct StringInterpolation: StringInterpolationProtocol {
         fileprivate var segments: [Segment] = []
-        
+
         public init(literalCapacity: Int, interpolationCount: Int) {
             segments.reserveCapacity(interpolationCount)
         }
-        
+
         public mutating func appendLiteral(_ literal: String) {
             guard !literal.isEmpty else { return }
             segments.append(.sql(literal))
         }
-        
+
         /// Append a quoted fragment to the interpolation.
         ///
         /// ```swift
@@ -176,7 +176,7 @@ extension QueryFragment: ExpressibleByStringInterpolation {
         ) {
             segments.append(.sql(sql.quoted(delimiter)))
         }
-        
+
         /// Append a raw SQL string to the interpolation.
         ///
         /// > Warning: Avoid using this API as much as possible as it naively interpolates the raw
@@ -188,7 +188,7 @@ extension QueryFragment: ExpressibleByStringInterpolation {
         public mutating func appendInterpolation(raw sql: String) {
             appendLiteral(sql)
         }
-        
+
         /// Append a raw lossless string to the interpolation.
         ///
         /// This can be used to interpolate values into statements in which they cannot be bound.
@@ -205,14 +205,14 @@ extension QueryFragment: ExpressibleByStringInterpolation {
         public mutating func appendInterpolation(raw sql: some LosslessStringConvertible) {
             appendLiteral(sql.description)
         }
-        
+
         /// Append a query binding to the interpolation.
         ///
         /// - Parameter binding: A query binding.
         public mutating func appendInterpolation(_ binding: QueryBinding) {
             segments.append(.binding(binding))
         }
-        
+
         /// Append a query representable output to the interpolation.
         ///
         /// - Parameters:
@@ -224,28 +224,28 @@ extension QueryFragment: ExpressibleByStringInterpolation {
         ) {
             appendInterpolation(QueryValue(queryOutput: queryOutput))
         }
-        
+
         /// Append a query fragment to the interpolation.
         ///
         /// - Parameter fragment: A query fragment.
         public mutating func appendInterpolation(_ fragment: QueryFragment) {
             segments.append(contentsOf: fragment.segments)
         }
-        
+
         /// Append a query expression to the interpolation.
         ///
         /// - Parameter expression: A query expression.
         public mutating func appendInterpolation(bind expression: some QueryExpression) {
             appendInterpolation(expression.queryFragment)
         }
-        
+
         /// Append a query expression to the interpolation.
         ///
         /// - Parameter expression: A query expression.
         public mutating func appendInterpolation(_ expression: some QueryExpression) {
             appendInterpolation(expression.queryFragment)
         }
-        
+
         /// Append a statement to the interpolation.
         ///
         /// The statement is directly interpolated into the query fragment, without parentheses. When
@@ -270,7 +270,7 @@ extension QueryFragment: ExpressibleByStringInterpolation {
         public mutating func appendInterpolation(_ statement: some PartialSelectStatement) {
             appendInterpolation(statement.query)
         }
-        
+
         /// Append a table's alias or name to the interpolation.
         ///
         /// ```swift
@@ -290,7 +290,7 @@ extension QueryFragment: ExpressibleByStringInterpolation {
             }
             appendInterpolation(quote: table.tableAlias ?? table.tableName)
         }
-        
+
         @available(
             *,
              deprecated,

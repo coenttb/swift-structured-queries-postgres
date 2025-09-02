@@ -7,15 +7,15 @@ public enum QueryFragmentBuilder<Clause> {
     public static func buildBlock(_ component: [QueryFragment]) -> [QueryFragment] {
         component
     }
-    
+
     public static func buildEither(first component: [QueryFragment]) -> [QueryFragment] {
         component
     }
-    
+
     public static func buildEither(second component: [QueryFragment]) -> [QueryFragment] {
         component
     }
-    
+
     public static func buildOptional(_ component: [QueryFragment]?) -> [QueryFragment] {
         component ?? []
     }
@@ -25,13 +25,13 @@ extension QueryFragmentBuilder<Bool> {
     public static func buildArray(_ components: [[QueryFragment]]) -> [QueryFragment] {
         components.map { $0.joined(separator: " AND ") }
     }
-    
+
     public static func buildExpression(
         _ expression: some QueryExpression<Bool>
     ) -> [QueryFragment] {
         [expression.queryFragment]
     }
-    
+
     public static func buildExpression(
         _ expression: some QueryExpression<some _OptionalPromotable<Bool?>>
     ) -> [QueryFragment] {
@@ -53,7 +53,7 @@ extension QueryFragmentBuilder<any Statement> {
     ) -> [QueryFragment] {
         [expression.query]
     }
-    
+
     public static func buildBlock(
         _ first: [QueryFragment],
         _ rest: [QueryFragment]...

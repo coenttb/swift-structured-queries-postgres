@@ -5,16 +5,16 @@
 public protocol TableColumnExpression<Root, Value>: QueryExpression where Value == QueryValue {
     associatedtype Root: Table
     associatedtype Value: QueryRepresentable & QueryBindable
-    
+
     /// The name of the table column.
     var name: String { get }
-    
+
     /// The default value of the table column.
     var defaultValue: Value.QueryOutput? { get }
-    
+
     /// The table model key path associated with this table column.
     var keyPath: KeyPath<Root, Value.QueryOutput> { get }
-    
+
     func _aliased<Name: AliasName>(
         _ alias: Name.Type
     ) -> any TableColumnExpression<TableAlias<Root, Name>, Value>
@@ -40,20 +40,19 @@ extension WritableTableColumnExpression {
 /// Don't create instances of this value directly. Instead, use the `@Table` and `@Column` macros to
 /// generate values of this type.
 public struct TableColumn<Root: Table, Value: QueryRepresentable & QueryBindable>:
-    WritableTableColumnExpression
-{
+    WritableTableColumnExpression {
     public typealias QueryValue = Value
-    
+
     public let name: String
-    
+
     public let defaultValue: Value.QueryOutput?
-    
+
     let _keyPath: KeyPath<Root, Value.QueryOutput>
-    
+
     public var keyPath: KeyPath<Root, Value.QueryOutput> {
         _keyPath
     }
-    
+
     public init(
         _ name: String,
         keyPath: KeyPath<Root, Value.QueryOutput>,
@@ -63,7 +62,7 @@ public struct TableColumn<Root: Table, Value: QueryRepresentable & QueryBindable
         self.defaultValue = defaultValue
         self._keyPath = keyPath
     }
-    
+
     public init(
         _ name: String,
         keyPath: KeyPath<Root, Value.QueryOutput>,
@@ -73,15 +72,15 @@ public struct TableColumn<Root: Table, Value: QueryRepresentable & QueryBindable
         self.defaultValue = defaultValue
         self._keyPath = keyPath
     }
-    
+
     public func decode(_ decoder: inout some QueryDecoder) throws -> Value.QueryOutput {
         try Value(decoder: &decoder).queryOutput
     }
-    
+
     public var queryFragment: QueryFragment {
         "\(Root.self).\(quote: name)"
     }
-    
+
     public func _aliased<Name>(
         _ alias: Name.Type
     ) -> any WritableTableColumnExpression<TableAlias<Root, Name>, Value> {
@@ -109,20 +108,19 @@ public enum GeneratedColumnStorage {
 /// Don't create instances of this value directly. Instead, use the `@Table` and `@Column` macros to
 /// generate values of this type.
 public struct GeneratedColumn<Root: Table, Value: QueryRepresentable & QueryBindable>:
-    TableColumnExpression
-{
+    TableColumnExpression {
     public typealias QueryValue = Value
-    
+
     public let name: String
-    
+
     public let defaultValue: Value.QueryOutput?
-    
+
     let _keyPath: KeyPath<Root, Value.QueryOutput>
-    
+
     public var keyPath: KeyPath<Root, Value.QueryOutput> {
         _keyPath
     }
-    
+
     public init(
         _ name: String,
         keyPath: KeyPath<Root, Value.QueryOutput>,
@@ -132,7 +130,7 @@ public struct GeneratedColumn<Root: Table, Value: QueryRepresentable & QueryBind
         self.defaultValue = defaultValue
         self._keyPath = keyPath
     }
-    
+
     public init(
         _ name: String,
         keyPath: KeyPath<Root, Value.QueryOutput>,
@@ -142,15 +140,15 @@ public struct GeneratedColumn<Root: Table, Value: QueryRepresentable & QueryBind
         self.defaultValue = defaultValue
         self._keyPath = keyPath
     }
-    
+
     public func decode(_ decoder: inout some QueryDecoder) throws -> Value.QueryOutput {
         try Value(decoder: &decoder).queryOutput
     }
-    
+
     public var queryFragment: QueryFragment {
         "\(Root.self).\(quote: name)"
     }
-    
+
     public func _aliased<Name>(
         _ alias: Name.Type
     ) -> any TableColumnExpression<TableAlias<Root, Name>, Value> {

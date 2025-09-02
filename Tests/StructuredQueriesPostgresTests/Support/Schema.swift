@@ -21,7 +21,7 @@ struct RemindersList: Codable, Equatable, Identifiable {
 @Table
 struct Reminder: Codable, Equatable, Identifiable {
     static let incomplete = Self.where { !$0.isCompleted }
-    
+
     let id: Int
     var assignedUserID: User.ID?
     var dueDate: Date?
@@ -52,11 +52,11 @@ enum Priority: Int, Codable, QueryBindable {
     case high
 }
 //
-//extension Reminder.TableColumns {
+// extension Reminder.TableColumns {
 //  var isPastDue: some QueryExpression<Bool> {
 //    !isCompleted && #sql("coalesce(\(dueDate), date('now')) < date('now')")
 //  }
-//}
+// }
 //
 @Table
 struct Tag: Codable, Equatable, Identifiable {
@@ -76,17 +76,17 @@ struct ReminderTag: Equatable {
   var title = ""
 }
 //
-//@Table
-//struct ReminderText: FTS5 {
+// @Table
+// struct ReminderText: FTS5 {
 //  let reminderID: Reminder.ID
 //  let title: String
 //  let notes: String
 //  let listID: RemindersList.ID
 //  let listTitle: String
 //  let tags: String
-//}
+// }
 //
-//extension Database {
+// extension Database {
 //  static func `default`() throws -> Database {
 //    let db = try Database()
 //    try db.migrate()
@@ -368,18 +368,18 @@ struct ReminderTag: Equatable {
 //    }
 //    .forEach(execute)
 //  }
-//}
+// }
 //
-//extension Database: @unchecked Sendable {}
+// extension Database: @unchecked Sendable {}
 //
-//private enum DefaultDatabaseKey: DependencyKey {
+// private enum DefaultDatabaseKey: DependencyKey {
 //  static var liveValue: Database { try! .default() }
 //  static var testValue: Database { liveValue }
-//}
+// }
 //
-//extension DependencyValues {
+// extension DependencyValues {
 //  var defaultDatabase: Database {
 //    get { self[DefaultDatabaseKey.self] }
 //    set { self[DefaultDatabaseKey.self] = newValue }
 //  }
-//}
+// }

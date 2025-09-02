@@ -25,7 +25,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func empty() {
             assertInlineSnapshot(
                 of: Reminder.none.select { ("reminder", $0.title) }

@@ -23,7 +23,7 @@ extension [UInt8]: _OptionalPromotable where Element: _OptionalPromotable {}
 
 extension Optional: QueryBindable where Wrapped: QueryBindable {
     public typealias QueryValue = Wrapped.QueryValue?
-    
+
     public var queryBinding: QueryBinding {
         self?.queryBinding ?? .null
     }
@@ -42,7 +42,7 @@ extension Optional: QueryDecodable where Wrapped: QueryDecodable {
 
 extension Optional: QueryExpression where Wrapped: QueryExpression {
     public typealias QueryValue = Wrapped.QueryValue?
-    
+
     public var queryFragment: QueryFragment {
         self?.queryFragment ?? "NULL"
     }
@@ -50,7 +50,7 @@ extension Optional: QueryExpression where Wrapped: QueryExpression {
 
 extension Optional: QueryRepresentable where Wrapped: QueryRepresentable {
     public typealias QueryOutput = Wrapped.QueryOutput?
-    
+
     @inlinable
     public init(queryOutput: Wrapped.QueryOutput?) {
         if let queryOutput {
@@ -59,7 +59,7 @@ extension Optional: QueryRepresentable where Wrapped: QueryRepresentable {
             self = nil
         }
     }
-    
+
     @inlinable
     public var queryOutput: Wrapped.QueryOutput? {
         self?.queryOutput
@@ -70,34 +70,34 @@ extension Optional: Table where Wrapped: Table {
     public static var tableName: String {
         Wrapped.tableName
     }
-    
+
     public static var tableAlias: String? {
         Wrapped.tableAlias
     }
-    
+
     public static var columns: TableColumns {
         TableColumns()
     }
-    
+
     fileprivate subscript<Member: QueryRepresentable>(
         member _: KeyPath<Member, Member>,
         column keyPath: KeyPath<Wrapped, Member.QueryOutput>
     ) -> Member.QueryOutput? {
         self?[keyPath: keyPath]
     }
-    
+
     @dynamicMemberLookup
     public struct TableColumns: TableDefinition {
         public typealias QueryValue = Optional
-        
+
         public static var allColumns: [any TableColumnExpression] {
             Wrapped.TableColumns.allColumns
         }
-        
+
         public static var writableColumns: [any WritableTableColumnExpression] {
             Wrapped.TableColumns.writableColumns
         }
-        
+
         public subscript<Member>(
             dynamicMember keyPath: KeyPath<Wrapped.TableColumns, TableColumn<Wrapped, Member>>
         ) -> TableColumn<Optional, Member?> {
@@ -107,13 +107,13 @@ extension Optional: Table where Wrapped: Table {
                 keyPath: \.[member: \Member.self, column: column._keyPath]
             )
         }
-        
+
         public subscript<Member: QueryExpression>(
             dynamicMember keyPath: KeyPath<Wrapped.TableColumns, Member>
         ) -> some QueryExpression<Member.QueryValue?> {
             Member?.some(Wrapped.columns[keyPath: keyPath])
         }
-        
+
         @_disfavoredOverload
         public subscript<QueryValue>(
             dynamicMember keyPath: KeyPath<Wrapped.TableColumns, some QueryExpression<QueryValue?>>
@@ -137,7 +137,7 @@ extension Optional: TableDraft where Wrapped: TableDraft {
 extension Optional.TableColumns: PrimaryKeyedTableDefinition
 where Wrapped.TableColumns: PrimaryKeyedTableDefinition {
     public typealias PrimaryKey = Wrapped.TableColumns.PrimaryKey?
-    
+
     public var primaryKey: TableColumn<Optional, Wrapped.TableColumns.PrimaryKey.QueryValue?> {
         self[dynamicMember: \.primaryKey]
     }
@@ -162,7 +162,7 @@ extension QueryExpression where QueryValue: _OptionalProtocol {
     ) -> some QueryExpression<T?> {
         SQLQueryExpression(transform(SQLQueryExpression(queryFragment)).queryFragment)
     }
-    
+
     /// Creates a new optional expression from this one by applying an unwrapped version of this
     /// expression to a given closure.
     ///

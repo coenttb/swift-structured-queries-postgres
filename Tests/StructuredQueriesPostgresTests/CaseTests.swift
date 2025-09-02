@@ -14,7 +14,7 @@ extension SnapshotTests {
                     cases.when(id.element, then: id.offset)
                 }
                 .else(0)
-            
+
             assertInlineSnapshot(
                 of: Values(caseExpression),
                 as: .sql

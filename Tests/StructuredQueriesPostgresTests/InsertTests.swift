@@ -53,7 +53,7 @@ extension SnapshotTests {
                 as: .sql
             ) {
                 """
-                
+
                 """
             }
             assertInlineSnapshot(
@@ -61,7 +61,7 @@ extension SnapshotTests {
                 as: .sql
             ) {
                 """
-                
+
                 """
             }
         }
@@ -137,7 +137,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func draft() {
             assertInlineSnapshot(
                 of: Reminder.insert {
@@ -148,13 +148,13 @@ extension SnapshotTests {
             ) {
                 """
                 INSERT INTO "reminders"
-                ("id", "assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt")
+                ("assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt")
                 VALUES
-                (NULL, NULL, NULL, false, false, '', NULL, 1, 'Check email', '2040-02-14 23:31:30.000')
+                (NULL, NULL, false, false, '', NULL, 1, 'Check email', '2040-02-14 23:31:30.000')
                 RETURNING "id"
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Reminder.insert {
                     Reminder(id: 12, remindersListID: 1, title: "Check voicemail")
@@ -167,16 +167,16 @@ extension SnapshotTests {
                 INSERT INTO "reminders"
                 ("id", "assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt")
                 VALUES
-                (12, NULL, NULL, false, false, '', NULL, 1, 'Check voicemail', '2040-02-14 23:31:30.000'), (NULL, NULL, NULL, false, false, '', NULL, 1, 'Check pager', '2040-02-14 23:31:30.000')
+                (12, NULL, NULL, false, false, '', NULL, 1, 'Check voicemail', '2040-02-14 23:31:30.000'), (DEFAULT, NULL, NULL, false, false, '', NULL, 1, 'Check pager', '2040-02-14 23:31:30.000')
                 RETURNING "id"
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Reminder.insert {
                     [
                         Reminder.Draft(remindersListID: 1, title: "Check mailbox"),
-                        Reminder.Draft(remindersListID: 1, title: "Check Slack"),
+                        Reminder.Draft(remindersListID: 1, title: "Check Slack")
                     ]
                 }
                     .returning(\.id),
@@ -184,9 +184,9 @@ extension SnapshotTests {
             ) {
                 """
                 INSERT INTO "reminders"
-                ("id", "assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt")
+                ("assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt")
                 VALUES
-                (NULL, NULL, NULL, false, false, '', NULL, 1, 'Check mailbox', '2040-02-14 23:31:30.000'), (NULL, NULL, NULL, false, false, '', NULL, 1, 'Check Slack', '2040-02-14 23:31:30.000')
+                (NULL, NULL, false, false, '', NULL, 1, 'Check mailbox', '2040-02-14 23:31:30.000'), (NULL, NULL, false, false, '', NULL, 1, 'Check Slack', '2040-02-14 23:31:30.000')
                 RETURNING "id"
                 """
             }
@@ -202,7 +202,7 @@ extension SnapshotTests {
                 WHERE ("reminders"."id" = 1)
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Reminder
                     .upsert { Reminder.Draft(id: 1, remindersListID: 1, title: "Cash check") }
@@ -220,7 +220,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func upsertWithoutID_OtherConflict() {
             assertInlineSnapshot(
                 of: RemindersList.upsert {
@@ -233,7 +233,7 @@ extension SnapshotTests {
                 INSERT INTO "remindersLists"
                 ("id", "color", "title", "position")
                 VALUES
-                (NULL, 4889071, 'Personal', 0)
+                (DEFAULT, 4889071, 'Personal', 0)
                 ON CONFLICT ("id")
                 DO UPDATE SET "color" = "excluded"."color", "title" = "excluded"."title", "position" = "excluded"."position"
                 RETURNING "id", "color", "title", "position"
@@ -253,9 +253,9 @@ extension SnapshotTests {
             ) {
                 """
                 INSERT INTO "remindersLists"
-                ("id", "color", "title", "position")
+                ("color", "title", "position")
                 VALUES
-                (NULL, 4889071, 'Personal', 0)
+                (4889071, 'Personal', 0)
                 ON CONFLICT ("title")
                 DO UPDATE SET "color" = 65280
                 RETURNING "id", "color", "title", "position"
@@ -401,7 +401,7 @@ extension SnapshotTests {
                 INSERT INTO "reminders"
                 ("id", "assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt")
                 VALUES
-                (NULL, NULL, NULL, false, false, '', NULL, 1, '', '2040-02-14 23:31:30.000')
+                (DEFAULT, NULL, NULL, false, false, '', NULL, 1, '', '2040-02-14 23:31:30.000')
                 ON CONFLICT ("id")
                 WHERE NOT ("reminders"."isCompleted")
                 DO UPDATE SET "isCompleted" = "excluded"."isCompleted"
@@ -445,9 +445,9 @@ extension SnapshotTests {
             ) {
                 """
                 INSERT INTO "reminders"
-                ("id", "assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt")
+                ("assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt")
                 VALUES
-                (NULL, NULL, NULL, false, false, '', NULL, 1, '', '2040-02-14 23:31:30.000')
+                (NULL, NULL, false, false, '', NULL, 1, '', '2040-02-14 23:31:30.000')
                 """
             }
         }

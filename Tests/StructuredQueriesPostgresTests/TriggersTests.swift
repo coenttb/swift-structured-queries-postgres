@@ -1,12 +1,12 @@
-//import Dependencies
-//import Foundation
-//import InlineSnapshotTesting
-//import StructuredQueriesPostgres
+// import Dependencies
+// import Foundation
+// import InlineSnapshotTesting
+// import StructuredQueriesPostgres
 //// TODO: Migrate to PostgreSQL test infrastructure
 //// import StructuredQueriesSQLite
-//import Testing
+// import Testing
 //
-//extension SnapshotTests {
+// extension SnapshotTests {
 //  @Suite struct TriggersTests {
 //    @Test func basics() {
 //      let trigger = RemindersList.createTemporaryTrigger(
@@ -152,4 +152,4 @@
 //      }
 //    }
 //  }
-//}
+// }

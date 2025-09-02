@@ -1,5 +1,23 @@
-import IssueReporting
 import Foundation
+import IssueReporting
+
+// Helper function to check if a QueryFragment represents NULL
+private func isNullBinding(_ fragment: QueryFragment) -> Bool {
+  // Empty fragment typically means NULL
+  if fragment.segments.isEmpty {
+    return true
+  }
+
+  // Check each segment
+  for segment in fragment.segments {
+    // Check for null binding
+    if case .binding(.null) = segment {
+      return true
+    }
+  }
+
+  return false
+}
 
 extension Table {
   /// Columns referencing the value that would have been inserted in an
@@ -162,7 +180,7 @@ extension Table {
   ) -> InsertOf<Self> {
     withoutActuallyEscaping(updates) { updates in
       _insert(
-          columnNames: TableColumns.writableColumns.map(\.name),
+        columnNames: TableColumns.writableColumns.map(\.name),
         values: .values(values()),
         onConflict: conflictTargets,
         where: targetFilter,
@@ -629,20 +647,230 @@ extension Table {
 }
 
 extension PrimaryKeyedTable {
+  /// An insert statement for one or more table rows with PostgreSQL NULL handling.
+  ///
+  /// This override handles the case where records are mixed with Drafts that have NULL primary keys.
+  /// PostgreSQL doesn't allow NULL in PRIMARY KEY columns, so we use DEFAULT instead.
+  public static func insert(
+    _ columns: (TableColumns) -> TableColumns = { $0 },
+    @InsertValuesBuilder<Self> values: () -> [[QueryFragment]],
+    onConflictDoUpdate updates: ((inout Updates<Self>, Excluded) -> Void)? = nil,
+    @QueryFragmentBuilder<Bool>
+    where updateFilter: (TableColumns) -> [QueryFragment] = { _ in [] }
+  ) -> InsertOf<Self> {
+    // Get the values
+    let allValues = values()
+    let primaryKeyName = Self.columns.primaryKey.name
+
+    // Check for NULL primary key values
+    var hasAnyExplicitPrimaryKey = false
+    var hasAnyNullPrimaryKey = false
+
+    for rowValues in allValues {
+      for (column, value) in zip(TableColumns.writableColumns, rowValues) {
+        if column.name == primaryKeyName {
+          if isNullBinding(value) {
+            hasAnyNullPrimaryKey = true
+          } else {
+            hasAnyExplicitPrimaryKey = true
+          }
+          break
+        }
+      }
+    }
+
+    // If we have mixed values (some NULL, some not), replace NULL with DEFAULT
+    if hasAnyExplicitPrimaryKey && hasAnyNullPrimaryKey {
+      var processedValues: [[QueryFragment]] = []
+
+      for rowValues in allValues {
+        var processedRow: [QueryFragment] = []
+        for (column, value) in zip(TableColumns.writableColumns, rowValues) {
+          if column.name == primaryKeyName && isNullBinding(value) {
+            // Replace NULL with DEFAULT for PostgreSQL
+            processedRow.append(.init("DEFAULT"))
+          } else {
+            processedRow.append(value)
+          }
+        }
+        processedValues.append(processedRow)
+      }
+
+      return _insert(
+        columnNames: TableColumns.writableColumns.map(\.name),
+        values: .values(processedValues),
+        onConflict: { _ -> ()? in nil },
+        where: { _ in return [] },
+        doUpdate: updates,
+        where: updateFilter
+      )
+    }
+
+    // Default behavior for non-mixed cases
+    return _insert(
+      columnNames: TableColumns.writableColumns.map(\.name),
+      values: .values(allValues),
+      onConflict: { _ -> ()? in nil },
+      where: { _ in return [] },
+      doUpdate: updates,
+      where: updateFilter
+    )
+  }
+
+  /// An insert statement with conflict resolution for mixed records/drafts.
+  ///
+  /// Handles NULL primary keys in Draft values for PostgreSQL compatibility.
+  public static func insert<T1, each T2>(
+    _ columns: (TableColumns) -> TableColumns = { $0 },
+    @InsertValuesBuilder<Self> values: () -> [[QueryFragment]],
+    onConflict conflictTargets: (TableColumns) -> (
+      TableColumn<Self, T1>, repeat TableColumn<Self, each T2>
+    ),
+    @QueryFragmentBuilder<Bool>
+    where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
+    doUpdate updates: (inout Updates<Self>, Excluded) -> Void = { _, _ in },
+    @QueryFragmentBuilder<Bool>
+    where updateFilter: (TableColumns) -> [QueryFragment] = { _ in [] }
+  ) -> InsertOf<Self> {
+    withoutActuallyEscaping(updates) { updates in
+      // Get the values
+      let allValues = values()
+      let primaryKeyName = Self.columns.primaryKey.name
+
+      // Check for NULL primary key values
+      var hasAnyExplicitPrimaryKey = false
+      var hasAnyNullPrimaryKey = false
+
+      for rowValues in allValues {
+        for (column, value) in zip(TableColumns.writableColumns, rowValues) {
+          if column.name == primaryKeyName {
+            if isNullBinding(value) {
+              hasAnyNullPrimaryKey = true
+            } else {
+              hasAnyExplicitPrimaryKey = true
+            }
+            break
+          }
+        }
+      }
+
+      // If we have only NULL primary keys, exclude the primary key column entirely
+      // This is required for PostgreSQL which doesn't allow NULL in PRIMARY KEY columns
+      if hasAnyNullPrimaryKey && !hasAnyExplicitPrimaryKey {
+        // Build column names and values excluding the primary key
+        var filteredColumnNames: [String] = []
+        var filteredValues: [[QueryFragment]] = []
+
+        for (index, rowValues) in allValues.enumerated() {
+          var filteredRowValues: [QueryFragment] = []
+
+          // Build column names from first row
+          if index == 0 {
+            for (columnIndex, column) in TableColumns.writableColumns.enumerated() {
+              if column.name != primaryKeyName {
+                filteredColumnNames.append(column.name)
+              }
+            }
+          }
+
+          // Build values excluding primary key
+          for (column, value) in zip(TableColumns.writableColumns, rowValues) {
+            if column.name != primaryKeyName {
+              filteredRowValues.append(value)
+            }
+          }
+
+          filteredValues.append(filteredRowValues)
+        }
+
+        return _insert(
+          columnNames: filteredColumnNames,
+          values: .values(filteredValues),
+          onConflict: conflictTargets,
+          where: targetFilter,
+          doUpdate: updates,
+          where: updateFilter
+        )
+      }
+
+      // If we have mixed values, replace NULL with DEFAULT
+      if hasAnyExplicitPrimaryKey && hasAnyNullPrimaryKey {
+        var processedValues: [[QueryFragment]] = []
+
+        for rowValues in allValues {
+          var processedRow: [QueryFragment] = []
+          for (column, value) in zip(TableColumns.writableColumns, rowValues) {
+            if column.name == primaryKeyName && isNullBinding(value) {
+              processedRow.append(.init("DEFAULT"))
+            } else {
+              processedRow.append(value)
+            }
+          }
+          processedValues.append(processedRow)
+        }
+
+        return _insert(
+          columnNames: TableColumns.writableColumns.map(\.name),
+          values: .values(processedValues),
+          onConflict: conflictTargets,
+          where: targetFilter,
+          doUpdate: updates,
+          where: updateFilter
+        )
+      }
+
+      // Default behavior
+      return _insert(
+        columnNames: TableColumns.writableColumns.map(\.name),
+        values: .values(allValues),
+        onConflict: conflictTargets,
+        where: targetFilter,
+        doUpdate: updates,
+        where: updateFilter
+      )
+    }
+  }
+
+  /// An insert statement with conflict resolution for mixed records/drafts (single update parameter).
+  ///
+  /// Handles NULL primary keys in Draft values for PostgreSQL compatibility.
+  public static func insert<T1, each T2>(
+    _ columns: (TableColumns) -> TableColumns = { $0 },
+    @InsertValuesBuilder<Self> values: () -> [[QueryFragment]],
+    onConflict conflictTargets: (TableColumns) -> (
+      TableColumn<Self, T1>, repeat TableColumn<Self, each T2>
+    ),
+    @QueryFragmentBuilder<Bool>
+    where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
+    doUpdate updates: (inout Updates<Self>) -> Void,
+    @QueryFragmentBuilder<Bool>
+    where updateFilter: (TableColumns) -> [QueryFragment] = { _ in [] }
+  ) -> InsertOf<Self> {
+    // Delegate to the two-parameter version with a wrapper
+    insert(
+      columns,
+      values: values,
+      onConflict: conflictTargets,
+      where: targetFilter,
+      doUpdate: { row, _ in updates(&row) },
+      where: updateFilter
+    )
+  }
+
   /// Helper function to check if a QueryFragment represents NULL
   private static func isNullBinding(_ fragment: QueryFragment) -> Bool {
     // Empty fragment typically means NULL
     if fragment.segments.isEmpty {
       return true
     }
-    
+
     // Check each segment
     for segment in fragment.segments {
       // Check for null binding
       if case .binding(.null) = segment {
         return true
       }
-      
+
       // Check for SQL "NULL" literal
       if case .sql(let sql) = segment {
         let trimmed = sql.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
@@ -653,11 +881,12 @@ extension PrimaryKeyedTable {
     }
     return false
   }
-  
+
   /// An insert statement for one or more draft rows.
   ///
-  /// Dynamically excludes NULL-valued primary keys from the INSERT statement,
-  /// allowing PostgreSQL's DEFAULT to generate the value.
+  /// Dynamically handles NULL-valued primary keys for PostgreSQL compatibility.
+  /// When all rows have NULL primary keys, excludes the column entirely.
+  /// When mixing NULL and non-NULL primary keys, uses DEFAULT for NULL values.
   ///
   /// - Parameters:
   ///   - values: A builder of draft values to insert.
@@ -672,37 +901,62 @@ extension PrimaryKeyedTable {
   ) -> InsertOf<Self> {
     // Build the values using the standard builder
     let allValues = values()
-    
+
     // Get the primary key column name
     let primaryKeyName = columns.primaryKey.name
-    
-    // Process values to exclude NULL primary keys
+
+    // First pass: check if any row has a non-NULL primary key
+    var hasAnyExplicitPrimaryKey = false
+
+    for rowValues in allValues {
+      for (column, value) in zip(Draft.TableColumns.writableColumns, rowValues) {
+        if column.name == primaryKeyName && !isNullBinding(value) {
+          hasAnyExplicitPrimaryKey = true
+          break
+        }
+      }
+      if hasAnyExplicitPrimaryKey { break }
+    }
+
+    // Process values based on strategy
     var filteredColumnNames: [String] = []
     var filteredValues: [[QueryFragment]] = []
-    
+
     for rowValues in allValues {
       var filteredRowValues: [QueryFragment] = []
-      var currentColumnNames: [String] = []
-      
-      // Iterate through columns and values together
-      for (column, value) in zip(Draft.TableColumns.writableColumns, rowValues) {
-        // Check if this is the primary key and if it's NULL
-        if column.name == primaryKeyName && isNullBinding(value) {
-          // Skip NULL primary key - PostgreSQL will use DEFAULT
-          continue
-        }
-        // Include all other columns (non-primary-key or non-NULL primary key)
-        currentColumnNames.append(column.name)
-        filteredRowValues.append(value)
-      }
-      
-      // Use the column names from the first row for all rows
+
+      // Build column names from first row
       if filteredColumnNames.isEmpty {
-        filteredColumnNames = currentColumnNames
+        for column in Draft.TableColumns.writableColumns {
+          // Skip primary key column if no rows have explicit values
+          if column.name == primaryKeyName && !hasAnyExplicitPrimaryKey {
+            continue
+          }
+          filteredColumnNames.append(column.name)
+        }
       }
+
+      // Build values for this row
+      for (column, value) in zip(Draft.TableColumns.writableColumns, rowValues) {
+        if column.name == primaryKeyName {
+          if hasAnyExplicitPrimaryKey {
+            // Include primary key column - use DEFAULT for NULL values
+            if isNullBinding(value) {
+                filteredRowValues.append(.init("DEFAULT"))
+            } else {
+              filteredRowValues.append(value)
+            }
+          }
+          // If not including primary key column, skip it entirely
+        } else {
+          // Always include non-primary-key columns
+          filteredRowValues.append(value)
+        }
+      }
+
       filteredValues.append(filteredRowValues)
     }
-    
+
     return _insert(
       columnNames: filteredColumnNames,
       values: .values(filteredValues),
@@ -711,7 +965,115 @@ extension PrimaryKeyedTable {
       doUpdate: updates
     )
   }
-  
+
+  /// An insert statement with custom conflict resolution for draft rows.
+  ///
+  /// This method handles Draft inserts with ON CONFLICT clauses while properly
+  /// excluding NULL primary keys for PostgreSQL compatibility.
+  ///
+  /// - Parameters:
+  ///   - values: A builder of draft values to insert.
+  ///   - conflictTargets: Columns to target for conflict resolution.
+  ///   - targetFilter: A filter to apply to conflict target columns.
+  ///   - updates: Updates to perform in an upsert clause should the insert conflict.
+  ///   - updateFilter: A filter to apply to the update clause.
+  /// - Returns: An insert statement.
+  public static func insert<T1, each T2>(
+    @InsertValuesBuilder<Draft> values: () -> [[QueryFragment]],
+    onConflict conflictTargets: (TableColumns) -> (
+      TableColumn<Self, T1>, repeat TableColumn<Self, each T2>
+    ),
+    @QueryFragmentBuilder<Bool>
+    where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
+    doUpdate updates: (inout Updates<Self>, Excluded) -> Void = { _, _ in },
+    @QueryFragmentBuilder<Bool>
+    where updateFilter: (TableColumns) -> [QueryFragment] = { _ in [] }
+  ) -> InsertOf<Self> {
+    // Build the values using the standard builder
+    let allValues = values()
+
+    // Get the primary key column name
+    let primaryKeyName = columns.primaryKey.name
+
+    // First pass: check if any row has a non-NULL primary key
+    var hasAnyExplicitPrimaryKey = false
+    var hasAnyNullPrimaryKey = false
+
+    for (index, rowValues) in allValues.enumerated() {
+      for (column, value) in zip(Draft.TableColumns.writableColumns, rowValues) {
+        if column.name == primaryKeyName {
+          if isNullBinding(value) {
+            hasAnyNullPrimaryKey = true
+          } else {
+            hasAnyExplicitPrimaryKey = true
+          }
+          break
+        }
+      }
+    }
+
+    // For ON CONFLICT with Draft, we need to determine if we should include the primary key
+    // PostgreSQL requires that if we're doing ON CONFLICT on a column, it must be in the INSERT
+    // 
+    // Since we can't easily check the conflict targets at compile time with parameter packs,
+    // we'll use a safe approach: if all primary keys are NULL and we have ON CONFLICT,
+    // we should include the primary key column with DEFAULT values.
+    // This ensures ON CONFLICT on PK will work correctly.
+    let shouldIncludePrimaryKey = hasAnyExplicitPrimaryKey || hasAnyNullPrimaryKey
+
+    // Process values based on strategy
+    var filteredColumnNames: [String] = []
+    var filteredValues: [[QueryFragment]] = []
+
+    for rowValues in allValues {
+      var filteredRowValues: [QueryFragment] = []
+
+      // Build column names from first row
+      if filteredColumnNames.isEmpty {
+        for column in Draft.TableColumns.writableColumns {
+          // Skip primary key column only if not needed
+          if column.name == primaryKeyName && !shouldIncludePrimaryKey {
+            continue
+          }
+          filteredColumnNames.append(column.name)
+        }
+      }
+
+      // Build values for this row
+      for (column, value) in zip(Draft.TableColumns.writableColumns, rowValues) {
+        // Handle primary key specially
+        if column.name == primaryKeyName {
+          if shouldIncludePrimaryKey {
+            // Include primary key column - use DEFAULT for NULL values
+            if isNullBinding(value) {
+              // Replace NULL with DEFAULT for PostgreSQL
+              filteredRowValues.append(QueryFragment("DEFAULT"))
+            } else {
+              filteredRowValues.append(value)
+            }
+          }
+          // If not including primary key column, skip it entirely
+        } else {
+          // Always include non-primary-key columns
+          filteredRowValues.append(value)
+        }
+      }
+
+      filteredValues.append(filteredRowValues)
+    }
+
+    return withoutActuallyEscaping(updates) { updates in
+      _insert(
+        columnNames: filteredColumnNames,
+        values: .values(filteredValues),
+        onConflict: conflictTargets,
+        where: targetFilter,
+        doUpdate: updates,
+        where: updateFilter
+      )
+    }
+  }
+
   /// An upsert statement for given drafts.
   ///
   /// Generates an insert statement with an upsert clause. Useful for building forms that can both
@@ -732,32 +1094,48 @@ extension PrimaryKeyedTable {
   ) -> InsertOf<Self> {
     // Build the values using the standard builder
     let allValues = values()
-    
+
     // Get the primary key column name
     let primaryKeyName = columns.primaryKey.name
-    
-    // Process values to exclude NULL primary keys
+
+    // For PostgreSQL upsert, we need to include the primary key column
+    // even if it's NULL (using DEFAULT)
     var filteredColumnNames: [String] = []
     var filteredValues: [[QueryFragment]] = []
-    
+
+    // First pass: check if any value has explicit primary key
+    var hasAnyExplicitPrimaryKey = false
+    for rowValues in allValues {
+      for (column, value) in zip(Draft.TableColumns.writableColumns, rowValues) {
+        if column.name == primaryKeyName && !isNullBinding(value) {
+          hasAnyExplicitPrimaryKey = true
+          break
+        }
+      }
+      if hasAnyExplicitPrimaryKey { break }
+    }
+
+    // Build columns list (always include primary key for upsert)
+    for column in Draft.TableColumns.writableColumns {
+      filteredColumnNames.append(column.name)
+    }
+
+    // Process values
     for rowValues in allValues {
       var filteredRowValues: [QueryFragment] = []
-      var currentColumnNames: [String] = []
-      
+
       for (column, value) in zip(Draft.TableColumns.writableColumns, rowValues) {
         if column.name == primaryKeyName && isNullBinding(value) {
-          continue
+          // For upsert, use DEFAULT for NULL primary keys
+          filteredRowValues.append(QueryFragment("DEFAULT"))
+        } else {
+          filteredRowValues.append(value)
         }
-        currentColumnNames.append(column.name)
-        filteredRowValues.append(value)
       }
-      
-      if filteredColumnNames.isEmpty {
-        filteredColumnNames = currentColumnNames
-      }
+
       filteredValues.append(filteredRowValues)
     }
-    
+
     // For UPSERT, we use ON CONFLICT on the primary key
     return _insert(
       columnNames: filteredColumnNames,
@@ -803,24 +1181,6 @@ public struct Insert<Into: Table, Returning> {
   var updates: Updates<Into>?
   var updateFilter: [QueryFragment]
   var returning: [QueryFragment]
-
-  fileprivate init(
-    columnNames: [String],
-    conflictTargetColumnNames: [String],
-    conflictTargetFilter: [QueryFragment],
-    values: InsertValues,
-    updates: Updates<Into>?,
-    updateFilter: [QueryFragment],
-    returning: [QueryFragment]
-  ) {
-    self.columnNames = columnNames
-    self.conflictTargetColumnNames = conflictTargetColumnNames
-    self.conflictTargetFilter = conflictTargetFilter
-    self.values = values
-    self.updates = updates
-    self.updateFilter = updateFilter
-    self.returning = returning
-  }
 
   /// Adds a returning clause to an insert statement.
   ///
@@ -999,8 +1359,7 @@ public enum InsertValuesBuilder<Value> {
   ) -> [[QueryFragment]]
   where
     Value == V.QueryValue,
-    V.QueryValue: QueryRepresentable & QueryBindable
-  {
+    V.QueryValue: QueryRepresentable & QueryBindable {
     [expression.map(\.queryFragment)]
   }
 
@@ -1028,8 +1387,7 @@ public enum InsertValuesBuilder<Value> {
   ) -> [[QueryFragment]]
   where
     Value == V.QueryValue,
-    V.QueryValue: QueryRepresentable & QueryBindable
-  {
+    V.QueryValue: QueryRepresentable & QueryBindable {
     buildExpression([expression])
   }
 
@@ -1046,8 +1404,7 @@ public enum InsertValuesBuilder<Value> {
   ) -> [[QueryFragment]]
   where
     Value == (repeat (each V).QueryValue),
-    repeat (each V).QueryValue: QueryRepresentable & QueryBindable
-  {
+    repeat (each V).QueryValue: QueryRepresentable & QueryBindable {
     var valueFragment: [QueryFragment] = []
     for column in repeat each expression {
       valueFragment.append(column.queryFragment)

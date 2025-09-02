@@ -6,7 +6,7 @@ where TableColumns: PrimaryKeyedTableDefinition<PrimaryKey> {
     /// For auto-incrementing tables, this is typically `Int`.
     associatedtype PrimaryKey: QueryBindable
     where PrimaryKey.QueryValue == PrimaryKey, PrimaryKey.QueryValue.QueryOutput: Sendable
-    
+
     /// A type that represents this type, but with an optional primary key.
     ///
     /// This type can be used to stage an inserted row.
@@ -17,7 +17,7 @@ where TableColumns: PrimaryKeyedTableDefinition<PrimaryKey> {
 public protocol TableDraft: Table {
     /// A type that represents the table with a primary key.
     associatedtype PrimaryTable: PrimaryKeyedTable where PrimaryTable.Draft == Self
-    
+
     /// Creates a draft from a primary keyed table.
     init(_ primaryTable: PrimaryTable)
 }
@@ -28,13 +28,13 @@ extension TableDraft {
     ) -> some Statement<Self> {
         SQLQueryExpression("\(PrimaryTable.self[keyPath: keyPath])")
     }
-    
+
     public static subscript(
         dynamicMember keyPath: KeyPath<PrimaryTable.Type, some SelectStatementOf<PrimaryTable>>
     ) -> SelectOf<Self> {
         unsafeBitCast(PrimaryTable.self[keyPath: keyPath].asSelect(), to: SelectOf<Self>.self)
     }
-    
+
     public static var all: SelectOf<Self> {
         unsafeBitCast(PrimaryTable.all.asSelect(), to: SelectOf<Self>.self)
     }
@@ -51,7 +51,7 @@ where QueryValue: PrimaryKeyedTable {
     /// For auto-incrementing tables, this is typically `Int`.
     associatedtype PrimaryKey: QueryBindable
     where PrimaryKey.QueryValue == PrimaryKey, PrimaryKey.QueryValue.QueryOutput: Sendable
-    
+
     /// The column representing this table's primary key.
     var primaryKey: TableColumn<QueryValue, PrimaryKey> { get }
 }
@@ -74,7 +74,7 @@ extension PrimaryKeyedTable {
     ) -> Where<Self> {
         Self.where { $0.primaryKey.eq(primaryKey) }
     }
-    
+
     public var primaryKey: PrimaryKey.QueryOutput {
         self[keyPath: Self.columns.primaryKey.keyPath]
     }

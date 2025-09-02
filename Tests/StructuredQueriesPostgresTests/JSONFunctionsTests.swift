@@ -1,12 +1,12 @@
-//import Dependencies
-//import Foundation
-//import InlineSnapshotTesting
-//import StructuredQueriesPostgres
+// import Dependencies
+// import Foundation
+// import InlineSnapshotTesting
+// import StructuredQueriesPostgres
 //// TODO: Migrate to PostgreSQL test infrastructure
 //// import StructuredQueriesSQLite
-//import Testing
+// import Testing
 //
-//extension SnapshotTests {
+// extension SnapshotTests {
 //  @MainActor
 //  @Suite struct JSONFunctionsTests {
 //    @Dependency(\.defaultDatabase) var db
@@ -493,21 +493,21 @@
 //      }
 //    }
 //  }
-//}
+// }
 //
-//@Selection
-//private struct ReminderRow: Codable {
+// @Selection
+// private struct ReminderRow: Codable {
 //  let assignedUser: User?
 //  let reminder: Reminder
 //  @Column(as: [Tag].JSONRepresentation.self)
 //  let tags: [Tag]
-//}
+// }
 //
-//@Selection
-//private struct RemindersListRow {
+// @Selection
+// private struct RemindersListRow {
 //  let remindersList: RemindersList
 //  @Column(as: [Milestone].JSONRepresentation.self)
 //  let milestones: [Milestone]
 //  @Column(as: [Reminder].JSONRepresentation.self)
 //  let reminders: [Reminder]
-//}
+// }

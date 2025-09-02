@@ -15,12 +15,12 @@ import Foundation
 public protocol QueryRepresentable<QueryOutput>: QueryDecodable {
     /// The Swift type this value is ultimately decoded to.
     associatedtype QueryOutput
-    
+
     /// Wraps a value in this representation.
     ///
     /// - Parameter queryOutput: The value.
     init(queryOutput: QueryOutput)
-    
+
     /// Unwraps a value from this representation.
     var queryOutput: QueryOutput { get }
 }
@@ -31,7 +31,7 @@ extension QueryRepresentable where Self: QueryDecodable, Self == QueryOutput {
     public init(queryOutput: QueryOutput) {
         self = queryOutput
     }
-    
+
     @inlinable
     @inline(__always)
     public var queryOutput: QueryOutput {

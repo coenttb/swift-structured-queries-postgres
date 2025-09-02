@@ -22,7 +22,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func outerJoinOptional() {
             assertInlineSnapshot(
                 of: RemindersList

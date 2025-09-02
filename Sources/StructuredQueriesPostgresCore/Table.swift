@@ -6,24 +6,24 @@
 public protocol Table: QueryRepresentable where TableColumns.QueryValue == Self {
     /// A type that describes this table's columns.
     associatedtype TableColumns: TableDefinition
-    
+
     /// A type that describes the default results of requesting all rows from the table.
     associatedtype DefaultScope: SelectStatement<(), Self, ()>
-    
+
     /// A value that describes this table's columns.
     static var columns: TableColumns { get }
-    
+
     /// The table's name.
     static var tableName: String { get }
-    
+
     /// A table alias.
     ///
     /// This property should always return `nil` unless called on a ``TableAlias``.
     static var tableAlias: String? { get }
-    
+
     /// The table schema's name.
     static var schemaName: String? { get }
-    
+
     /// A select statement for this table.
     ///
     /// The default implementation of this property returns a fully unscoped query for the table
@@ -82,19 +82,19 @@ extension Table {
     public static var unscoped: Where<Self> {
         Where(scope: .unscoped)
     }
-    
+
     public static var none: Where<Self> {
         Where(scope: .empty)
     }
-    
+
     public static var tableAlias: String? {
         nil
     }
-    
+
     public static var schemaName: String? {
         nil
     }
-    
+
     /// Returns a table column to the resulting value of a given key path.
     ///
     /// Allows, _e.g._ `Reminder.columns.id` to be abbreviated `Reminder.id`, which is useful when

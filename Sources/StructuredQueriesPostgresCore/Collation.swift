@@ -4,7 +4,7 @@
 /// should be compared in a query.
 public struct Collation: QueryExpression, Sendable {
     public typealias QueryValue = Never
-    
+
     /// Initializes a collating sequence name from a query fragment.
     ///
     /// ```swift
@@ -21,6 +21,6 @@ public struct Collation: QueryExpression, Sendable {
     public init(rawValue: String) {
         self.queryFragment = "\(quote: rawValue)"
     }
-    
+
     public let queryFragment: QueryFragment
 }

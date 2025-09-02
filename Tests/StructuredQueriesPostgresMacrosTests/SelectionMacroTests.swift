@@ -68,16 +68,16 @@ extension SnapshotTests {
     @Test func optionalField() {
       assertMacro {
         """
-        @Selection 
+        @Selection
         struct ReminderTitleAndListTitle {
-          var reminderTitle: String 
+          var reminderTitle: String
           var listTitle: String?
         }
         """
       } expansion: {
         """
         struct ReminderTitleAndListTitle {
-          var reminderTitle: String 
+          var reminderTitle: String
           var listTitle: String?
 
           public struct Columns: StructuredQueriesPostgresCore._SelectedColumns {

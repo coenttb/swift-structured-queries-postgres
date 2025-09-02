@@ -4,10 +4,9 @@ import StructuredQueriesPostgres
 import StructuredQueriesPostgresTestSupport
 import Testing
 
-
 extension SnapshotTests {
     @Suite struct SelectionTests {
-        
+
         @Test func outerJoin() {
             assertInlineSnapshot(
                 of: Reminder
@@ -29,7 +28,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func date() {
             assertInlineSnapshot(
                 of: Reminder.select {

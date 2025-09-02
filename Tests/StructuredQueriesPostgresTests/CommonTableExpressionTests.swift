@@ -6,8 +6,7 @@ import Testing
 
 extension SnapshotTests {
     @Suite struct CommonTableExpressionTests {
-        
-        
+
         @Test func insert() {
             assertInlineSnapshot(
                 of: With {
@@ -43,7 +42,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func delete() {
             assertInlineSnapshot(
                 of: With {
@@ -71,7 +70,7 @@ extension SnapshotTests {
         """
             }
         }
-        
+
         @Test func emptyWithClauses() {
             // Test with no rows selected in CTE
             assertInlineSnapshot(
@@ -88,10 +87,10 @@ extension SnapshotTests {
                 as: .sql
             ) {
         """
-        
+
         """
             }
-            
+
             // Test with .none in CTE definition
             assertInlineSnapshot(
                 of: With {
@@ -107,10 +106,10 @@ extension SnapshotTests {
                 as: .sql
             ) {
         """
-        
+
         """
             }
-            
+
             // Test with both .none and regular CTE
             assertInlineSnapshot(
                 of: With {
@@ -139,7 +138,7 @@ extension SnapshotTests {
         """
             }
         }
-        
+
         @Test func recursive() {
             assertInlineSnapshot(
                 of: With {
@@ -163,11 +162,7 @@ extension SnapshotTests {
         """
             }
         }
-        
-        
-        
-        
-        
+
         @Test func fibonacci() {
             assertInlineSnapshot(
                 of: With {
@@ -198,7 +193,7 @@ extension SnapshotTests {
         """
             }
         }
-        
+
         @Test func goldenRatioApproximation() {
             assertInlineSnapshot(
                 of: With {

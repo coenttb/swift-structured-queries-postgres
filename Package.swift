@@ -9,7 +9,7 @@ let package = Package(
         .iOS(.v13),
         .macOS(.v10_15),
         .tvOS(.v13),
-        .watchOS(.v6),
+        .watchOS(.v6)
     ],
     products: [
         .library(
@@ -23,7 +23,7 @@ let package = Package(
         .library(
             name: "StructuredQueriesPostgresTestSupport",
             targets: ["StructuredQueriesPostgresTestSupport"]
-        ),
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-custom-dump", from: "1.3.3"),
@@ -31,14 +31,14 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-macro-testing", from: "0.6.3"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.18.4"),
         .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.5.2"),
-        .package(url: "https://github.com/swiftlang/swift-syntax", "600.0.0"..<"602.0.0"),
+        .package(url: "https://github.com/swiftlang/swift-syntax", "600.0.0"..<"602.0.0")
     ],
     targets: [
         .target(
             name: "StructuredQueriesPostgres",
             dependencies: [
                 "StructuredQueriesPostgresCore",
-                "StructuredQueriesPostgresMacros",
+                "StructuredQueriesPostgresMacros"
             ]
         ),
         .target(
@@ -54,7 +54,7 @@ let package = Package(
             dependencies: [
                 "StructuredQueriesPostgresSupport",
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
-                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax")
             ],
             exclude: ["Symbolic Links/README.md"]
         ),
@@ -64,7 +64,7 @@ let package = Package(
                 "StructuredQueriesPostgresCore",
                 .product(name: "CustomDump", package: "swift-custom-dump"),
                 .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
-                .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+                .product(name: "DependenciesTestSupport", package: "swift-dependencies")
             ]
         ),
         .target(
@@ -79,7 +79,7 @@ let package = Package(
                 "StructuredQueriesPostgres",
                 "StructuredQueriesPostgresMacros",
                 .product(name: "IssueReporting", package: "xctest-dynamic-overlay"),
-                .product(name: "MacroTesting", package: "swift-macro-testing"),
+                .product(name: "MacroTesting", package: "swift-macro-testing")
             ]
         ),
         .testTarget(
@@ -89,9 +89,9 @@ let package = Package(
                 "StructuredQueriesPostgresTestSupport",
                 .product(name: "CustomDump", package: "swift-custom-dump"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
+                .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing")
             ]
-        ),
+        )
     ],
     swiftLanguageModes: [.v6]
 )
@@ -109,7 +109,6 @@ let swiftSettings: [SwiftSetting] = [
 for index in package.targets.indices {
     package.targets[index].swiftSettings = swiftSettings
 }
-
 
 #if !os(Windows)
 // Add the documentation compiler plugin if possible

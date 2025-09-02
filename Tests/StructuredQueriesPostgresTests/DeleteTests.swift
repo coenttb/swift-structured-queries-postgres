@@ -6,7 +6,7 @@ import Testing
 
 extension SnapshotTests {
     @Suite struct DeleteTests {
-        
+
         @Test func deleteWhereKeyPath() {
             assertInlineSnapshot(
                 of: Reminder
@@ -22,7 +22,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func aliasName() {
             enum R: AliasName {}
             assertInlineSnapshot(
@@ -39,7 +39,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func noPrimaryKey() {
             assertInlineSnapshot(
                 of: Item.delete(),
@@ -50,14 +50,14 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func empty() {
             assertInlineSnapshot(
                 of: Reminder.none.delete(),
                 as: .sql
             ) {
                 """
-                
+
                 """
             }
         }

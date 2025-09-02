@@ -1,10 +1,10 @@
-//import Foundation
-//import InlineSnapshotTesting
-//import StructuredQueriesPostgres
-//import StructuredQueriesPostgresTestSupport
-//import Testing
+// import Foundation
+// import InlineSnapshotTesting
+// import StructuredQueriesPostgres
+// import StructuredQueriesPostgresTestSupport
+// import Testing
 //
-//extension SnapshotTests {
+// extension SnapshotTests {
 //  @Suite struct FTSTests {
 //    @Test func basics() {
 //      assertQuery(
@@ -140,4 +140,4 @@
 //      }
 //    }
 //  }
-//}
+// }

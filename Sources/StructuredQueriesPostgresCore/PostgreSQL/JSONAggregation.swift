@@ -7,12 +7,12 @@ extension QueryExpression {
     public func jsonAgg() -> some QueryExpression<Data?> {
         JSONAggregation(expression: self, format: .json)
     }
-    
+
     /// PostgreSQL's jsonb_agg function - aggregates values into a JSONB array
     public func jsonbAgg() -> some QueryExpression<Data?> {
         JSONAggregation(expression: self, format: .jsonb)
     }
-    
+
     /// PostgreSQL's array_agg function - aggregates values into a PostgreSQL array
     public func arrayAgg() -> some QueryExpression<String?> {
         ArrayAggregation(expression: self)
@@ -47,14 +47,14 @@ public func jsonbBuildObject(_ pairs: (String, any QueryExpression)...) -> some 
 
 private struct JSONAggregation<Expression: QueryExpression>: QueryExpression {
     typealias QueryValue = Data?
-    
+
     let expression: Expression
     let format: JSONFormat
-    
+
     enum JSONFormat {
         case json
         case jsonb
-        
+
         var functionName: String {
             switch self {
             case .json: return "json_agg"
@@ -62,7 +62,7 @@ private struct JSONAggregation<Expression: QueryExpression>: QueryExpression {
             }
         }
     }
-    
+
     var queryFragment: QueryFragment {
         "\(raw: format.functionName)(\(expression.queryFragment))"
     }
@@ -70,9 +70,9 @@ private struct JSONAggregation<Expression: QueryExpression>: QueryExpression {
 
 private struct ArrayAggregation<Expression: QueryExpression>: QueryExpression {
     typealias QueryValue = String?
-    
+
     let expression: Expression
-    
+
     var queryFragment: QueryFragment {
         "array_agg(\(expression.queryFragment))"
     }
@@ -80,14 +80,14 @@ private struct ArrayAggregation<Expression: QueryExpression>: QueryExpression {
 
 private struct JSONBuildObject: QueryExpression {
     typealias QueryValue = Data
-    
+
     let pairs: [(String, any QueryExpression)]
     let format: JSONFormat
-    
+
     enum JSONFormat {
         case json
         case jsonb
-        
+
         var functionName: String {
             switch self {
             case .json: return "json_build_object"
@@ -95,12 +95,12 @@ private struct JSONBuildObject: QueryExpression {
             }
         }
     }
-    
+
     init(pairs: [(String, any QueryExpression)], format: JSONFormat = .json) {
         self.pairs = pairs
         self.format = format
     }
-    
+
     var queryFragment: QueryFragment {
         var fragment: QueryFragment = "\(raw: format.functionName)("
         for (index, (key, value)) in pairs.enumerated() {
@@ -121,17 +121,17 @@ extension QueryExpression where QueryValue == Data {
     public func field(_ key: String) -> some QueryExpression<Data> {
         JSONFieldOperator<Self, Data>(json: self, key: key, asText: false)
     }
-    
+
     /// PostgreSQL's ->> operator - extract JSON object field as text
     public func fieldAsText(_ key: String) -> some QueryExpression<String> {
         JSONFieldOperator<Self, String>(json: self, key: key, asText: true)
     }
-    
+
     /// PostgreSQL's -> operator - extract JSON array element by index
     public func element(at index: Int) -> some QueryExpression<Data> {
         JSONIndexOperator<Self, Data>(json: self, index: index, asText: false)
     }
-    
+
     /// PostgreSQL's ->> operator - extract JSON array element as text
     public func elementAsText(at index: Int) -> some QueryExpression<String> {
         JSONIndexOperator<Self, String>(json: self, index: index, asText: true)
@@ -140,11 +140,11 @@ extension QueryExpression where QueryValue == Data {
 
 private struct JSONFieldOperator<JSON: QueryExpression, Output>: QueryExpression where JSON.QueryValue == Data {
     typealias QueryValue = Output
-    
+
     let json: JSON
     let key: String
     let asText: Bool
-    
+
     var queryFragment: QueryFragment {
         let op = asText ? "->>" : "->"
         return "(\(json.queryFragment) \(raw: op) \(bind: key))"
@@ -153,11 +153,11 @@ private struct JSONFieldOperator<JSON: QueryExpression, Output>: QueryExpression
 
 private struct JSONIndexOperator<JSON: QueryExpression, Output>: QueryExpression where JSON.QueryValue == Data {
     typealias QueryValue = Output
-    
+
     let json: JSON
     let index: Int
     let asText: Bool
-    
+
     var queryFragment: QueryFragment {
         let op = asText ? "->>" : "->"
         return "(\(json.queryFragment) \(raw: op) \(index))"
@@ -174,13 +174,13 @@ extension QueryExpression {
     }
 }
 
-private struct FilteredAggregation<Aggregate: QueryExpression, Condition: QueryExpression>: QueryExpression 
+private struct FilteredAggregation<Aggregate: QueryExpression, Condition: QueryExpression>: QueryExpression
 where Condition.QueryValue == Bool {
     typealias QueryValue = Aggregate.QueryValue
-    
+
     let aggregate: Aggregate
     let condition: Condition
-    
+
     var queryFragment: QueryFragment {
         "\(aggregate.queryFragment) FILTER (WHERE \(condition.queryFragment))"
     }

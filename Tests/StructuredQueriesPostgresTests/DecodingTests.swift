@@ -1,10 +1,10 @@
-//import Foundation
-//import StructuredQueriesPostgres
+// import Foundation
+// import StructuredQueriesPostgres
 //// TODO: Migrate to PostgreSQL test infrastructure
 //// import StructuredQueriesSQLite
-//import Testing
+// import Testing
 //
-//extension SnapshotTests {
+// extension SnapshotTests {
 //  struct DecodingTests {
 //    let db: Database
 //
@@ -243,10 +243,10 @@
 //      )
 //    }
 //  }
-//}
+// }
 //
 //// NB: This is a compile time test for decoding with `decode()` method.
-//@Table
-//private struct Row {
+// @Table
+// private struct Row {
 //  var data = Int(42)
-//}
+// }

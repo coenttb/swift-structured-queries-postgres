@@ -16,7 +16,7 @@ extension SnapshotTests {
             _ = Reminder.where(\.isCompleted).select(\.id)
             _ = Reminder.where(\.isCompleted).select { $0.id }
             _ = Reminder.where(\.isCompleted).select { ($0.id, $0.isCompleted) }
-            
+
             let condition1 = Int?.some(1) == 2
             #expect(condition1 == false)
             let condition2 = Int?.some(1) != 2
@@ -58,7 +58,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func selectSingleColumn() {
             assertInlineSnapshot(
                 of: Tag.select(\.title),
@@ -70,7 +70,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func selectChaining() {
             assertInlineSnapshot(
                 of: Tag.select(\.id).select(\.title),
@@ -82,7 +82,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func selectChainingWithJoin() {
             assertInlineSnapshot(
                 of: Reminder
@@ -97,7 +97,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func join() {
             assertInlineSnapshot(
                 of: Reminder
@@ -110,7 +110,7 @@ extension SnapshotTests {
                 JOIN "remindersLists" ON ("reminders"."remindersListID" = "remindersLists"."id")
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: RemindersList
                     .join(Reminder.all) { $0.id.eq($1.remindersListID) }
@@ -123,7 +123,7 @@ extension SnapshotTests {
                 JOIN "reminders" ON ("remindersLists"."id" = "reminders"."remindersListID")
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Reminder.all
                     .leftJoin(User.all) { $0.assignedUserID.eq($1.id) }
@@ -139,7 +139,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func whereConditionalTrue() {
             let includeConditional = true
             assertInlineSnapshot(
@@ -178,7 +178,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func limit() {
             assertInlineSnapshot(
                 of: Reminder.select(\.id).limit(2),
@@ -202,7 +202,6 @@ extension SnapshotTests {
             }
         }
 
-        
         @Test func rightJoin() {
             assertInlineSnapshot(
                 of: User.all
@@ -218,7 +217,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func rightJoinWithSelect() {
             assertInlineSnapshot(
                 of: User.all
@@ -235,7 +234,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func rightJoinSelectColumns() {
             assertInlineSnapshot(
                 of: User.all
@@ -252,7 +251,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func fullJoin() {
             assertInlineSnapshot(
                 of: Reminder.all
@@ -269,7 +268,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func whereClause() {
             assertInlineSnapshot(
                 of: Reminder.where(\.isCompleted),
@@ -282,9 +281,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
-        
-        
+
         @Test func order() {
             assertInlineSnapshot(
                 of: Reminder
@@ -298,7 +295,7 @@ extension SnapshotTests {
                 ORDER BY "reminders"."title"
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Reminder
                     .select { ($0.isCompleted, $0.dueDate) }
@@ -311,7 +308,7 @@ extension SnapshotTests {
                 ORDER BY "reminders"."isCompleted" ASC, "reminders"."dueDate" DESC
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Reminder
                     .select { ($0.priority, $0.dueDate) }
@@ -333,7 +330,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func map() {
             assertInlineSnapshot(
                 of: Reminder.limit(1).select { ($0.id, $0.title) }.map { ($1, $0) },
@@ -345,7 +342,7 @@ extension SnapshotTests {
                 LIMIT 1
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Reminder.limit(1).select { ($0.id, $0.title) }.map { _, _ in },
                 as: .sql
@@ -357,18 +354,18 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func none() {
             assertInlineSnapshot(
                 of: Reminder.none,
                 as: .sql
             ) {
                 """
-                
+
                 """
             }
         }
-        
+
         @Test func selfJoin() {
             enum R1: AliasName {}
             enum R2: AliasName {}
@@ -386,7 +383,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func selfLeftJoinSelect() {
             enum R1: AliasName {}
             enum R2: AliasName {}
@@ -405,7 +402,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         // TODO: Re-enable when Swift compiler bug is fixed
         // @Test func forceEmptyJoin() {
         //     enum R1: AliasName {}
@@ -427,8 +424,7 @@ extension SnapshotTests {
         //         """
         //     }
         // }
-        
-        
+
         // TODO: Re-enable when Swift compiler bug is fixed
         // @Test func vec0() {
         //     let xs = [0.890, 0.544, 0.825, 0.961, 0.358, 0.0196, 0.521, 0.175]
@@ -460,9 +456,7 @@ extension SnapshotTests {
         //         """
         //     }
         // }
-        
-        
-        
+
         @Test func reusableStaticHelperOnDraft() {
             assertInlineSnapshot(
                 of: Reminder.Draft.incomplete.select(\.id),
@@ -474,7 +468,7 @@ extension SnapshotTests {
                 WHERE NOT ("reminders"."isCompleted")
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Reminder.Draft.where { _ in true }.incomplete.select(\.id),
                 as: .sql
@@ -485,7 +479,7 @@ extension SnapshotTests {
                 WHERE true AND NOT ("reminders"."isCompleted")
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Reminder.Draft.select(\.id).incomplete,
                 as: .sql
@@ -496,7 +490,7 @@ extension SnapshotTests {
                 WHERE NOT ("reminders"."isCompleted")
                 """
             }
-            
+
             assertInlineSnapshot(
                 of: Reminder.Draft.all.incomplete.select(\.id),
                 as: .sql
@@ -508,7 +502,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func reusableColumnHelperOnDraft() {
             assertInlineSnapshot(
                 of: Reminder.Draft.select(\.isHighPriority),
@@ -520,7 +514,7 @@ extension SnapshotTests {
                 """
             }
         }
-        
+
         @Test func singleJoinChaining() {
             let base = Reminder.group(by: \.id).join(ReminderTag.all) { $0.id.eq($1.reminderID) }
             _ = base.select { r, _ in r.isCompleted }

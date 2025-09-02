@@ -1,11 +1,11 @@
-//import Foundation
-//import InlineSnapshotTesting
-//import StructuredQueriesPostgres
+// import Foundation
+// import InlineSnapshotTesting
+// import StructuredQueriesPostgres
 //// TODO: Migrate to PostgreSQL test infrastructure
 //// import StructuredQueriesSQLite
-//import Testing
+// import Testing
 //
-//extension SnapshotTests {
+// extension SnapshotTests {
 //  @Suite struct LiveTests {
 //    @Test func selectAll() {
 //      assertQuery(Reminder.all) {
@@ -346,4 +346,4 @@
 //      var createdAt: Date
 //    }
 //  }
-//}
+// }

@@ -3,11 +3,11 @@ import Foundation
 /// A type that represents PostgreSQL JSONB storage for Codable types
 public struct _PostgresJSONBRepresentation<QueryOutput: Codable>: QueryRepresentable {
     public var queryOutput: QueryOutput
-    
+
     public init(queryOutput: QueryOutput) {
         self.queryOutput = queryOutput
     }
-    
+
     public init(decoder: inout some QueryDecoder) throws {
         // Decode from JSONB data
         // PostgreSQL returns JSONB as a string (when in text format) or as binary data

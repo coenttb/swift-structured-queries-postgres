@@ -1,12 +1,12 @@
-//import Dependencies
-//import Foundation
-//import InlineSnapshotTesting
-//import StructuredQueriesPostgres
+// import Dependencies
+// import Foundation
+// import InlineSnapshotTesting
+// import StructuredQueriesPostgres
 //// TODO: Migrate to PostgreSQL test infrastructure
 //// import StructuredQueriesSQLite
-//import Testing
+// import Testing
 //
-//extension SnapshotTests {
+// extension SnapshotTests {
 //  @MainActor
 //  @Suite struct KitchenSinkTests {
 //    @Dependency(\.defaultDatabase) var db
@@ -308,19 +308,19 @@
 //      }
 //    }
 //  }
-//}
+// }
 //
-//@Table
-//private struct Kitchen {
+// @Table
+// private struct Kitchen {
 //  let id: Int
-//}
+// }
 //
-//private enum Color: String, Codable, QueryBindable {
+// private enum Color: String, Codable, QueryBindable {
 //  case red, green, blue
-//}
+// }
 //
-//@Table
-//private struct KitchenSink: Codable {
+// @Table
+// private struct KitchenSink: Codable {
 //  let id: Int
 //  var kitchenID: Int?
 //  var bool: Bool
@@ -349,4 +349,4 @@
 //  var optionalJSONArray: [String]?
 //  @Column(as: [Date].JSONRepresentation.self)
 //  var jsonArrayOfDates: [Date]
-//}
+// }

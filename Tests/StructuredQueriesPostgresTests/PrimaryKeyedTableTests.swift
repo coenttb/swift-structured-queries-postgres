@@ -1,12 +1,12 @@
-//import Dependencies
-//import Foundation
-//import InlineSnapshotTesting
-//import StructuredQueriesPostgres
+// import Dependencies
+// import Foundation
+// import InlineSnapshotTesting
+// import StructuredQueriesPostgres
 //// TODO: Migrate to PostgreSQL test infrastructure
 //// import StructuredQueriesSQLite
-//import Testing
+// import Testing
 //
-//extension SnapshotTests {
+// extension SnapshotTests {
 //  struct PrimaryKeyedTableTests {
 //    @Dependency(\.defaultDatabase) var database
 //
@@ -323,12 +323,12 @@
 //      // Reminder.join(RemindersList.all, with: \.remindersListID)
 //    }
 //  }
-//}
+// }
 //
-//@Table
-//private struct Row {
+// @Table
+// private struct Row {
 //  let id: UUID
 //  var isDeleted = false
 //  @Column(generated: .virtual)
 //  let isNotDeleted: Bool
-//}
+// }

@@ -6,7 +6,7 @@ public protocol QueryBindable: QueryRepresentable, QueryExpression where QueryVa
     ///
     /// For example, a `TEXT` expression may be represented as a `String` query value.
     associatedtype QueryValue = Self
-    
+
     /// A value that can be bound to a parameter of a SQL statement.
     var queryBinding: QueryBinding { get }
 }
@@ -98,7 +98,7 @@ extension DefaultStringInterpolation {
     public mutating func appendInterpolation(_ value: some QueryExpression) {
         self.appendInterpolation(value as Any)
     }
-    
+
     @available(
         *,
          deprecated,

@@ -19,7 +19,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         lhs.eq(rhs)
     }
-    
+
     /// A predicate expression indicating whether two query expressions are not equal.
     ///
     /// ```swift
@@ -40,7 +40,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         lhs.neq(rhs)
     }
-    
+
     /// Returns a predicate expression indicating whether two query expressions are equal.
     ///
     /// ```swift
@@ -53,7 +53,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     public func eq(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "=", rhs: other)
     }
-    
+
     /// Returns a predicate expression indicating whether two query expressions are not equal.
     ///
     /// ```swift
@@ -66,7 +66,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     public func neq(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "<>", rhs: other)
     }
-    
+
     /// Returns a predicate expression indicating whether two query expressions are equal (or are
     /// equal to `NULL`).
     ///
@@ -82,7 +82,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "IS", rhs: other)
     }
-    
+
     /// Returns a predicate expression indicating whether two query expressions are not equal (or are
     /// not equal to `NULL`).
     ///
@@ -109,29 +109,29 @@ extension QueryExpression where QueryValue: QueryBindable & _OptionalProtocol {
     public func eq(_ other: some QueryExpression<QueryValue.Wrapped>) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "=", rhs: other)
     }
-    
+
     @_documentation(visibility: private)
     public func neq(_ other: some QueryExpression<QueryValue.Wrapped>) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "<>", rhs: other)
     }
-    
+
     @_documentation(visibility: private)
     public func eq(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "=", rhs: other)
     }
-    
+
     @_documentation(visibility: private)
     public func neq(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "<>", rhs: other)
     }
-    
+
     @_documentation(visibility: private)
     public func `is`(
         _ other: some QueryExpression<QueryValue>
     ) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "IS", rhs: other)
     }
-    
+
     @_documentation(visibility: private)
     public func isNot(
         _ other: some QueryExpression<QueryValue>
@@ -147,7 +147,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "IS", rhs: other)
     }
-    
+
     @_documentation(visibility: private)
     public func isNot(
         _ other: _Null<QueryValue>
@@ -259,7 +259,6 @@ public func != <QueryValue: QueryBindable>(
     SQLQueryExpression(rhs).isNot(lhs)  // Generates: column IS NOT NULL
 }
 
-
 extension QueryExpression where QueryValue: QueryBindable {
     /// Returns a predicate expression indicating whether the value of the first expression is less
     /// than that of the second expression.
@@ -277,7 +276,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         lhs.lt(rhs)
     }
-    
+
     /// Returns a predicate expression indicating whether the value of the first expression is greater
     /// than that of the second expression.
     ///
@@ -294,7 +293,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         lhs.gt(rhs)
     }
-    
+
     /// Returns a predicate expression indicating whether the value of the first expression is less
     /// than or equal to that of the second expression.
     ///
@@ -311,7 +310,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         lhs.lte(rhs)
     }
-    
+
     /// Returns a predicate expression indicating whether the value of the first expression is greater
     /// than or equal to that of the second expression.
     ///
@@ -328,7 +327,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         lhs.gte(rhs)
     }
-    
+
     /// Returns a predicate expression indicating whether the value of the first expression is less
     /// than that of the second expression.
     ///
@@ -339,7 +338,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "<", rhs: other)
     }
-    
+
     /// Returns a predicate expression indicating whether the value of the first expression is greater
     /// than that of the second expression.
     ///
@@ -350,7 +349,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: ">", rhs: other)
     }
-    
+
     /// Returns a predicate expression indicating whether the value of the first expression is less
     /// than or equal to that of the second expression.
     ///
@@ -361,7 +360,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     ) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "<=", rhs: other)
     }
-    
+
     /// Returns a predicate expression indicating whether the value of the first expression is greater
     /// than or equal to that of the second expression.
     ///
@@ -390,7 +389,7 @@ extension QueryExpression where QueryValue == Bool {
     ) -> some QueryExpression<QueryValue> {
         lhs.and(rhs)
     }
-    
+
     /// Returns a logical OR operation on two predicate expressions.
     ///
     /// > Important: Overloaded operators can strain the Swift compiler's type checking ability.
@@ -406,7 +405,7 @@ extension QueryExpression where QueryValue == Bool {
     ) -> some QueryExpression<QueryValue> {
         lhs.or(rhs)
     }
-    
+
     /// Returns a logical NOT operation on a predicate expression.
     ///
     /// - Parameter expression: The predicate expression to negate.
@@ -414,7 +413,7 @@ extension QueryExpression where QueryValue == Bool {
     public static prefix func ! (expression: Self) -> some QueryExpression<QueryValue> {
         expression.not()
     }
-    
+
     /// Returns a logical AND operation on two predicate expressions.
     ///
     /// - Parameter other: The right-hand side of the operation to this predicate's left-hand side.
@@ -422,7 +421,7 @@ extension QueryExpression where QueryValue == Bool {
     public func and(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: self, operator: "AND", rhs: other)
     }
-    
+
     /// Returns a logical OR operation on two predicate expressions.
     ///
     /// - Parameter other: The right-hand side of the operation to this predicate's left-hand side.
@@ -430,7 +429,7 @@ extension QueryExpression where QueryValue == Bool {
     public func or(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: self, operator: "OR", rhs: other)
     }
-    
+
     /// Returns a logical NOT operation on this predicate expression.
     ///
     /// - Returns: This predicate expression, negated.
@@ -469,7 +468,7 @@ extension QueryExpression where QueryValue: Numeric {
     ) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: lhs, operator: "+", rhs: rhs)
     }
-    
+
     /// Returns a difference expression that subtracts two expressions.
     ///
     /// - Parameters:
@@ -482,7 +481,7 @@ extension QueryExpression where QueryValue: Numeric {
     ) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: lhs, operator: "-", rhs: rhs)
     }
-    
+
     /// Returns a product expression that multiplies two expressions.
     ///
     /// - Parameters:
@@ -495,7 +494,7 @@ extension QueryExpression where QueryValue: Numeric {
     ) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: lhs, operator: "*", rhs: rhs)
     }
-    
+
     /// Returns a quotient expression that divides two expressions.
     ///
     /// - Parameters:
@@ -508,7 +507,7 @@ extension QueryExpression where QueryValue: Numeric {
     ) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: lhs, operator: "/", rhs: rhs)
     }
-    
+
     /// Returns the additive inverse of the specified expression.
     ///
     /// - Parameter expression: A numeric expression.
@@ -516,7 +515,7 @@ extension QueryExpression where QueryValue: Numeric {
     public static prefix func - (expression: Self) -> some QueryExpression<QueryValue> {
         UnaryOperator(operator: "-", base: expression, separator: "")
     }
-    
+
     /// Returns the additive equivalent to the specified expression.
     ///
     /// - Parameter expression: A numeric expression.
@@ -557,7 +556,7 @@ extension SQLQueryExpression where QueryValue: Numeric {
     public static func += (lhs: inout Self, rhs: some QueryExpression<QueryValue>) {
         lhs = Self(lhs + rhs)
     }
-    
+
     /// Subtracts from a numeric expression in an update clause.
     ///
     /// - Parameters:
@@ -566,7 +565,7 @@ extension SQLQueryExpression where QueryValue: Numeric {
     public static func -= (lhs: inout Self, rhs: some QueryExpression<QueryValue>) {
         lhs = Self(lhs - rhs)
     }
-    
+
     /// Multiplies a numeric expression in an update clause.
     ///
     /// - Parameters:
@@ -575,7 +574,7 @@ extension SQLQueryExpression where QueryValue: Numeric {
     public static func *= (lhs: inout Self, rhs: some QueryExpression<QueryValue>) {
         lhs = Self(lhs * rhs)
     }
-    
+
     /// Divides a numeric expression in an update clause.
     ///
     /// - Parameters:
@@ -584,7 +583,7 @@ extension SQLQueryExpression where QueryValue: Numeric {
     public static func /= (lhs: inout Self, rhs: some QueryExpression<QueryValue>) {
         lhs = Self(lhs / rhs)
     }
-    
+
     /// Negates a numeric expression in an update clause.
     public mutating func negate() {
         self = Self(-self)
@@ -604,7 +603,7 @@ extension QueryExpression where QueryValue: BinaryInteger {
     ) -> some QueryExpression<QueryValue?> {
         BinaryOperator(lhs: lhs, operator: "%", rhs: rhs)
     }
-    
+
     /// Returns the expression of performing a bitwise AND operation on the two given expressions.
     ///
     /// - Parameters:
@@ -617,7 +616,7 @@ extension QueryExpression where QueryValue: BinaryInteger {
     ) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: lhs, operator: "&", rhs: rhs)
     }
-    
+
     /// Returns the expression of performing a bitwise OR operation on the two given expressions.
     ///
     /// - Parameters:
@@ -630,7 +629,7 @@ extension QueryExpression where QueryValue: BinaryInteger {
     ) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: lhs, operator: "|", rhs: rhs)
     }
-    
+
     /// Returns an expression representing the result of shifting an expression's binary
     /// representation the specified expression of digits to the left.
     ///
@@ -644,7 +643,7 @@ extension QueryExpression where QueryValue: BinaryInteger {
     ) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: lhs, operator: "<<", rhs: rhs)
     }
-    
+
     /// Returns an expression representing the result of shifting an expression's binary
     /// representation the specified expression of digits to the right.
     ///
@@ -658,7 +657,7 @@ extension QueryExpression where QueryValue: BinaryInteger {
     ) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: lhs, operator: ">>", rhs: rhs)
     }
-    
+
     /// Returns the inverse expression of the bits set in the argument.
     ///
     /// - Parameter expression: An integer expression.
@@ -683,15 +682,15 @@ extension SQLQueryExpression where QueryValue: BinaryInteger {
     public static func &= (lhs: inout Self, rhs: some QueryExpression<QueryValue>) {
         lhs = Self(lhs & rhs)
     }
-    
+
     public static func |= (lhs: inout Self, rhs: some QueryExpression<QueryValue>) {
         lhs = Self(lhs | rhs)
     }
-    
+
     public static func <<= (lhs: inout Self, rhs: some QueryExpression<QueryValue>) {
         lhs = Self(lhs << rhs)
     }
-    
+
     public static func >>= (lhs: inout Self, rhs: some QueryExpression<QueryValue>) {
         lhs = Self(lhs >> rhs)
     }
@@ -710,7 +709,7 @@ extension QueryExpression where QueryValue == String {
     ) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: lhs, operator: "||", rhs: rhs)
     }
-    
+
     /// Returns an expression of this expression that is compared using the given collating sequence.
     ///
     /// - Parameter collation: A collating sequence name.
@@ -718,7 +717,7 @@ extension QueryExpression where QueryValue == String {
     public func collate(_ collation: Collation) -> some QueryExpression<QueryValue> {
         BinaryOperator(lhs: self, operator: "COLLATE", rhs: collation)
     }
-    
+
     /// A predicate expression from this string expression matched against another _via_ the `LIKE`
     /// operator.
     ///
@@ -737,7 +736,7 @@ extension QueryExpression where QueryValue == String {
     ) -> some QueryExpression<Bool> {
         LikeOperator(string: self, pattern: "\(pattern)", escape: escape)
     }
-    
+
     /// A predicate expression from this string expression matched against another _via_ the `LIKE`
     /// operator given a prefix.
     ///
@@ -751,7 +750,7 @@ extension QueryExpression where QueryValue == String {
     public func hasPrefix(_ other: some StringProtocol) -> some QueryExpression<Bool> {
         like("\(other)%")
     }
-    
+
     /// A predicate expression from this string expression matched against another _via_ the `LIKE`
     /// operator given a suffix.
     ///
@@ -765,7 +764,7 @@ extension QueryExpression where QueryValue == String {
     public func hasSuffix(_ other: some StringProtocol) -> some QueryExpression<Bool> {
         like("%\(other)")
     }
-    
+
     /// A predicate expression from this string expression matched against another _via_ the `LIKE`
     /// operator given an infix.
     ///
@@ -801,7 +800,7 @@ extension SQLQueryExpression<String> {
     ) {
         lhs = Self(lhs + rhs)
     }
-    
+
     /// Appends this string expression in an update clause.
     ///
     /// An alias for ``+=(_:_:)``.
@@ -810,7 +809,7 @@ extension SQLQueryExpression<String> {
     public mutating func append(_ other: some QueryExpression<QueryValue>) {
         self += other
     }
-    
+
     /// Appends this string expression in an update clause.
     ///
     /// An alias for ``+=(_:_:)``.
@@ -830,7 +829,7 @@ extension QueryExpression where QueryValue: QueryBindable {
     where S.Element: QueryExpression<QueryValue> {
         BinaryOperator(lhs: self, operator: "IN", rhs: S.Expression(elements: expression))
     }
-    
+
     /// Returns a predicate expression indicating whether the expression is in a subquery.
     ///
     /// - Parameter query: A subquery.
@@ -842,7 +841,7 @@ extension QueryExpression where QueryValue: QueryBindable {
             rhs: SQLQueryExpression("(\(query.query))", as: Void.self)
         )
     }
-    
+
     /// Returns a predicate expression indicating whether the expression is between a lower and upper
     /// bound.
     ///
@@ -929,13 +928,13 @@ private struct UnaryOperator<QueryValue>: QueryExpression {
     let `operator`: QueryFragment
     let base: QueryFragment
     let separator: QueryFragment
-    
+
     init(operator: QueryFragment, base: some QueryExpression, separator: QueryFragment = " ") {
         self.operator = `operator`
         self.base = base.queryFragment
         self.separator = separator
     }
-    
+
     var queryFragment: QueryFragment {
         "\(`operator`)\(separator)(\(base))"
     }
@@ -945,7 +944,7 @@ struct BinaryOperator<QueryValue>: QueryExpression {
     let lhs: QueryFragment
     let `operator`: QueryFragment
     let rhs: QueryFragment
-    
+
     init(
         lhs: some QueryExpression,
         operator: QueryFragment,
@@ -955,7 +954,7 @@ struct BinaryOperator<QueryValue>: QueryExpression {
         self.operator = `operator`
         self.rhs = rhs.queryFragment
     }
-    
+
     var queryFragment: QueryFragment {
         "(\(lhs) \(`operator`) \(rhs))"
     }
@@ -966,11 +965,11 @@ private struct LikeOperator<
     RHS: QueryExpression<String>
 >: QueryExpression {
     typealias QueryValue = Bool
-    
+
     let string: LHS
     let pattern: RHS
     let escape: Character?
-    
+
     var queryFragment: QueryFragment {
         var query: QueryFragment = "(\(string.queryFragment) LIKE \(pattern.queryFragment)"
         if let escape {
@@ -990,6 +989,14 @@ where S.Element: QueryExpression, S.Element.QueryValue: QueryBindable {
     typealias QueryValue = S
     let queryFragment: QueryFragment
     init(elements: S) {
-        queryFragment = "(\(elements.map(\.queryFragment).joined(separator: ", ")))"
+        let items = Array(elements)
+        if items.isEmpty {
+            // PostgreSQL doesn't allow empty IN clauses
+            // Using (NULL) will never match any non-NULL values, which is the expected behavior
+            // for an empty IN clause (nothing matches an empty set)
+            queryFragment = "(NULL)"
+        } else {
+            queryFragment = "(\(items.map(\.queryFragment).joined(separator: ", ")))"
+        }
     }
 }

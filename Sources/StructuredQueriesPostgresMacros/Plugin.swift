@@ -9,6 +9,6 @@ struct StructuredQueriesPlugin: CompilerPlugin {
     EphemeralMacro.self,
     SelectionMacro.self,
     SQLMacro.self,
-    TableMacro.self,
+    TableMacro.self
   ]
 }

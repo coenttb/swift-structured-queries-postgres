@@ -10,14 +10,14 @@ public enum SQLMacro: ExpressionMacro {
   ) -> ExprSyntax {
     guard let argument = node.arguments.first?.expression else { fatalError() }
     let binds = [
-      UInt8(ascii: "?"), UInt8(ascii: ":"), UInt8(ascii: "@"), UInt8(ascii: "$"),
+      UInt8(ascii: "?"), UInt8(ascii: ":"), UInt8(ascii: "@"), UInt8(ascii: "$")
     ]
     let delimiters: [UInt8: UInt8] = [
       UInt8(ascii: #"""#): UInt8(ascii: #"""#),
       UInt8(ascii: "'"): UInt8(ascii: "'"),
       UInt8(ascii: "`"): UInt8(ascii: "`"),
       UInt8(ascii: "["): UInt8(ascii: "]"),
-      UInt8(ascii: "("): UInt8(ascii: ")"),
+      UInt8(ascii: "("): UInt8(ascii: ")")
     ]
     var parenStack: [(delimiter: UInt8, segment: StringSegmentSyntax, offset: Int)] = []
     var currentDelimiter: (delimiter: UInt8, segment: StringSegmentSyntax, offset: Int)?
@@ -31,8 +31,7 @@ public enum SQLMacro: ExpressionMacro {
           if invalidBind,
             let currentDelimiter,
             let segment = segment.as(ExpressionSegmentSyntax.self),
-            let expression = segment.expressions.first
-          {
+            let expression = segment.expressions.first {
             guard expression.label?.text == "raw" else {
               let openingDelimiter = UnicodeScalar(currentDelimiter.delimiter)
               let q = openingDelimiter == "'" ? #"""# : "'"
@@ -83,8 +82,7 @@ public enum SQLMacro: ExpressionMacro {
               } else if delimiter.segment == segment,
                 offset > delimiter.offset + 1,
                 segment.content.syntaxTextBytes.indices.contains(offset + 1),
-                segment.content.syntaxTextBytes[offset + 1] == byte
-              {
+                segment.content.syntaxTextBytes[offset + 1] == byte {
                 offset += 1
                 continue
               } else {
@@ -112,8 +110,7 @@ public enum SQLMacro: ExpressionMacro {
       }
 
       if let currentDelimiter = currentDelimiter ?? parenStack.last,
-        let closingDelimiter = delimiters[currentDelimiter.delimiter]
-      {
+        let closingDelimiter = delimiters[currentDelimiter.delimiter] {
         let openingDelimiter = UnicodeScalar(currentDelimiter.delimiter)
         let closingDelimiter = UnicodeScalar(closingDelimiter)
         let q = openingDelimiter == "'" ? #"""# : "'"
@@ -160,7 +157,7 @@ public enum SQLMacro: ExpressionMacro {
       if let unexpectedClose {
         let delimiters: [UInt8: UInt8] = [
           UInt8(ascii: "]"): UInt8(ascii: "["),
-          UInt8(ascii: ")"): UInt8(ascii: "("),
+          UInt8(ascii: ")"): UInt8(ascii: "(")
         ]
         let closingDelimiter = UnicodeScalar(unexpectedClose.delimiter)
         let openingDelimiter = UnicodeScalar(

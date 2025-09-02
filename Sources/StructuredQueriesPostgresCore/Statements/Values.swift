@@ -12,19 +12,19 @@
 /// common table expressions and other subqueries. See <doc:CommonTableExpressions> for more.
 public struct Values<QueryValue>: PartialSelectStatement {
     public typealias From = Never
-    
+
     let values: [QueryFragment]
-    
+
     public init(_ value: QueryValue) where QueryValue: QueryExpression {
         self.values = [value.queryFragment]
     }
-    
+
     public init<each Value: QueryExpression>(
         _ values: repeat each Value
     ) where QueryValue == (repeat (each Value).QueryValue) {
         self.values = Array(repeat each values)
     }
-    
+
     public var query: QueryFragment {
         "SELECT \(values.joined(separator: ", "))"
     }

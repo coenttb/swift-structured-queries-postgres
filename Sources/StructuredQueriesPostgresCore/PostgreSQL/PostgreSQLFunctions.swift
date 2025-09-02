@@ -39,25 +39,25 @@ extension QueryExpression {
     public static func rowNumber() -> some QueryExpression<Int> {
         SQLQueryExpression("ROW_NUMBER() OVER ()", as: Int.self)
     }
-    
+
     /// PostgreSQL's ROW_NUMBER() with partition and order
     public static func rowNumber(
         partitionBy partition: (any QueryExpression)? = nil,
         orderBy order: (any QueryExpression)? = nil
     ) -> some QueryExpression<Int> {
         var fragment: QueryFragment = "ROW_NUMBER() OVER ("
-        
+
         if let partition {
             fragment.append("PARTITION BY \(partition.queryFragment)")
             if order != nil {
                 fragment.append(" ")
             }
         }
-        
+
         if let order {
             fragment.append("ORDER BY \(order.queryFragment)")
         }
-        
+
         fragment.append(")")
         return SQLQueryExpression(fragment, as: Int.self)
     }
@@ -99,22 +99,22 @@ extension QueryExpression where QueryValue == String {
     public func concat(_ other: String) -> some QueryExpression<String> {
         SQLQueryExpression("(\(self.queryFragment) || \(bind: other))", as: String.self)
     }
-    
+
     /// PostgreSQL's string concatenation with another expression
     public func concat(_ other: some QueryExpression<String>) -> some QueryExpression<String> {
         SQLQueryExpression("(\(self.queryFragment) || \(other.queryFragment))", as: String.self)
     }
-    
+
     /// PostgreSQL's POSITION function (equivalent to SQLite's INSTR)
     public func position(of substring: String) -> some QueryExpression<Int> {
         SQLQueryExpression("POSITION(\(bind: substring) IN \(self.queryFragment))", as: Int.self)
     }
-    
+
     /// PostgreSQL's STRPOS function (alternative to POSITION)
     public func strpos(_ substring: String) -> some QueryExpression<Int> {
         SQLQueryExpression("STRPOS(\(self.queryFragment), \(bind: substring))", as: Int.self)
     }
-    
+
     /// PostgreSQL's SUBSTRING function
     public func substring(from start: Int, for length: Int? = nil) -> some QueryExpression<String> {
         if let length {
@@ -153,7 +153,7 @@ extension QueryExpression where QueryValue == Date {
     public func extract(_ field: DateField) -> some QueryExpression<Double> {
         SQLQueryExpression("EXTRACT(\(raw: field.rawValue) FROM \(self.queryFragment))", as: Double.self)
     }
-    
+
     /// PostgreSQL's date truncation
     public func dateTrunc(_ precision: DateTruncPrecision) -> some QueryExpression<Date> {
         SQLQueryExpression("DATE_TRUNC('\(raw: precision.rawValue)', \(self.queryFragment))", as: Date.self)
@@ -167,7 +167,7 @@ extension Date {
     public static var currentTimestamp: some QueryExpression<Date> {
         SQLQueryExpression("CURRENT_TIMESTAMP", as: Date.self)
     }
-    
+
     /// PostgreSQL's CURRENT_DATE
     public static var currentDate: some QueryExpression<Date> {
         SQLQueryExpression("CURRENT_DATE", as: Date.self)
@@ -187,19 +187,19 @@ extension QueryExpression where QueryValue == String {
         var fragment: QueryFragment = "STRING_AGG("
         fragment.append(self.queryFragment)
         fragment.append(", \(bind: separator)")
-        
+
         if let order {
             fragment.append(" ORDER BY \(order.queryFragment)")
         }
         fragment.append(")")
-        
+
         if let filter {
             fragment.append(" FILTER (WHERE \(filter.queryFragment))")
         }
-        
+
         return SQLQueryExpression(fragment, as: String?.self)
     }
-    
+
     /// PostgreSQL's STRING_AGG with DISTINCT
     public func stringAgg(
         distinct: Bool,
@@ -213,16 +213,16 @@ extension QueryExpression where QueryValue == String {
         }
         fragment.append(self.queryFragment)
         fragment.append(", \(bind: separator)")
-        
+
         if let order {
             fragment.append(" ORDER BY \(order.queryFragment)")
         }
         fragment.append(")")
-        
+
         if let filter {
             fragment.append(" FILTER (WHERE \(filter.queryFragment))")
         }
-        
+
         return SQLQueryExpression(fragment, as: String?.self)
     }
 }
@@ -237,16 +237,16 @@ extension QueryExpression {
         var fragment: QueryFragment = "STRING_AGG(CAST("
         fragment.append(self.queryFragment)
         fragment.append(" AS TEXT), \(bind: separator)")
-        
+
         if let order {
             fragment.append(" ORDER BY \(order.queryFragment)")
         }
         fragment.append(")")
-        
+
         if let filter {
             fragment.append(" FILTER (WHERE \(filter.queryFragment))")
         }
-        
+
         return SQLQueryExpression(fragment, as: String?.self)
     }
 }
@@ -259,7 +259,7 @@ extension QueryExpression where QueryValue == [UInt8] {
     public func encodeHex() -> some QueryExpression<String> {
         SQLQueryExpression("ENCODE(\(self.queryFragment), 'hex')", as: String.self)
     }
-    
+
     /// PostgreSQL's ENCODE function with custom encoding
     public func encode(_ format: String) -> some QueryExpression<String> {
         SQLQueryExpression("ENCODE(\(self.queryFragment), \(bind: format))", as: String.self)
@@ -272,19 +272,19 @@ extension QueryExpression where QueryValue == String {
     public func decodeHex() -> some QueryExpression<[UInt8]> {
         SQLQueryExpression("DECODE(\(self.queryFragment), 'hex')", as: [UInt8].self)
     }
-    
+
     /// PostgreSQL's QUOTE_LITERAL function (equivalent to SQLite's QUOTE)
     /// Quotes a string for safe inclusion in SQL
     public func quoteLiteral() -> some QueryExpression<String> {
         SQLQueryExpression("QUOTE_LITERAL(\(self.queryFragment))", as: String.self)
     }
-    
+
     /// PostgreSQL's QUOTE_IDENT function
     /// Quotes an identifier for safe inclusion in SQL
     public func quoteIdent() -> some QueryExpression<String> {
         SQLQueryExpression("QUOTE_IDENT(\(self.queryFragment))", as: String.self)
     }
-    
+
     /// PostgreSQL's ASCII function (partial equivalent to SQLite's UNICODE)
     /// Returns the ASCII code of the first character
     public func ascii() -> some QueryExpression<Int?> {
@@ -310,7 +310,7 @@ extension QueryExpression where QueryValue: Numeric & QueryBindable {
     public func sumOrZero() -> some QueryExpression<QueryValue> {
         SQLQueryExpression("COALESCE(SUM(\(self.queryFragment)), 0)", as: QueryValue.self)
     }
-    
+
     /// PostgreSQL SUM with default value
     public func sumOr(_ defaultValue: QueryValue) -> some QueryExpression<QueryValue> {
         SQLQueryExpression("COALESCE(SUM(\(self.queryFragment)), \(bind: defaultValue))", as: QueryValue.self)
