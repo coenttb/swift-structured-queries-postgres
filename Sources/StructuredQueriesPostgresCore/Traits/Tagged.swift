@@ -1,4 +1,4 @@
-#if StructuredQueriesTagged
+#if StructuredQueriesPostgresTagged
 import Tagged
 
 extension Tagged: _OptionalPromotable where RawValue: _OptionalPromotable {}
