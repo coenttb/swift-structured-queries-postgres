@@ -56,7 +56,7 @@ let package = Package(
                 .product(
                     name: "Tagged",
                     package: "swift-tagged",
-                    condition: .when(traits: ["StructuredQueriesTagged"])
+                    condition: .when(traits: ["StructuredQueriesPostgresTagged"])
                 ),
             ],
             exclude: ["Symbolic Links/README.md"]
