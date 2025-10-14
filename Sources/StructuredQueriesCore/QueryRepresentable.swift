@@ -7,39 +7,39 @@ import Foundation
 /// or more result columns depending on the type.
 ///
 /// This protocol can also be used to create a compile-time distinction between multiple query
-/// representations of a single Swift type. For example, in SQLite there are three distinct
+/// representations of a single Swift type. For example, databases support multiple distinct
 /// representations of date and time values, including ISO-8601-formatted strings, integer second
 /// offsets from the Unix epoch, or double Julian day numbers. This library defaults to ISO-8601
 /// text, but provides `UnixTimeRepresentation` to represent a date as an integer, and
 /// `JulianDayRepresentation` to represent a date as a floating point number.
 public protocol QueryRepresentable<QueryOutput>: QueryDecodable {
-  /// The Swift type this value is ultimately decoded to.
-  associatedtype QueryOutput
+    /// The Swift type this value is ultimately decoded to.
+    associatedtype QueryOutput
 
-  /// Wraps a value in this representation.
-  ///
-  /// - Parameter queryOutput: The value.
-  init(queryOutput: QueryOutput)
+    /// Wraps a value in this representation.
+    ///
+    /// - Parameter queryOutput: The value.
+    init(queryOutput: QueryOutput)
 
-  /// Unwraps a value from this representation.
-  var queryOutput: QueryOutput { get }
+    /// Unwraps a value from this representation.
+    var queryOutput: QueryOutput { get }
 }
 
 extension QueryRepresentable where Self: QueryDecodable, Self == QueryOutput {
-  @inlinable
-  @inline(__always)
-  public init(queryOutput: QueryOutput) {
-    self = queryOutput
-  }
+    @inlinable
+    @inline(__always)
+    public init(queryOutput: QueryOutput) {
+        self = queryOutput
+    }
 
-  @inlinable
-  @inline(__always)
-  public var queryOutput: QueryOutput {
-    self
-  }
+    @inlinable
+    @inline(__always)
+    public var queryOutput: QueryOutput {
+        self
+    }
 }
 
-extension [UInt8]: QueryRepresentable {}
+// extension [UInt8]: QueryRepresentable {}
 
 extension Bool: QueryRepresentable {}
 
@@ -64,3 +64,7 @@ extension UInt8: QueryRepresentable {}
 extension UInt16: QueryRepresentable {}
 
 extension UInt32: QueryRepresentable {}
+
+extension Decimal: QueryRepresentable {}
+
+extension UUID: QueryRepresentable {}

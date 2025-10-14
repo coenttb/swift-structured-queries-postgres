@@ -1,2 +1,0 @@
-@_exported import StructuredQueries
-@_exported import StructuredQueriesSQLiteCore

@@ -14,24 +14,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  library:
+  macos:
     name: macOS
+    runs-on: macos-26
     strategy:
       matrix:
-        xcode: ['16.3']
-    runs-on: macos-15
+        xcode: ['26.0']
+        config: ['release']  # Release mode for speed; debug adds time with minimal value
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+
       - name: Select Xcode ${{ matrix.xcode }}
-        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
+        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.1.app
+
+      - name: Print Swift version
+        run: swift --version
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Build
+        run: swift build -c ${{ matrix.config }}
+
       - name: Run tests
-        run: swift test
-      - name: Build release
-        run: swift build -c release --build-tests
+        run: swift test -c ${{ matrix.config }}
 
   linux:
-    name: Linux
+    name: Linux (Swift ${{ matrix.swift }})
     strategy:
+      fail-fast: false
       matrix:
         swift:
           - '6.0'
@@ -39,8 +55,33 @@ jobs:
     runs-on: ubuntu-latest
     container: swift:${{ matrix.swift }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Install SQLite
-        run: apt update && apt -y install libsqlite3-dev
+      - uses: actions/checkout@v5
+
+      - name: Print Swift version
+        run: swift --version
+
       - name: Build
         run: swift build
+
+      - name: Run tests
+        run: swift test
+
+  documentation:
+    name: Documentation
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.0.1.app
+
+      - name: Build documentation
+        run: |
+          swift package \
+            --allow-writing-to-directory ./docs \
+            generate-documentation \
+            --target StructuredQueriesPostgresCore \
+            --output-path ./docs \
+            --transform-for-static-hosting \
+            --hosting-base-path swift-structured-queries-postgres
+        continue-on-error: true  # DocC may not be fully configured yet

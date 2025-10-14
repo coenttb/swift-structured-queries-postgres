@@ -101,10 +101,9 @@ The library supports building everything from [`SELECT`](<doc:SelectStatements>)
 reading to learn more about building SQL with StructuredQueries.
 
 > Important: This library does not come with any database drivers for making actual database
-> requests, _e.g._, to SQLite, Postgres, MySQL. This library focuses only on building SQL statements
-> and providing the tools that would allow you to integrate with another library that makes the
-> actual database requests. See <doc:Integration> for information on how to integrate this library
-> with a database library.
+> requests. This library focuses only on building type-safe SQL statements for PostgreSQL.
+> For database execution, use the [swift-records](https://github.com/coenttb/swift-records) library.
+> See <doc:Integration> for information on integrating with PostgreSQL databases.
 
 ## Topics
 

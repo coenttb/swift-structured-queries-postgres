@@ -18,7 +18,6 @@ Explore the full list of available functions below.
 
 ### Strings
 
-- ``QueryExpression/instr(_:)``
 - ``QueryExpression/length()``
 - ``QueryExpression/lower()``
 - ``QueryExpression/ltrim(_:)``
@@ -27,8 +26,9 @@ Explore the full list of available functions below.
 - ``QueryExpression/replace(_:_:)``
 - ``QueryExpression/rtrim(_:)``
 - ``QueryExpression/trim(_:)``
-- ``QueryExpression/unhex(_:)``
 - ``QueryExpression/upper()``
+
+> Note: For PostgreSQL-specific string functions like `position()`, `strpos()`, and `decodeHex()`, see ``PostgreSQLFunctions``.
 
 ### Numeric
 

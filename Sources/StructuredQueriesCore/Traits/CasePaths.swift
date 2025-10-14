@@ -1,3 +1,3 @@
-#if StructuredQueriesCasePaths
-  @_exported import CasePaths
+#if StructuredQueriesPostgresCasePaths
+    @_exported import CasePaths
 #endif

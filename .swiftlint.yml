@@ -1,0 +1,121 @@
+# SwiftLint Configuration for swift-structured-queries-postgres
+# Optimized for PostgreSQL query builder DSL and library development
+#
+# NOTE: Formatting is handled by swift-format (.swift-format config)
+#       SwiftLint focuses on code quality, complexity, and best practices
+
+# Disabled Rules
+# These are disabled for good reasons specific to query DSL code
+disabled_rules:
+  - line_length                           # Query building can have long chained calls
+  - identifier_name                       # SQL-like short names are idiomatic (db, id, $0)
+  - nesting                               # Query DSL naturally nests deeply
+  - explicit_init                         # Type inference handles this well
+  - unneeded_synthesized_initializer      # Synthesized inits are fine
+  - type_name                             # Allow _ prefixed types (Swift internal convention)
+  - explicit_acl                          # Too noisy for internal implementation details
+  - large_tuple                           # Query DSL uses tuples for join results
+  - force_cast                            # Intentional in generic/type-erased code
+  - redundant_type_annotation             # @Table macro requires explicit type annotations
+
+  # Formatting rules (handled by swift-format)
+  - indentation_width                     # swift-format handles indentation
+  - trailing_whitespace                   # swift-format handles whitespace
+  - trailing_comma                        # swift-format handles commas
+  - sorted_imports                        # swift-format handles import ordering
+  - vertical_whitespace                   # swift-format handles vertical spacing
+  - colon                                 # swift-format handles colon spacing
+  - comma                                 # swift-format handles comma spacing
+  - trailing_newline                      # swift-format handles newlines
+
+# Opt-in Rules
+opt_in_rules:
+  # Code Safety
+  - force_try
+  - force_unwrapping
+
+  # Code Quality
+  - empty_count
+  - empty_string
+  - empty_collection_literal
+  - unused_closure_parameter
+  - discouraged_optional_collection       # Use [] instead of nil
+  - redundant_nil_coalescing
+
+  # Performance
+  - contains_over_first_not_nil
+  - last_where
+  - first_where
+
+  # Best Practices
+  - explicit_enum_raw_value
+  - legacy_random
+  - no_extension_access_modifier
+  - private_outlet
+
+  # Testing
+  - single_test_class
+
+  # Organization
+  - sorted_first_last
+
+# Included Paths
+included:
+  - Package.swift
+  - Sources
+  - Tests
+
+# Excluded Paths
+excluded:
+  - Carthage
+  - Pods
+  - fastlane
+  - build
+  - .build
+  - "**/StructuredQueriesPostgresMacros/**/*.swift"  # Macro expansion code is naturally complex
+  - "**/StructuredQueriesPostgresMacrosTests/**/*.swift"  # Macro test expansions are very long
+
+# Analyzer Rules (static analysis)
+analyzer_rules:
+  - unused_import
+  - unused_declaration
+
+# Rule Configuration
+# (Formatting rules removed - see .swift-format for formatting config)
+
+# File/Type/Function Length Limits
+# Relaxed for query DSL and macro test complexity
+file_length:
+  warning: 600
+  error: 1000
+  ignore_comment_only_lines: true
+
+type_body_length:
+  warning: 500
+  error: 3000  # Macro test files have large expansion tests
+
+function_body_length:
+  warning: 60
+  error: 200  # Macro test cases can be long
+
+# Complexity Limits
+cyclomatic_complexity:
+  warning: 12
+  error: 20
+  ignores_case_statements: true
+
+# Custom Rules
+custom_rules:
+  no_sqlite_null_pk:
+    name: "PostgreSQL NULL PRIMARY KEY Check"
+    regex: '(id|ID|Id)\s*[:=]\s*nil'
+    match_kinds:
+      - identifier
+    message: "PostgreSQL forbids NULL in PRIMARY KEY columns (use Draft types instead)"
+    severity: warning
+
+  prefer_some_over_any:
+    name: "Prefer 'some' over 'any'"
+    regex: ':\s*any\s+QueryExpression'
+    message: "Consider using 'some QueryExpression' for better type inference (unless workaround needed)"
+    severity: warning

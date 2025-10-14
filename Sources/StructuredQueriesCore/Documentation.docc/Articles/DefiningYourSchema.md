@@ -35,7 +35,7 @@ Suppose your database has a table defined with the following create statement:
 
 ```sql
 CREATE TABLE "reminders" (
-  "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "id" SERIAL PRIMARY KEY,
   "title" TEXT NOT NULL DEFAULT '',
   "isCompleted" INTEGER DEFAULT 0
 )
@@ -211,7 +211,7 @@ and will decode data from the database using the `RawRepresentable` conformance 
 
 #### JSON
 
-To store complex data types in a column of a SQLite table you can serialize values to JSON. For
+To store complex data types in a column of a PostgreSQL table you can serialize values to JSON or JSONB. For
 example, suppose the `Reminder` table had an array of notes:
 
 ```swift
@@ -223,7 +223,7 @@ example, suppose the `Reminder` table had an array of notes:
 ```
 
 This does not work because the `@Table` macro does not know how to encode and decode an array
-of strings into a value that SQLite understands. If you annotate this field with
+of strings into a value that PostgreSQL understands. If you annotate this field with
 ``Swift/Decodable/JSONRepresentation``, then the library can encode the array of strings to a JSON
 string when storing data in the table, and decode the JSON array into a Swift array when decoding a
 row:
@@ -308,7 +308,7 @@ RemindersList.leftJoin(Reminder.all) {
 ```
 
 Tagged works with any query-representable value. For example, if you want a Tagged UUID to use the
-`UUID.BytesRepresentation` from StructuredQueriesSQLite:
+`UUID` type (PostgreSQL has native UUID support):
 
 ```swift
 @Table
@@ -382,7 +382,7 @@ struct Reminder {
 }
 ```
 
-> Important: Since SQLite has no concept of grouped columns you must remember to flatten all
+> Important: Since PostgreSQL has no concept of grouped columns you must remember to flatten all
 > groupings into a single list when defining your table's schema. For example, the "CREATE TABLE"
 > statement for the `RemindersList` above would look like this:
 >
@@ -456,7 +456,7 @@ struct Book {
 
 ### Generated columns
 
-Some databases, including SQLite, support [generated columns](https://www.sqlite.org/gencol.html),
+PostgreSQL supports [generated columns](https://www.postgresql.org/docs/current/ddl-generated-columns.html),
 which are columns whose values are computed from other columns in the same row. Since these columns
 are read-only from an application's perspective, they should be included in `SELECT` statements but
 excluded from `INSERT` or `UPDATE` statements.
@@ -505,7 +505,7 @@ attachments supported, annotated with the `@Selection` macro:
 
 > Important: It is required to apply the `@CasePathable` macro in order to define columns from an
 > enum. This macro comes from our [Case Paths] library and is automatically included with the
-> library when the `StructuredQueriesCasePaths` trait is enabled.
+> library when the `StructuredQueriesPostgresCasePaths` trait is enabled.
 
 [Case Paths]: http://github.com/pointfreeco/swift-case-paths
 
@@ -653,7 +653,7 @@ CREATE TABLE "attachments" (
 These tools allow you to emulate what is known as "single table inheritance", where you model
 a class inheritance heirarchy of models as a single wide table that has columns for each
 model. This allows you to share bits of data and logic amongst many models in a way that still
-plays nicely with SQLite.
+plays nicely with PostgreSQL.
 
 SwiftData supports this kind of data modeling, but they force you to use reference
 types instead of value types, you lose exhaustivity for the types of models supported, and
@@ -718,7 +718,7 @@ following kinds of queries:
   @Column {
     ```sql
     CREATE TABLE "reminders" (
-      "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+      "id" SERIAL PRIMARY KEY,
       "title" TEXT NOT NULL,
       "isCompleted" INTEGER NOT NULL DEFAULT 0
     )
@@ -733,7 +733,7 @@ the [`#sql` macro](<doc:SafeSQLStrings>):
 #sql(
   """
   CREATE TABLE "reminders" (
-    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id" SERIAL PRIMARY KEY,
     "title" TEXT NOT NULL,
     "isCompleted" INTEGER NOT NULL DEFAULT 0
   )
@@ -829,7 +829,7 @@ If it worries you to write SQL strings by hand, then fear not! For a few reasons
     awhile in your app.
 
 So, we hope that you will consider it a _benefit_ that your application's schema will be defined and
-maintained as simple SQL strings. It's a simple format that everyone familiar with SQLite will
+maintained as simple SQL strings. It's a simple format that everyone familiar with PostgreSQL will
 understand, and it makes your application most resilient to the ever growing changes and demands on
 your application.
 

@@ -10,7 +10,7 @@ statement, along with the `@Selection` macro. CTEs allow you to refactor complex
 smaller pieces, and they allow you to execute recursive queries that can traverse tree-like and
 graph-like tables.
 
-[common table expressions]: https://sqlite.org/lang_with.html
+[common table expressions]: https://www.postgresql.org/docs/current/queries-with.html
 
 ### The basics
 
