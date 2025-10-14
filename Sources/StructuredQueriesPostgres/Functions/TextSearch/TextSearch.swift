@@ -303,8 +303,6 @@ public protocol FullTextSearchable: Table {
     /// struct Product: FullTextSearchable {
     ///     let id: Int
     ///     var searchVector: TextSearch.Vector
-    ///
-    ///     static var searchVectorColumn: String { "searchVector" }
     /// }
     /// ```
     ///

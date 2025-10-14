@@ -9,8 +9,6 @@ struct Article: FullTextSearchable {
     var title: String
     var body: String
     var searchVector: String  // tsvector column
-
-    static var searchVectorColumn: String { "searchVector" }
 }
 
 @Table("blogPosts")

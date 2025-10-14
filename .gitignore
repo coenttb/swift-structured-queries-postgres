@@ -39,4 +39,6 @@ CLAUDE.MD
 
 # Temporary files
 *.tmp
-*.temp
+*.temp.archive
+.swift-version
+.archive/

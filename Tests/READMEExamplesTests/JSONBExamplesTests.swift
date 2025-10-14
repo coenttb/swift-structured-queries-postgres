@@ -14,8 +14,6 @@ struct JSONBExamplesTests {
     struct User {
         let id: Int
         var name: String
-
-        @Column(as: Data.self)
         var settings: Data
     }
 
