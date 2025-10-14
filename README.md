@@ -11,11 +11,10 @@ Type-safe PostgreSQL query builder for Swift. Build complex SQL queries with com
 ## Key Features
 
 - 🔒 **Type-safe query building** with compile-time validation
-- 🎯 **85% PostgreSQL Chapter 9 coverage** (Functions & Operators)
 - 🚀 **PostgreSQL-native features**: JSONB, triggers, window functions, CTEs, full-text search
-- ⚡ **Production-ready**: Swift 6.0+ with strict concurrency
-- 🧪 **280+ tests** with SQL snapshot testing
-- 🔌 **Seamless integration** with [swift-records](https://github.com/coenttb/swift-records)
+- 🔌 **Built for [swift-records](https://github.com/coenttb/swift-records)**: High-level database operations with connection pooling, transactions, and migrations
+- ⚡ **Swift 6.1+** with strict concurrency
+- 🧪 **467 tests** with SQL snapshot testing
 
 ## Quick Start
 
@@ -63,18 +62,17 @@ Debug builds have Swift 6.x compiler linker issues. This is a known Swift compil
 
 ### Optional Features
 
-Enable optional traits in your `Package.swift`:
+The following traits are enabled by default:
+- **StructuredQueriesPostgresCasePaths**: Enum table support via swift-case-paths
+- **StructuredQueriesPostgresSQLValidation**: SQL validation using PostgresNIO (heavy dependency)
+
+These traits are configured at the package level and automatically available when you add the dependency:
 
 ```swift
 .target(
     name: "YourTarget",
     dependencies: [
         .product(name: "StructuredQueriesPostgres", package: "swift-structured-queries-postgres")
-    ],
-    swiftSettings: [
-        .enableExperimentalFeature("Trait"),
-        .enableTrait("StructuredQueriesPostgresCasePaths"),  // Enum table support
-        .enableTrait("StructuredQueriesPostgresSQLValidation")  // SQL validation (heavy dependency)
     ]
 )
 ```
@@ -143,8 +141,6 @@ User
 struct User {
     let id: Int
     var name: String
-
-    @Column(as: Data.self)
     var settings: Data
 }
 
@@ -180,16 +176,14 @@ struct Employee {
     var salary: Double
 }
 
-Employee
-    .select {
-        let department = $0.department
-        let salary = $0.salary
-        return (
-            $0.name,
-            salary,
+Employee.all
+    .select { employee in
+        (
+            employee.name,
+            employee.salary,
             rank().over {
-                $0.partition(by: department)
-                    .order(by: salary.desc())
+                $0.partition(by: employee.department)
+                    .order(by: employee.salary.desc())
             }
         )
     }
@@ -200,7 +194,7 @@ Employee
 **Named windows (WINDOW clause):**
 
 ```swift
-Employee
+Employee.all
     .window("dept_salary") {
         $0.partition(by: $1.department)
             .order(by: $1.salary.desc())
@@ -220,7 +214,7 @@ Employee
 
 ### Triggers
 
-**BEFORE UPDATE trigger with automatic timestamps:**
+**Auto-update timestamp on changes:**
 
 ```swift
 @Table
@@ -232,29 +226,38 @@ struct Product {
     var updatedAt: Date?
 }
 
+// Elegant DSL - auto-generates trigger name and function
 Product.createTrigger(
-    name: "update_timestamp",
     timing: .before,
     event: .update,
-    function: .plpgsql(
-        "set_updated_at",
-        """
-        NEW."updatedAt" = CURRENT_TIMESTAMP;
-        RETURN NEW;
-        """
-    )
+    function: .updateTimestamp(column: \.updatedAt)
 )
-// SQL: CREATE TRIGGER "update_timestamp" BEFORE UPDATE ON "products"
-//      FOR EACH ROW EXECUTE FUNCTION "set_updated_at"()
+// SQL: CREATE TRIGGER "products_before_update_update_updatedAt"
+//      BEFORE UPDATE ON "products"
+//      FOR EACH ROW EXECUTE FUNCTION "update_updatedAt_products"()
 ```
 
-**Conditional trigger with WHEN clause:**
+**Set creation timestamp:**
+
+```swift
+Product.createTrigger(
+    timing: .before,
+    event: .insert,
+    function: .createdAt(column: \.createdAt)
+)
+// Automatically generates descriptive names: "products_before_insert_set_createdAt"
+```
+
+**Conditional trigger with UPDATE OF and WHEN:**
 
 ```swift
 Product.createTrigger(
     name: "low_stock_alert",
     timing: .after,
-    event: .update(of: { $0.stock }, when: { new in new.stock < 10 }),
+    event: .update(
+        of: { $0.stock },
+        when: { new in new.stock < 10 }
+    ),
     function: .plpgsql(
         "notify_low_stock",
         """
@@ -263,27 +266,47 @@ Product.createTrigger(
         """
     )
 )
-// SQL: CREATE TRIGGER "low_stock_alert" AFTER UPDATE OF "stock" ON "products"
-//      FOR EACH ROW WHEN (NEW."stock" < 10) EXECUTE FUNCTION "notify_low_stock"()
+// SQL: CREATE TRIGGER "low_stock_alert"
+//      AFTER UPDATE OF "stock" ON "products"
+//      FOR EACH ROW WHEN (NEW."stock" < 10)
+//      EXECUTE FUNCTION "notify_low_stock"()
 ```
 
-**Access NEW and OLD records:**
+**Audit logging with type-safe DSL:**
+
+```swift
+@Table
+struct ProductAudit: AuditTable {
+    let id: Int
+    var tableName: String
+    var operation: String
+    var oldData: String?
+    var newData: String?
+    var changedAt: Date
+    var changedBy: String
+}
+
+// Elegant audit function - tracks all changes automatically
+Product.createTrigger(
+    timing: .after,
+    event: .insert, .update(), .delete(),
+    function: .audit(to: ProductAudit.self)
+)
+// Captures OLD and NEW data, operation type, and timestamp
+```
+
+**Soft delete implementation:**
 
 ```swift
 Product.createTrigger(
-    timing: .after,
-    event: .update,
-    function: .plpgsql(
-        "log_price_change",
-        """
-        IF NEW.price != OLD.price THEN
-            INSERT INTO price_history (product_id, old_price, new_price, changed_at)
-            VALUES (NEW.id, OLD.price, NEW.price, CURRENT_TIMESTAMP);
-        END IF;
-        RETURN NEW;
-        """
+    timing: .before,
+    event: .delete,
+    function: .softDelete(
+        deletedAtColumn: \.deletedAt,
+        identifiedBy: \.id
     )
 )
+// Intercepts DELETE and converts to UPDATE with timestamp
 ```
 
 ### Full-Text Search
@@ -316,8 +339,6 @@ struct Article: FullTextSearchable {
     let id: Int
     var title: String
     var searchVector: String  // Pre-computed tsvector column
-
-    static var searchVectorColumn: String { "searchVector" }
 }
 
 // Search with ranking
@@ -362,8 +383,6 @@ User.insert { User(id: nil, name: "Alice") }
 ```
 
 ## PostgreSQL Feature Coverage
-
-### Comprehensive Support (85% of Chapter 9)
 
 **Window Functions:**
 - ✅ ROW_NUMBER, RANK, DENSE_RANK, NTILE
@@ -422,17 +441,13 @@ User.insert { User(id: nil, name: "Alice") }
 
 ## Documentation
 
-### Quick Reference
-📘 [**CLAUDE.md**](CLAUDE.md) - LLM-optimized quick reference (build commands, troubleshooting, key differences)
-
-### Detailed Guides
 - 📖 [**ARCHITECTURE.md**](ARCHITECTURE.md) - Design decisions, PostgreSQL features, module architecture
 - 🧪 [**TESTING.md**](TESTING.md) - Test patterns, snapshot testing, SQL validation
 - 📜 [**HISTORY.md**](HISTORY.md) - Evolution timeline, decisions, learnings
 
 ## Requirements
 
-- **Swift**: 6.0 or later
+- **Swift**: 6.1 or later
 - **Platforms**: macOS 13+, iOS 13+, Linux
 - **Build**: Use `swift build -c release` (debug mode has linker issues)
 - **PostgreSQL**: Designed for PostgreSQL 12+
@@ -440,7 +455,7 @@ User.insert { User(id: nil, name: "Alice") }
 ### CI Status
 
 Tested on:
-- ✅ Swift 6.0, 6.1, 6.2
+- ✅ Swift 6.1, 6.2
 - ✅ macOS (latest)
 - ✅ Linux (Ubuntu)
 
@@ -462,13 +477,25 @@ Key differences from Point-Free's swift-structured-queries (SQLite):
 
 ## Integration with swift-records
 
-This package provides **query building only**. For database operations (connection pooling, execution, migrations), use [swift-records](https://github.com/coenttb/swift-records):
+This package provides **query building only**. For complete database functionality, use it with [**swift-records**](https://github.com/coenttb/swift-records):
+
+### What swift-records Provides
+
+- 🔄 **Connection pooling** with automatic lifecycle management
+- 💾 **Transaction support** with isolation levels and savepoints
+- 🔄 **Migration management** with version tracking
+- 🧪 **Test utilities** with schema isolation for parallel testing
+
+### Usage
 
 ```swift
-// Query building (this package)
-let statement = User.where { $0.isActive }
+// 1. Build queries (this package)
+let statement = User
+    .where { $0.isActive }
+    .order(by: \.name)
+    .limit(10)
 
-// Execution (swift-records)
+// 2. Execute with swift-records
 let users = try await statement.fetchAll(db)
 let user = try await statement.fetchOne(db)
 try await statement.execute(db)
@@ -482,12 +509,7 @@ To learn about the core concepts behind structured query building in Swift, chec
 
 ## License
 
-Dual-licensed:
-
-- **Apache License 2.0**: Core query building infrastructure (inherited from Point-Free's swift-structured-queries)
-- **AGPL 3.0**: PostgreSQL-specific additions and features
-
-See [LICENSE-APACHE](LICENSE-APACHE) and [LICENSE-AGPL](LICENSE-AGPL) for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Related Projects
 
