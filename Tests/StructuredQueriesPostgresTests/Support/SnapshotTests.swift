@@ -3,7 +3,7 @@ import Testing
 
 @MainActor
 @Suite(
-    .serialized,
+//    .serialized,
     .snapshots(record: .never)
 )
 struct SnapshotTests {}

@@ -1424,7 +1424,7 @@ Conducted comprehensive audit against [PostgreSQL SELECT Documentation](https://
          .window("dept_salary") {
              WindowSpec()
                  .partition(by: $0.department)
-                 .order(by: $0.salary, .desc)
+                 .order(by: $0.salary.desc())
          }
          .select {
              (
@@ -1448,10 +1448,10 @@ Conducted comprehensive audit against [PostgreSQL SELECT Documentation](https://
          .window("list_order") {
              WindowSpec()
                  .partition(by: $0.remindersListID)
-                 .order(by: $0.title, .desc)
+                 .order(by: $0.title.desc())
          }
          .window("overall_order") {
-             WindowSpec().order(by: $0.title, .desc)
+             WindowSpec().order(by: $0.title.desc())
          }
          .select {
              (
@@ -1473,7 +1473,7 @@ Conducted comprehensive audit against [PostgreSQL SELECT Documentation](https://
          .window("list_window") {
              WindowSpec()
                  .partition(by: $0.remindersListID)
-                 .order(by: $0.title, .desc)
+                 .order(by: $0.title.desc())
          }
          .select {
              let id = $0.id

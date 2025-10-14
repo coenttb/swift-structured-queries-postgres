@@ -11,7 +11,7 @@ extension Select {
     /// ```swift
     /// Employee
     ///     .window("dept_window") { spec, cols in
-    ///         spec.partition(by: cols.department).order(by: cols.salary, .desc)
+    ///         spec.partition(by: cols.department).order(by: cols.salary.desc())
     ///     }
     ///     .select {
     ///         ($0.name, rank().over("dept_window"))
@@ -23,7 +23,7 @@ extension Select {
     /// ```swift
     /// Employee
     ///     .window("dept_window") {
-    ///         $0.partition(by: $1.department).order(by: $1.salary, .desc)
+    ///         $0.partition(by: $1.department).order(by: $1.salary.desc())
     ///     }
     ///     .select {
     ///         ($0.name, rank().over("dept_window"))

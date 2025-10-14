@@ -8,7 +8,7 @@
 /// ```swift
 /// WindowSpec()
 ///     .partition(by: columns.category)
-///     .order(by: columns.price, .desc)
+///     .order(by: columns.price.desc())
 /// ```
 public struct WindowSpec: Sendable {
     public var partitions: [QueryFragment] = []
@@ -43,17 +43,17 @@ public struct WindowSpec: Sendable {
         return copy
     }
 
-    /// Add an ordering expression with direction
+    /// Add an ordering expression
+    ///
+    /// Use `.asc()` or `.desc()` on the expression to specify direction:
+    /// ```swift
+    /// WindowSpec().order(by: columns.price.desc())
+    /// ```
     public func order(
-        by expression: some QueryExpression,
-        _ direction: OrderDirection = .asc
+        by expression: some QueryExpression
     ) -> WindowSpec {
         var copy = self
-        var fragment: QueryFragment = expression.queryFragment
-        if direction == .desc {
-            fragment.append(" DESC")
-        }
-        copy.orderings.append(fragment)
+        copy.orderings.append(expression.queryFragment)
         return copy
     }
 

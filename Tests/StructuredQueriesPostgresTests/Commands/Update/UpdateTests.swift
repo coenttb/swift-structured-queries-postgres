@@ -16,7 +16,7 @@ extension SnapshotTests {
                 """
                 UPDATE "reminders"
                 SET "isCompleted" = NOT ("reminders"."isCompleted")
-                RETURNING "title", "priority", "isCompleted"
+                RETURNING "reminders"."title", "reminders"."priority", "reminders"."isCompleted"
                 """
             }
 
@@ -31,7 +31,7 @@ extension SnapshotTests {
                 UPDATE "reminders"
                 SET "isCompleted" = true
                 WHERE ("reminders"."priority") IS NOT DISTINCT FROM (NULL)
-                RETURNING "title", "priority", "isCompleted"
+                RETURNING "reminders"."title", "reminders"."priority", "reminders"."isCompleted"
                 """
             }
         }
@@ -135,7 +135,7 @@ extension SnapshotTests {
                 UPDATE "reminders" AS "rs"
                 SET "title" = ("rs"."title") || (' 2')
                 WHERE ("rs"."id") = (1)
-                RETURNING "id", "assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt"
+                RETURNING "rs"."id", "rs"."assignedUserID", "rs"."dueDate", "rs"."isCompleted", "rs"."isFlagged", "rs"."notes", "rs"."priority", "rs"."remindersListID", "rs"."title", "rs"."updatedAt"
                 """
             }
         }

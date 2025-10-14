@@ -560,7 +560,7 @@ extension SnapshotTests.Commands.Select {
                             $0.title,
                             rowNumber().over {
                                 $0.partition(by: listID)
-                                    .order(by: priority, .desc)
+                                    .order(by: priority.desc())
                                     .rows(
                                         between: FrameBound.preceding(3),
                                         and: FrameBound.following(1))

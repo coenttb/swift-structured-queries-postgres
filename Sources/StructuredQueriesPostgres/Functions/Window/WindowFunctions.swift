@@ -68,7 +68,7 @@ public func rowNumber() -> WindowFunctionBuilder<Int> {
 /// // Leaderboard with gaps for ties
 /// Score.select {
 ///     let points = $0.points
-///     return ($0, rank().over { $0.order(by: points, .desc) })
+///     return ($0, rank().over { $0.order(by: points.desc()) })
 /// }
 /// // Ranks: 1, 2, 2, 4, 5 (gap at 3)
 /// ```
@@ -87,7 +87,7 @@ public func rank() -> WindowFunctionBuilder<Int> {
 /// // Leaderboard without gaps
 /// Score.select {
 ///     let points = $0.points
-///     return ($0, denseRank().over { $0.order(by: points, .desc) })
+///     return ($0, denseRank().over { $0.order(by: points.desc()) })
 /// }
 /// // Ranks: 1, 2, 2, 3, 4 (no gap)
 /// ```
@@ -105,7 +105,7 @@ public func denseRank() -> WindowFunctionBuilder<Int> {
 /// ```swift
 /// Score.select {
 ///     let points = $0.points
-///     return ($0, percentRank().over { $0.order(by: points, .desc) })
+///     return ($0, percentRank().over { $0.order(by: points.desc()) })
 /// }
 /// // Returns: 0.0, 0.25, 0.5, 0.75, 1.0
 /// ```
@@ -123,7 +123,7 @@ public func percentRank() -> WindowFunctionBuilder<Double> {
 /// ```swift
 /// Score.select {
 ///     let points = $0.points
-///     return ($0, cumeDist().over { $0.order(by: points, .desc) })
+///     return ($0, cumeDist().over { $0.order(by: points.desc()) })
 /// }
 /// ```
 ///
@@ -228,7 +228,7 @@ extension QueryExpression {
     ///     let price = $0.price
     ///     return ($0, price.firstValue().over {
     ///         $0.partition(by: category)
-    ///           .order(by: price, .desc)
+    ///           .order(by: price.desc())
     ///     })
     /// }
     /// ```
@@ -252,7 +252,7 @@ extension QueryExpression {
     ///     let price = $0.price
     ///     return ($0, price.lastValue().over {
     ///         $0.partition(by: category)
-    ///           .order(by: price, .desc)
+    ///           .order(by: price.desc())
     ///     })
     /// }
     /// ```
@@ -273,7 +273,7 @@ extension QueryExpression {
     ///     let price = $0.price
     ///     return ($0, price.nthValue(2).over {
     ///         $0.partition(by: category)
-    ///           .order(by: price, .desc)
+    ///           .order(by: price.desc())
     ///     })
     /// }
     /// ```
@@ -330,7 +330,7 @@ public struct WindowFunctionBuilder<Value: QueryBindable>: QueryExpression {
     /// ```swift
     /// .rank().over {
     ///     $0.partition(by: category)
-    ///       .order(by: price, .desc)
+    ///       .order(by: price.desc())
     /// }
     /// // RANK() OVER (PARTITION BY "category" ORDER BY "price" DESC)
     /// ```
@@ -352,7 +352,7 @@ public struct WindowFunctionBuilder<Value: QueryBindable>: QueryExpression {
     ///
     /// ```swift
     /// Employee
-    ///     .window("dept_window") { $0.partition(by: $0.department).order(by: $0.salary, .desc) }
+    ///     .window("dept_window") { $0.partition(by: $0.department).order(by: $0.salary.desc()) }
     ///     .select {
     ///         ($0.name, $0.salary.rank().over("dept_window"))
     ///     }

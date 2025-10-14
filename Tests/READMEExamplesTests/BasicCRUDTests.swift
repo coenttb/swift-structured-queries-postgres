@@ -5,7 +5,10 @@ import StructuredQueriesPostgresTestSupport
 import Testing
 
 /// Tests for Basic CRUD examples shown in README.md
-@Suite("README Examples - Basic CRUD")
+@Suite(
+    "README Examples - Basic CRUD",
+    .snapshots(record: .failed)
+)
 struct BasicCRUDTests {
 
     // MARK: - Test Models
@@ -67,7 +70,7 @@ struct BasicCRUDTests {
             """
             SELECT "users"."id", "users"."name", "users"."email", "users"."isActive"
             FROM "users"
-            WHERE ("users"."isActive" AND ("users"."email" LIKE ('%' || '@example.com')))
+            WHERE ("users"."isActive") AND ("users"."email" LIKE '%@example.com')
             """
         }
     }
@@ -99,8 +102,10 @@ struct BasicCRUDTests {
             }
         ) {
             """
-            INSERT INTO "users" ("name", "email", "isActive")
-            VALUES ('Alice', 'alice@example.com', true)
+            INSERT INTO "users"
+            ("id", "name", "email", "isActive")
+            VALUES
+            (DEFAULT, 'Alice', 'alice@example.com', true)
             """
         }
     }
@@ -114,8 +119,10 @@ struct BasicCRUDTests {
             }
         ) {
             """
-            INSERT INTO "users" ("name", "email", "isActive")
-            VALUES ('Alice', 'alice@example.com', true), ('Bob', 'bob@example.com', false)
+            INSERT INTO "users"
+            ("id", "name", "email", "isActive")
+            VALUES
+            (DEFAULT, 'Alice', 'alice@example.com', true), (DEFAULT, 'Bob', 'bob@example.com', false)
             """
         }
     }
@@ -128,8 +135,10 @@ struct BasicCRUDTests {
             }.returning(\.id)
         ) {
             """
-            INSERT INTO "users" ("name", "email", "isActive")
-            VALUES ('Alice', 'alice@example.com', true)
+            INSERT INTO "users"
+            ("id", "name", "email", "isActive")
+            VALUES
+            (DEFAULT, 'Alice', 'alice@example.com', true)
             RETURNING "users"."id"
             """
         }
@@ -144,8 +153,10 @@ struct BasicCRUDTests {
             }
         ) {
             """
-            INSERT INTO "users" ("id", "name", "email", "isActive")
-            VALUES (1, 'Alice', 'alice@example.com', true), (DEFAULT, 'Bob', 'bob@example.com', true)
+            INSERT INTO "users"
+            ("id", "name", "email", "isActive")
+            VALUES
+            (1, 'Alice', 'alice@example.com', true), (DEFAULT, 'Bob', 'bob@example.com', true)
             """
         }
     }

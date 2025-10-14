@@ -27,11 +27,12 @@ struct User {
     let id: Int
     var name: String
     var email: String
+    var isActive: Bool = true
 }
 
 // Build query (this package)
 let statement = User
-    .where { $0.email.hasSuffix("@example.com") }
+    .where { $0.isActive && $0.email.hasSuffix("@example.com") }
     .order(by: \.name)
     .limit(10)
 
@@ -89,7 +90,11 @@ User
     .where { $0.isActive }
     .order(by: \.name)
     .limit(10)
-// SQL: SELECT * FROM "users" WHERE "users"."isActive" ORDER BY "users"."name" LIMIT 10
+// SQL: SELECT "users"."id", "users"."name", "users"."email", "users"."isActive"
+//      FROM "users"
+//      WHERE "users"."isActive"
+//      ORDER BY "users"."name"
+//      LIMIT 10
 ```
 
 **INSERT with Draft types** (PostgreSQL NULL PRIMARY KEY handling):
@@ -99,14 +104,14 @@ User
 User.insert {
     User.Draft(name: "Alice", email: "alice@example.com")
 }
-// SQL: INSERT INTO "users" ("name", "email") VALUES ('Alice', 'alice@example.com')
+// SQL: INSERT INTO "users" ("id", "name", "email", "isActive") VALUES (DEFAULT, 'Alice', 'alice@example.com', true)
 
 // Mixed records - uses DEFAULT for NULL PKs
 User.insert {
     User(id: 1, name: "Alice", email: "alice@example.com")
     User.Draft(name: "Bob", email: "bob@example.com")
 }
-// SQL: INSERT INTO "users" ("id", "name", "email") VALUES (1, 'Alice', 'alice@example.com'), (DEFAULT, 'Bob', 'bob@example.com')
+// SQL: INSERT INTO "users" ("id", "name", "email", "isActive") VALUES (1, 'Alice', 'alice@example.com', true), (DEFAULT, 'Bob', 'bob@example.com', true)
 ```
 
 **UPDATE with RETURNING:**
@@ -131,37 +136,35 @@ User
 
 ### PostgreSQL JSONB
 
-**Containment operators (@>, <@):**
+**Containment operator (@>):**
 
 ```swift
-struct UserSettings: Codable {
-    var theme: String
-    var notifications: Bool
-}
-
 @Table
 struct User {
     let id: Int
-    var settings: UserSettings
+    var name: String
+
+    @Column(as: Data.self)
+    var settings: Data
 }
 
 // Find users with dark theme
-User.where { $0.settings.contains(UserSettings(theme: "dark", notifications: true)) }
-// SQL: WHERE "users"."settings" @> '{"theme":"dark","notifications":true}'
+User.where { $0.settings.contains(["theme": "dark"]) }
+// SQL: WHERE "users"."settings" @> '{"theme":"dark"}'::jsonb
 ```
 
-**JSON path operators (->, ->>):**
+**JSON path operator (->>):**
 
 ```swift
-User.where { $0.settings.getText("theme") == "dark" }
+User.where { $0.settings.fieldAsText("theme") == "dark" }
 // SQL: WHERE ("users"."settings" ->> 'theme') = 'dark'
 ```
 
-**GIN indexing for fast JSONB queries:**
+**Key existence operator (?):**
 
 ```swift
-User.createGINIndex(on: \.settings, operatorClass: .jsonb_path_ops)
-// SQL: CREATE INDEX "users_settings_gin_idx" ON "users" USING GIN ("settings" jsonb_path_ops)
+User.where { $0.settings.hasKey("notifications") }
+// SQL: WHERE "users"."settings" ? 'notifications'
 ```
 
 ### Window Functions
@@ -172,22 +175,26 @@ User.createGINIndex(on: \.settings, operatorClass: .jsonb_path_ops)
 @Table
 struct Employee {
     let id: Int
+    var name: String
     var department: String
     var salary: Double
 }
 
 Employee
     .select {
-        (
+        let department = $0.department
+        let salary = $0.salary
+        return (
             $0.name,
-            $0.salary,
+            salary,
             rank().over {
-                $0.partition(by: $1.department)
-                    .order(by: $1.salary, .desc)
+                $0.partition(by: department)
+                    .order(by: salary.desc())
             }
         )
     }
-// SQL: SELECT "name", "salary", RANK() OVER (PARTITION BY "department" ORDER BY "salary" DESC)
+// SQL: SELECT "employees"."name", "employees"."salary", RANK() OVER (PARTITION BY "employees"."department" ORDER BY "employees"."salary" DESC)
+//      FROM "employees"
 ```
 
 **Named windows (WINDOW clause):**
@@ -195,9 +202,8 @@ Employee
 ```swift
 Employee
     .window("dept_salary") {
-        WindowSpec()
-            .partition(by: $0.department)
-            .order(by: $0.salary, .desc)
+        $0.partition(by: $1.department)
+            .order(by: $1.salary.desc())
     }
     .select {
         (
@@ -207,23 +213,9 @@ Employee
             rowNumber().over("dept_salary")
         )
     }
-// SQL: SELECT "name", RANK() OVER dept_salary, DENSE_RANK() OVER dept_salary, ROW_NUMBER() OVER dept_salary
+// SQL: SELECT "employees"."name", RANK() OVER dept_salary, DENSE_RANK() OVER dept_salary, ROW_NUMBER() OVER dept_salary
 //      FROM "employees"
-//      WINDOW dept_salary AS (PARTITION BY "department" ORDER BY "salary" DESC)
-```
-
-**Running totals with SUM() window function:**
-
-```swift
-Sale
-    .select {
-        (
-            $0.date,
-            $0.amount,
-            sum($0.amount).over { $0.order(by: $1.date) }
-        )
-    }
-// SQL: SELECT "date", "amount", SUM("amount") OVER (ORDER BY "date")
+//      WINDOW dept_salary AS (PARTITION BY "employees"."department" ORDER BY "employees"."salary" DESC)
 ```
 
 ### Triggers
@@ -235,6 +227,8 @@ Sale
 struct Product {
     let id: Int
     var name: String
+    var price: Double
+    var stock: Int
     var updatedAt: Date?
 }
 

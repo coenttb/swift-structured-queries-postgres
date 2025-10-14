@@ -11,7 +11,7 @@ extension TableDefinition where QueryValue: FullTextSearchable {
     /// ```swift
     /// Article.where { $0.match("swift") }
     ///   .select { ($0, $0.rank(by: "swift")) }
-    ///   .order(by: \.1, .desc)
+    ///   .order(by: \.1.desc())
     /// // SELECT *, ts_rank("searchVector", to_tsquery('english', 'swift'))
     /// // FROM "articles"
     /// // WHERE "articles"."searchVector" @@ to_tsquery('english', 'swift')
@@ -56,7 +56,7 @@ extension TableDefinition where QueryValue: FullTextSearchable {
     /// ```swift
     /// Article.where { $0.match("quick <-> brown <-> fox") }
     ///   .select { ($0, $0.rank(byCoverage: "quick <-> brown <-> fox")) }
-    ///   .order(by: \.1, .desc)
+    ///   .order(by: \.1.desc())
     /// ```
     ///
     /// - Parameters:
@@ -89,7 +89,7 @@ extension TableDefinition where QueryValue: FullTextSearchable {
     /// // Weight A positions 10x more than D positions
     /// Article.where { $0.match("swift") }
     ///   .select { ($0, $0.rank(by: "swift", weights: [0.1, 0.2, 0.4, 1.0])) }
-    ///   .order(by: \.1, .desc)
+    ///   .order(by: \.1.desc())
     /// // SELECT *, ts_rank('{0.1, 0.2, 0.4, 1.0}', "searchVector", to_tsquery('swift'))
     /// ```
     ///
@@ -198,7 +198,7 @@ extension TableColumnExpression where Value == TextSearch.Vector {
     /// ```swift
     /// Article.where { $0.searchVector.match("swift") }
     ///   .select { ($0, $0.searchVector.rank(by: "swift")) }
-    ///   .order(by: \.1, .desc)
+    ///   .order(by: \.1.desc())
     /// ```
     ///
     /// - Parameters:

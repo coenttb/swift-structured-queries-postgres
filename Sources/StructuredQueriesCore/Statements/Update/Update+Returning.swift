@@ -16,7 +16,7 @@ extension Update {
     ) -> Update<From, (repeat each QueryValue)> {
         var returning: [QueryFragment] = []
         for resultColumn in repeat each selection(From.columns) {
-            returning.append("\(quote: resultColumn.name)")
+            returning.append(resultColumn.queryFragment)
         }
         return Update<From, (repeat each QueryValue)>(
             isEmpty: false,
@@ -63,7 +63,7 @@ extension Update {
     ) -> Update<From, From> {
         var returning: [QueryFragment] = []
         for resultColumn in From.TableColumns.allColumns {
-            returning.append("\(quote: resultColumn.name)")
+            returning.append(resultColumn.queryFragment)
         }
         return Update<From, From>(
             isEmpty: isEmpty,

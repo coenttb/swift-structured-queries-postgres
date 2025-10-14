@@ -144,7 +144,7 @@
                     UPDATE "attachments"
                     SET "link" = NULL, "note" = 'Good bye world!', "videoURL" = NULL, "videoKind" = NULL, "imageCaption" = NULL, "imageURL" = NULL
                     WHERE ("attachments"."id") IN (1)
-                    RETURNING "id", "link", "note", "videoURL", "videoKind", "imageCaption", "imageURL"
+                    RETURNING "attachments"."id", "attachments"."link", "attachments"."note", "attachments"."videoURL", "attachments"."videoKind", "attachments"."imageCaption", "attachments"."imageURL"
                     """
                 }
             }

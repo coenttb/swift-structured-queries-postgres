@@ -12,7 +12,7 @@ extension SnapshotTests.Commands.Select {
                 of: Reminder.all
                     .window("list_window") {
                         $0.partition(by: $1.remindersListID)
-                            .order(by: $1.title, .desc)
+                            .order(by: $1.title.desc())
                     }
                     .select { ($0.title, rank().over("list_window")) }
             ) {
@@ -30,10 +30,10 @@ extension SnapshotTests.Commands.Select {
                 of: Reminder.all
                     .window("list_window") {
                         $0.partition(by: $1.remindersListID)
-                            .order(by: $1.title, .desc)
+                            .order(by: $1.title.desc())
                     }
                     .window("overall_window") {
-                        $0.order(by: $1.title, .desc)
+                        $0.order(by: $1.title.desc())
                     }
                     .select {
                         (
@@ -58,7 +58,7 @@ extension SnapshotTests.Commands.Select {
                 of: Reminder.all
                     .window("list_window") {
                         $0.partition(by: $1.remindersListID)
-                            .order(by: $1.title, .desc)
+                            .order(by: $1.title.desc())
                     }
                     .select {
                         let id = $0.id
@@ -88,7 +88,7 @@ extension SnapshotTests.Commands.Select {
                             $0.title,
                             rank().over {
                                 $0.partition(by: listID)
-                                    .order(by: title, .desc)
+                                    .order(by: title.desc())
                             }
                         )
                     }
@@ -122,7 +122,7 @@ extension SnapshotTests.Commands.Select {
             await assertSQL(
                 of: Reminder.all
                     .window("title_order") {
-                        $0.order(by: $1.title, .desc)
+                        $0.order(by: $1.title.desc())
                     }
                     .select { ($0.title, rowNumber().over("title_order")) }
             ) {
@@ -140,7 +140,7 @@ extension SnapshotTests.Commands.Select {
                 of: Reminder.all
                     .window("list_title") {
                         $0.partition(by: $1.remindersListID)
-                            .order(by: $1.title, .desc)
+                            .order(by: $1.title.desc())
                     }
                     .select {
                         (
@@ -166,7 +166,7 @@ extension SnapshotTests.Commands.Select {
                 of: Reminder.all
                     .where { $0.isCompleted }
                     .window("title_order") {
-                        $0.order(by: $1.title, .desc)
+                        $0.order(by: $1.title.desc())
                     }
                     .select { ($0.title, rank().over("title_order")) }
             ) {
@@ -185,7 +185,7 @@ extension SnapshotTests.Commands.Select {
                 of: Reminder.all
                     .window("list_window") {
                         $0.partition(by: $1.remindersListID)
-                            .order(by: $1.title, .desc)
+                            .order(by: $1.title.desc())
                     }
                     .select { ($0.title, rank().over("list_window")) }
                     .order { $0.title }
@@ -204,7 +204,7 @@ extension SnapshotTests.Commands.Select {
             await assertSQL(
                 of: Reminder.all
                     .window("title_order") {
-                        $0.order(by: $1.title, .desc)
+                        $0.order(by: $1.title.desc())
                     }
                     .select { ($0.title, $0.remindersListID, rank().over("title_order")) }
                     .limit(10)

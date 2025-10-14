@@ -50,7 +50,7 @@ extension SnapshotTests {
         @Test func rowNumberWithOrder() async {
             let query = Score.select {
                 let points = $0.points
-                return ($0, rowNumber().over { $0.order(by: points, .desc) })
+                return ($0, rowNumber().over { $0.order(by: points.desc()) })
             }
 
             await assertSQL(of: SQLQueryExpression(query)) {
@@ -68,7 +68,7 @@ extension SnapshotTests {
                 return (
                     $0,
                     rowNumber().over { spec in
-                        spec.partition(by: playerId).order(by: points, .desc)
+                        spec.partition(by: playerId).order(by: points.desc())
                     }
                 )
             }
@@ -86,7 +86,7 @@ extension SnapshotTests {
         @Test func rankBasic() async {
             let query = Score.select {
                 let points = $0.points
-                return ($0, rank().over { $0.order(by: points, .desc) })
+                return ($0, rank().over { $0.order(by: points.desc()) })
             }
 
             await assertSQL(of: SQLQueryExpression(query)) {
@@ -104,7 +104,7 @@ extension SnapshotTests {
                 return (
                     $0,
                     rank().over { spec in
-                        spec.partition(by: playerId).order(by: points, .desc)
+                        spec.partition(by: playerId).order(by: points.desc())
                     }
                 )
             }
@@ -122,7 +122,7 @@ extension SnapshotTests {
         @Test func denseRankBasic() async {
             let query = Score.select {
                 let points = $0.points
-                return ($0, denseRank().over { $0.order(by: points, .desc) })
+                return ($0, denseRank().over { $0.order(by: points.desc()) })
             }
 
             await assertSQL(of: SQLQueryExpression(query)) {
@@ -139,12 +139,12 @@ extension SnapshotTests {
             let query = StockPrice.select {
                 let price = $0.price
                 let date = $0.date
-                return ($0, price.lag().over { $0.order(by: date, .asc) })
+                return ($0, price.lag().over { $0.order(by: date.asc()) })
             }
 
             await assertSQL(of: SQLQueryExpression(query)) {
                 """
-                SELECT "stock_prices"."id", "stock_prices"."symbol", "stock_prices"."date", "stock_prices"."price", LAG("stock_prices"."price", 1) OVER (ORDER BY "stock_prices"."date")
+                SELECT "stock_prices"."id", "stock_prices"."symbol", "stock_prices"."date", "stock_prices"."price", LAG("stock_prices"."price", 1) OVER (ORDER BY "stock_prices"."date" ASC)
                 FROM "stock_prices"
                 """
             }
@@ -154,12 +154,12 @@ extension SnapshotTests {
             let query = StockPrice.select {
                 let price = $0.price
                 let date = $0.date
-                return ($0, price.lag(offset: 1, default: 0.0).over { $0.order(by: date, .asc) })
+                return ($0, price.lag(offset: 1, default: 0.0).over { $0.order(by: date.asc()) })
             }
 
             await assertSQL(of: SQLQueryExpression(query)) {
                 """
-                SELECT "stock_prices"."id", "stock_prices"."symbol", "stock_prices"."date", "stock_prices"."price", LAG("stock_prices"."price", 1, 0.0) OVER (ORDER BY "stock_prices"."date")
+                SELECT "stock_prices"."id", "stock_prices"."symbol", "stock_prices"."date", "stock_prices"."price", LAG("stock_prices"."price", 1, 0.0) OVER (ORDER BY "stock_prices"."date" ASC)
                 FROM "stock_prices"
                 """
             }
@@ -169,12 +169,12 @@ extension SnapshotTests {
             let query = StockPrice.select {
                 let price = $0.price
                 let date = $0.date
-                return ($0, price.lead().over { $0.order(by: date, .asc) })
+                return ($0, price.lead().over { $0.order(by: date.asc()) })
             }
 
             await assertSQL(of: SQLQueryExpression(query)) {
                 """
-                SELECT "stock_prices"."id", "stock_prices"."symbol", "stock_prices"."date", "stock_prices"."price", LEAD("stock_prices"."price", 1) OVER (ORDER BY "stock_prices"."date")
+                SELECT "stock_prices"."id", "stock_prices"."symbol", "stock_prices"."date", "stock_prices"."price", LEAD("stock_prices"."price", 1) OVER (ORDER BY "stock_prices"."date" ASC)
                 FROM "stock_prices"
                 """
             }
@@ -185,7 +185,7 @@ extension SnapshotTests {
         @Test func firstValueBasic() async {
             let query = Product.select {
                 let price = $0.price
-                return ($0, price.firstValue().over { $0.order(by: price, .desc) })
+                return ($0, price.firstValue().over { $0.order(by: price.desc()) })
             }
 
             await assertSQL(of: SQLQueryExpression(query)) {
@@ -203,7 +203,7 @@ extension SnapshotTests {
                 return (
                     $0,
                     price.lastValue().over { spec in
-                        spec.partition(by: category).order(by: price, .desc)
+                        spec.partition(by: category).order(by: price.desc())
                     }
                 )
             }
@@ -225,7 +225,7 @@ extension SnapshotTests {
                 return (
                     $0,
                     price.nthValue(2).over { spec in
-                        spec.partition(by: category).order(by: price, .desc)
+                        spec.partition(by: category).order(by: price.desc())
                     }
                 )
             }
@@ -243,12 +243,12 @@ extension SnapshotTests {
         @Test func ntileQuartiles() async {
             let query = Product.select {
                 let price = $0.price
-                return ($0, ntile(4).over { $0.order(by: price, .asc) })
+                return ($0, ntile(4).over { $0.order(by: price.asc()) })
             }
 
             await assertSQL(of: SQLQueryExpression(query)) {
                 """
-                SELECT "products"."id", "products"."name", "products"."category", "products"."price", NTILE(4) OVER (ORDER BY "products"."price")
+                SELECT "products"."id", "products"."name", "products"."category", "products"."price", NTILE(4) OVER (ORDER BY "products"."price" ASC)
                 FROM "products"
                 """
             }
@@ -260,7 +260,7 @@ extension SnapshotTests {
             let query = Score.select {
                 let points = $0.points
                 return (
-                    $0, StructuredQueriesPostgres.percentRank().over { $0.order(by: points, .desc) }
+                    $0, StructuredQueriesPostgres.percentRank().over { $0.order(by: points.desc()) }
                 )
             }
 
@@ -276,7 +276,7 @@ extension SnapshotTests {
             let query = Score.select {
                 let points = $0.points
                 return (
-                    $0, StructuredQueriesPostgres.cumeDist().over { $0.order(by: points, .desc) }
+                    $0, StructuredQueriesPostgres.cumeDist().over { $0.order(by: points.desc()) }
                 )
             }
 

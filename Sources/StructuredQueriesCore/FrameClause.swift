@@ -209,7 +209,7 @@ extension WindowSpec {
     /// ```swift
     /// Leaderboard.select {
     ///     ($0.player, $0.score, $0.score.count().over {
-    ///         $0.order(by: $0.score, .desc)
+    ///         $0.order(by: $0.score.desc())
     ///           .groups(between: .currentRow, and: .unboundedFollowing)
     ///     })
     /// }

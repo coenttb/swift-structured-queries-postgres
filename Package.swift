@@ -49,9 +49,13 @@ let package = Package(
             description:
                 "Enable SQL syntax validation against PostgreSQL using postgres-nio. Heavy dependency - only enable for validation testing."
         ),
-        .default(enabledTraits: [
-            "StructuredQueriesPostgresCasePaths", "StructuredQueriesPostgresSQLValidation",
-        ]),
+        .default(
+            enabledTraits: [
+                "StructuredQueriesPostgresCasePaths",
+//                "StructuredQueriesPostgresTagged",
+                "StructuredQueriesPostgresSQLValidation",
+            ]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-case-paths", from: "1.0.0"),

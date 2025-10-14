@@ -7,10 +7,19 @@ import Testing
 /// Tests for Full-Text Search examples shown in README.md
 @Suite("README Examples - Full-Text Search")
 struct FullTextSearchExamplesTests {
-    // MARK: - Basic Text Search on String Columns
 
+    // MARK: - Basic Text Search on String Columns
+    @Table
+    struct Article: FullTextSearchable {
+        let id: Int
+        var title: String
+        var content: String
+    }
+    
     @Test("README Example: Basic search on text column")
     func basicTextSearch() async {
+        
+
         await assertSQL(
             of: Article.where { $0.content.match("postgresql") }
         ) {
@@ -50,14 +59,6 @@ struct FullTextSearchExamplesTests {
 
     // MARK: - Search with Ranking (Using Dedicated FTS Table)
 
-    @Table("fts_articles")
-    struct Article: FullTextSearchable {
-        let id: Int
-        var title: String
-        var content: String
-        var searchVector: String
-    }
-
     @Test("README Example: Search with ranking")
     func searchWithRanking() async {
         let query = "swift"
@@ -68,9 +69,9 @@ struct FullTextSearchExamplesTests {
                 .select { ($0.title, $0.rank(by: query)) }
         ) {
             """
-            SELECT "fts_articles"."title", ts_rank("fts_articles"."searchVector", to_tsquery('english'::regconfig, 'swift'))
-            FROM "fts_articles"
-            WHERE "fts_articles"."searchVector" @@ to_tsquery('english'::regconfig, 'swift')
+            SELECT "articles"."title", ts_rank("articles"."searchVector", to_tsquery('english'::regconfig, 'swift'))
+            FROM "articles"
+            WHERE "articles"."searchVector" @@ to_tsquery('english'::regconfig, 'swift')
             """
         }
     }
@@ -87,10 +88,10 @@ struct FullTextSearchExamplesTests {
                 .limit(10)
         ) {
             """
-            SELECT "fts_articles"."title", ts_rank("fts_articles"."searchVector", to_tsquery('english'::regconfig, 'swift'))
-            FROM "fts_articles"
-            WHERE "fts_articles"."searchVector" @@ to_tsquery('english'::regconfig, 'swift')
-            ORDER BY ts_rank("fts_articles"."searchVector", to_tsquery('english'::regconfig, 'swift')) DESC
+            SELECT "articles"."title", ts_rank("articles"."searchVector", to_tsquery('english'::regconfig, 'swift'))
+            FROM "articles"
+            WHERE "articles"."searchVector" @@ to_tsquery('english'::regconfig, 'swift')
+            ORDER BY ts_rank("articles"."searchVector", to_tsquery('english'::regconfig, 'swift')) DESC
             LIMIT 10
             """
         }

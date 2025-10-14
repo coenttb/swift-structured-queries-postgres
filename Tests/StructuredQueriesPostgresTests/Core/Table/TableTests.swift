@@ -102,7 +102,7 @@ extension SnapshotTests {
                 UPDATE "softDeleteRows"
                 SET "isDeleted" = NOT ("softDeleteRows"."isDeleted")
                 WHERE NOT ("softDeleteRows"."isDeleted") AND ("softDeleteRows"."id") > (0)
-                RETURNING "id", "isDeleted"
+                RETURNING "softDeleteRows"."id", "softDeleteRows"."isDeleted"
                 """
             }
             // .unscoped allows updating all rows
@@ -117,7 +117,7 @@ extension SnapshotTests {
                 UPDATE "softDeleteRows"
                 SET "isDeleted" = NOT ("softDeleteRows"."isDeleted")
                 WHERE ("softDeleteRows"."id") > (0)
-                RETURNING "id", "isDeleted"
+                RETURNING "softDeleteRows"."id", "softDeleteRows"."isDeleted"
                 """
             }
         }
