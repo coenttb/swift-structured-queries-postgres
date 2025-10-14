@@ -13,7 +13,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Basic match with tsquery")
         func basicMatch() async {
             await assertSQL(
-                of: FTSArticle.where { $0.match("swift & postgresql") }
+                of: Article.where { $0.match("swift & postgresql") }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -26,7 +26,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Match with custom language")
         func matchCustomLanguage() async {
             await assertSQL(
-                of: FTSArticle.where { $0.match("rapide & base", language: "french") }
+                of: Article.where { $0.match("rapide & base", language: "french") }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -39,7 +39,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Match with OR operator")
         func matchOr() async {
             await assertSQL(
-                of: FTSArticle.where { $0.match("swift | rust | go") }
+                of: Article.where { $0.match("swift | rust | go") }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -52,7 +52,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Match with NOT operator")
         func matchNot() async {
             await assertSQL(
-                of: FTSArticle.where { $0.match("swift & !objective") }
+                of: Article.where { $0.match("swift & !objective") }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -65,7 +65,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Match with phrase operator")
         func matchPhrase() async {
             await assertSQL(
-                of: FTSArticle.where { $0.match("quick <-> brown <-> fox") }
+                of: Article.where { $0.match("quick <-> brown <-> fox") }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -78,7 +78,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Plain text match")
         func plainMatch() async {
             await assertSQL(
-                of: FTSArticle.where { $0.plainMatch("swift postgresql database") }
+                of: Article.where { $0.plainMatch("swift postgresql database") }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -91,7 +91,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Web search match")
         func webMatch() async {
             await assertSQL(
-                of: FTSArticle.where { $0.webMatch(#""swift postgresql" -objective"#) }
+                of: Article.where { $0.webMatch(#""swift postgresql" -objective"#) }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -107,9 +107,9 @@ extension SnapshotTests.FullTextSearch {
                 of: FTSBlogPost.where { $0.match("content") }
             ) {
                 """
-                SELECT "blogPosts"."id", "blogPosts"."content", "blogPosts"."search_vector"
+                SELECT "blogPosts"."id", "blogPosts"."content", "blogPosts"."searchVector"
                 FROM "blogPosts"
-                WHERE "blogPosts"."search_vector" @@ to_tsquery('english'::regconfig, 'content')
+                WHERE "blogPosts"."searchVector" @@ to_tsquery('english'::regconfig, 'content')
                 """
             }
         }
@@ -117,7 +117,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Match text column directly")
         func matchTextColumn() async {
             await assertSQL(
-                of: FTSArticle.where { $0.title.match("swift") }
+                of: Article.where { $0.title.match("swift") }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -130,7 +130,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Match text column with language")
         func matchTextColumnLanguage() async {
             await assertSQL(
-                of: FTSArticle.where { $0.body.match("database", language: "simple") }
+                of: Article.where { $0.body.match("database", language: "simple") }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"

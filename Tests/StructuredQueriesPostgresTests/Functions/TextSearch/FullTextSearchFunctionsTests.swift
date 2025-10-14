@@ -12,7 +12,7 @@ extension SnapshotTests.FullTextSearch {
 
         @Test("Convert text to tsvector")
         func searchVector() async {
-            await assertSQL(of: FTSArticle.select { $0.title.searchVector() }) {
+            await assertSQL(of: Article.select { $0.title.searchVector() }) {
                 """
                 SELECT to_tsvector('english'::regconfig, "articles"."title")
                 FROM "articles"
@@ -22,7 +22,7 @@ extension SnapshotTests.FullTextSearch {
 
         @Test("Convert text to tsvector with language")
         func toTsvectorLanguage() async {
-            await assertSQL(of: FTSArticle.select { $0.body.searchVector("spanish") }) {
+            await assertSQL(of: Article.select { $0.body.searchVector("spanish") }) {
                 """
                 SELECT to_tsvector('spanish'::regconfig, "articles"."body")
                 FROM "articles"
@@ -34,7 +34,7 @@ extension SnapshotTests.FullTextSearch {
         func headlineDefault() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift") }
                     .select { $0.title.headline(matching: "swift") }
             ) {
@@ -50,7 +50,7 @@ extension SnapshotTests.FullTextSearch {
         func headlineCustomDelimiters() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where {
                         $0.match("swift")
                     }
@@ -74,7 +74,7 @@ extension SnapshotTests.FullTextSearch {
         func headlineWordLimits() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where {
                         $0.match("swift")
                     }
@@ -100,7 +100,7 @@ extension SnapshotTests.FullTextSearch {
         func headlineAllOptions() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where {
                         $0.match("swift postgresql")
                     }
@@ -130,7 +130,7 @@ extension SnapshotTests.FullTextSearch {
         func complexSearchQuery() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift & postgresql") }
                     .select { ($0.id, $0.title, $0.rank(by: "swift & postgresql")) }
                     .limit(10, offset: 20)
@@ -148,7 +148,7 @@ extension SnapshotTests.FullTextSearch {
         func searchWithHeadlineAndRank() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where {
                         $0.match("swift")
                     }
@@ -180,7 +180,7 @@ extension SnapshotTests.FullTextSearch {
         func multiLanguageSearch() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("développement", language: "french") }
                     .select { ($0.id, $0.rank(by: "développement", language: "french")) }
             ) {
@@ -196,7 +196,7 @@ extension SnapshotTests.FullTextSearch {
         func ftsWithFilters() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift") && $0.id > 100 }
                     .select { ($0.id, $0.title, $0.rank(by: "swift")) }
             ) {
@@ -212,7 +212,7 @@ extension SnapshotTests.FullTextSearch {
         func countSearchResults() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift & postgresql") }
                     .select { _ in .count() }
             ) {

@@ -14,7 +14,7 @@ extension SnapshotTests.FullTextSearch {
         func basicRank() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift") }
                     .select { ($0, $0.rank(by: "swift")) }
             ) {
@@ -30,7 +30,7 @@ extension SnapshotTests.FullTextSearch {
         func rankWithNormalization() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift") }
                     .select { ($0, $0.rank(by: "swift", normalization: .divideByLogLength)) }
             ) {
@@ -46,7 +46,7 @@ extension SnapshotTests.FullTextSearch {
         func rankCombinedNormalization() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift") }
                     .select {
                         (
@@ -68,7 +68,7 @@ extension SnapshotTests.FullTextSearch {
         func rankCoverage() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("quick <-> brown") }
                     .select { ($0, $0.rank(byCoverage: "quick <-> brown")) }
             ) {
@@ -86,7 +86,7 @@ extension SnapshotTests.FullTextSearch {
         func rankWithWeights() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift") }
                     .select { ($0.id, $0.rank(by: "swift", weights: [0.1, 0.2, 0.4, 1.0])) }
             ) {
@@ -102,7 +102,7 @@ extension SnapshotTests.FullTextSearch {
         func rankWithWeightsAndNormalization() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift") }
                     .select {
                         (
@@ -125,7 +125,7 @@ extension SnapshotTests.FullTextSearch {
         func rankWithWeightsAndLanguage() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("développement", language: "french") }
                     .select {
                         (
@@ -148,7 +148,7 @@ extension SnapshotTests.FullTextSearch {
         func rankCoverageWithWeights() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("quick <-> brown") }
                     .select {
                         (
@@ -169,7 +169,7 @@ extension SnapshotTests.FullTextSearch {
         func rankCoverageWithWeightsAndNormalization() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift & postgresql") }
                     .select {
                         (
@@ -192,7 +192,7 @@ extension SnapshotTests.FullTextSearch {
         func compareRankingMethods() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift") }
                     .select {
                         (
@@ -214,7 +214,7 @@ extension SnapshotTests.FullTextSearch {
         func rankZeroWeight() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.match("swift") }
                     .select { ($0.id, $0.rank(by: "swift", weights: [0.0, 0.0, 0.0, 1.0])) }
             ) {

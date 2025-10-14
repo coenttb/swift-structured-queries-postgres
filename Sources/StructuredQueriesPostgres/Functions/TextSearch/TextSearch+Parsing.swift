@@ -1,5 +1,4 @@
 import StructuredQueriesCore
-import StructuredQueriesPostgresSupport
 
 // MARK: - 12.9.1 & 12.9.2: Text Search Parsing (to_tsvector, to_tsquery, @@)
 
@@ -10,10 +9,10 @@ extension TableDefinition where QueryValue: FullTextSearchable {
     ///
     /// ```swift
     /// Article.where { $0.match("swift & postgresql") }
-    /// // WHERE "articles"."search_vector" @@ to_tsquery('english', 'swift & postgresql')
+    /// // WHERE "articles"."searchVector" @@ to_tsquery('english', 'swift & postgresql')
     ///
     /// Article.where { $0.match("quick brown fox", language: "simple") }
-    /// // WHERE "articles"."search_vector" @@ to_tsquery('simple', 'quick brown fox')
+    /// // WHERE "articles"."searchVector" @@ to_tsquery('simple', 'quick brown fox')
     /// ```
     ///
     /// ## Query Syntax
@@ -60,7 +59,7 @@ extension TableDefinition where QueryValue: FullTextSearchable {
     ///
     /// ```swift
     /// Article.where { $0.plainMatch("swift postgresql") }
-    /// // WHERE "articles"."search_vector" @@ plainto_tsquery('english', 'swift postgresql')
+    /// // WHERE "articles"."searchVector" @@ plainto_tsquery('english', 'swift postgresql')
     /// // Equivalent to: swift & postgresql
     /// ```
     ///
@@ -90,7 +89,7 @@ extension TableDefinition where QueryValue: FullTextSearchable {
     ///
     /// ```swift
     /// Article.where { $0.webMatch(#""swift postgresql" -objective"#) }
-    /// // WHERE "articles"."search_vector" @@ websearch_to_tsquery('english', '"swift postgresql" -objective')
+    /// // WHERE "articles"."searchVector" @@ websearch_to_tsquery('english', '"swift postgresql" -objective')
     /// ```
     ///
     /// - Parameters:
@@ -118,7 +117,7 @@ extension TableDefinition where QueryValue: FullTextSearchable {
     ///
     /// ```swift
     /// Article.where { $0.phraseMatch("quick brown fox") }
-    /// // WHERE "articles"."search_vector" @@ phraseto_tsquery('english', 'quick brown fox')
+    /// // WHERE "articles"."searchVector" @@ phraseto_tsquery('english', 'quick brown fox')
     /// // Equivalent to: 'quick' <-> 'brown' <-> 'fox'
     /// ```
     ///

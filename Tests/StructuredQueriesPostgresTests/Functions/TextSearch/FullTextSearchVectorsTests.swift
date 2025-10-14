@@ -12,7 +12,7 @@ extension SnapshotTests.FullTextSearch {
 
         @Test("Phrase match basic")
         func phraseMatchBasic() async {
-            await assertSQL(of: FTSArticle.where { $0.phraseMatch("quick brown fox") }) {
+            await assertSQL(of: Article.where { $0.phraseMatch("quick brown fox") }) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
                 FROM "articles"
@@ -24,7 +24,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Phrase match with custom language")
         func phraseMatchLanguage() async {
             await assertSQL(
-                of: FTSArticle.where { $0.phraseMatch("le chat noir", language: "french") }
+                of: Article.where { $0.phraseMatch("le chat noir", language: "french") }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -38,7 +38,7 @@ extension SnapshotTests.FullTextSearch {
         func phraseMatchWithRank() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.phraseMatch("swift programming") }
                     .select { ($0.id, $0.title, $0.rank(by: "swift & programming")) }
             ) {
@@ -54,7 +54,7 @@ extension SnapshotTests.FullTextSearch {
         func phraseMatchWithFilters() async {
             await assertSQL(
                 of:
-                    FTSArticle
+                    Article
                     .where { $0.phraseMatch("server side swift") && $0.id < 1000 }
                     .select { ($0.id, $0.title) }
             ) {
@@ -70,7 +70,7 @@ extension SnapshotTests.FullTextSearch {
 
         @Test("Setweight on tsvector column")
         func setweightColumn() async {
-            await assertSQL(of: FTSArticle.select { $0.title.searchVector().weighted(.A) }) {
+            await assertSQL(of: Article.select { $0.title.searchVector().weighted(.A) }) {
                 """
                 SELECT setweight(to_tsvector('english'::regconfig, "articles"."title"), 'A')
                 FROM "articles"
@@ -81,7 +81,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Setweight with different weights")
         func setweightVariousWeights() async {
             await assertSQL(
-                of: FTSArticle.select {
+                of: Article.select {
                     (
                         $0.title.searchVector().weighted(.A),
                         $0.body.searchVector().weighted(.B),
@@ -100,7 +100,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Concatenate weighted vectors")
         func concatWeightedVectors() async {
             await assertSQL(
-                of: FTSArticle.select {
+                of: Article.select {
                     $0.title.searchVector().weighted(.A)
                         .concat($0.body.searchVector().weighted(.B))
                 }
@@ -114,7 +114,7 @@ extension SnapshotTests.FullTextSearch {
 
         @Test("Length of tsvector")
         func tsvectorLength() async {
-            await assertSQL(of: FTSArticle.select { $0.title.searchVector().length() }) {
+            await assertSQL(of: Article.select { $0.title.searchVector().length() }) {
                 """
                 SELECT length(to_tsvector('english'::regconfig, "articles"."title"))
                 FROM "articles"
@@ -125,7 +125,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Strip weights from tsvector")
         func stripWeights() async {
             await assertSQL(
-                of: FTSArticle.select { $0.title.searchVector().weighted(.A).stripped() }
+                of: Article.select { $0.title.searchVector().weighted(.A).stripped() }
             ) {
                 """
                 SELECT strip(setweight(to_tsvector('english'::regconfig, "articles"."title"), 'A'))
@@ -137,7 +137,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Complex vector manipulation chain")
         func complexVectorManipulation() async {
             await assertSQL(
-                of: FTSArticle.select {
+                of: Article.select {
                     (
                         $0.title.searchVector().weighted(.A)
                             .concat($0.body.searchVector().weighted(.B)),
@@ -154,7 +154,7 @@ extension SnapshotTests.FullTextSearch {
 
         @Test("Filter by vector length")
         func filterByVectorLength() async {
-            await assertSQL(of: FTSArticle.where { $0.title.searchVector().length() > 5 }) {
+            await assertSQL(of: Article.where { $0.title.searchVector().length() > 5 }) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
                 FROM "articles"
@@ -166,7 +166,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Multi-language weighted vectors")
         func multiLanguageWeightedVectors() async {
             await assertSQL(
-                of: FTSArticle.select {
+                of: Article.select {
                     $0.title.searchVector("french").weighted(.A)
                         .concat($0.body.searchVector("french").weighted(.B))
                 }
@@ -182,7 +182,7 @@ extension SnapshotTests.FullTextSearch {
 
         @Test("Empty search query")
         func emptyQuery() async {
-            await assertSQL(of: FTSArticle.where { $0.match("") }) {
+            await assertSQL(of: Article.where { $0.match("") }) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
                 FROM "articles"
@@ -193,7 +193,7 @@ extension SnapshotTests.FullTextSearch {
 
         @Test("Special characters in search")
         func specialCharactersSearch() async {
-            await assertSQL(of: FTSArticle.where { $0.match("swift & (postgresql | mysql)") }) {
+            await assertSQL(of: Article.where { $0.match("swift & (postgresql | mysql)") }) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
                 FROM "articles"
@@ -204,7 +204,7 @@ extension SnapshotTests.FullTextSearch {
 
         @Test("Phrase match with quotes")
         func phraseMatchQuotes() async {
-            await assertSQL(of: FTSArticle.where { $0.phraseMatch(#"swift "server" development"#) })
+            await assertSQL(of: Article.where { $0.phraseMatch(#"swift "server" development"#) })
             {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -217,7 +217,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Web match with complex query")
         func webMatchComplex() async {
             await assertSQL(
-                of: FTSArticle.where { $0.webMatch(#""exact phrase" OR keyword -excluded"#) }
+                of: Article.where { $0.webMatch(#""exact phrase" OR keyword -excluded"#) }
             ) {
                 """
                 SELECT "articles"."id", "articles"."title", "articles"."body", "articles"."searchVector"
@@ -230,7 +230,7 @@ extension SnapshotTests.FullTextSearch {
         @Test("Multiple setweight operations")
         func multipleSetweightOps() async {
             await assertSQL(
-                of: FTSArticle.select {
+                of: Article.select {
                     $0.title.searchVector().weighted(.A).stripped().weighted(.B)
                 }
             ) {

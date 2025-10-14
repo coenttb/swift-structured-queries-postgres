@@ -15,56 +15,82 @@ concurrency:
 
 jobs:
   macos:
-    name: macOS
-    runs-on: macos-26
+    name: macOS (Xcode ${{ matrix.xcode }})
+    runs-on: macos-${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        xcode: ['26.0']
-        config: ['release']  # Release mode for speed; debug adds time with minimal value
+        include:
+          - os: '15'
+            xcode: '16.2'
+            swift: '6.1'
+          - os: '26'
+            xcode: '26.0'
+            swift: '6.2'
     steps:
       - uses: actions/checkout@v5
 
       - name: Select Xcode ${{ matrix.xcode }}
-        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.1.app
+        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
 
-      - name: Print Swift version
-        run: swift --version
+      - name: Print environment
+        run: |
+          xcodebuild -version
+          swift --version
+          echo "macOS $(sw_vers -productVersion)"
 
       - name: Cache Swift packages
         uses: actions/cache@v4
         with:
           path: .build
-          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
+          key: ${{ runner.os }}-xcode-${{ matrix.xcode }}-spm-${{ hashFiles('Package.resolved') }}
           restore-keys: |
+            ${{ runner.os }}-xcode-${{ matrix.xcode }}-spm-
             ${{ runner.os }}-spm-
 
-      - name: Build
-        run: swift build -c ${{ matrix.config }}
+      - name: Build (Release)
+        run: swift build -c release
+        timeout-minutes: 20
 
-      - name: Run tests
-        run: swift test -c ${{ matrix.config }}
+      - name: Run tests (Release)
+        run: swift test -c release --parallel
+        timeout-minutes: 20
 
   linux:
     name: Linux (Swift ${{ matrix.swift }})
+    runs-on: ubuntu-latest
+    container: swift:${{ matrix.swift }}
     strategy:
       fail-fast: false
       matrix:
         swift:
           - '6.0'
           - '6.1'
-    runs-on: ubuntu-latest
-    container: swift:${{ matrix.swift }}
+          - '6.2'
     steps:
       - uses: actions/checkout@v5
 
-      - name: Print Swift version
-        run: swift --version
+      - name: Print environment
+        run: |
+          swift --version
+          uname -a
 
-      - name: Build
-        run: swift build
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: linux-swift-${{ matrix.swift }}-spm-${{ hashFiles('Package.resolved') }}
+          restore-keys: |
+            linux-swift-${{ matrix.swift }}-spm-
+            linux-spm-
 
-      - name: Run tests
-        run: swift test
+      - name: Build (Release)
+        run: swift build -c release
+        timeout-minutes: 20
+
+      - name: Run tests (Release)
+        run: swift test -c release --parallel
+        timeout-minutes: 20
 
   documentation:
     name: Documentation

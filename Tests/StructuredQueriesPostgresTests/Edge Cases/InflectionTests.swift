@@ -1,5 +1,4 @@
 import StructuredQueriesCore
-import StructuredQueriesPostgresSupport
 import Testing
 
 @Suite struct InflectionTests {

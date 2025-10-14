@@ -1,5 +1,4 @@
 import Foundation
-import StructuredQueriesPostgresSupport
 
 /// A type representing a SQL string and its bindings.
 ///

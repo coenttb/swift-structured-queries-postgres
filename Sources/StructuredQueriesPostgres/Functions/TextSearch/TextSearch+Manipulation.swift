@@ -1,5 +1,4 @@
 import StructuredQueriesCore
-import StructuredQueriesPostgresSupport
 
 // MARK: - 12.9.5: Manipulating Documents (setweight, length, strip)
 
@@ -41,7 +40,7 @@ extension QueryExpression where QueryValue == String {
     ///
     /// ```swift
     /// Article.select { $0.searchVector.lexemeCount }
-    /// // SELECT length("articles"."search_vector")
+    /// // SELECT length("articles"."searchVector")
     /// ```
     public var lexemeCount: some QueryExpression<Int> {
         SQLQueryExpression(
@@ -57,7 +56,7 @@ extension QueryExpression where QueryValue == String {
     ///
     /// ```swift
     /// Article.select { $0.searchVector.stripped() }
-    /// // SELECT strip("articles"."search_vector")
+    /// // SELECT strip("articles"."searchVector")
     /// ```
     ///
     /// **Warning**: Stripping removes information needed for:

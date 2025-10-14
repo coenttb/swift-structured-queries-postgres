@@ -2,7 +2,6 @@ import Foundation
 import InlineSnapshotTesting
 import StructuredQueriesCore
 import StructuredQueriesPostgres
-import StructuredQueriesPostgresSupport
 import StructuredQueriesPostgresTestSupport
 import Testing
 

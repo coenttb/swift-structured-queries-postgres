@@ -1,4 +1,3 @@
-import StructuredQueriesPostgresSupport
 
 /// A collating sequence name.
 ///

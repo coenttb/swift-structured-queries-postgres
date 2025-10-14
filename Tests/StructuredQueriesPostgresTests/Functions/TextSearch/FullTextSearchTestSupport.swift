@@ -4,7 +4,7 @@ import Testing
 
 // Shared test tables for full-text search tests
 @Table("articles")
-struct FTSArticle: FullTextSearchable {
+struct Article: FullTextSearchable {
     let id: Int
     var title: String
     var body: String
@@ -17,7 +17,7 @@ struct FTSArticle: FullTextSearchable {
 struct FTSBlogPost: FullTextSearchable {
     let id: Int
     var content: String
-    var search_vector: String  // Default column name
+    var searchVector: String  // Default column name
 }
 
 // Full-Text Search test namespace

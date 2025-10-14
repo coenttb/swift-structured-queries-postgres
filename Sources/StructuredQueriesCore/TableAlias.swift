@@ -1,5 +1,4 @@
 import Foundation
-import StructuredQueriesPostgresSupport
 
 /// Internal protocol for TableAlias to expose quote information.
 ///

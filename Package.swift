@@ -12,7 +12,7 @@ import PackageDescription
 let package = Package(
     name: "swift-structured-queries-postgres",
     platforms: [
-        //        .iOS(.v13),
+        .iOS(.v13),
         .macOS(.v13)
         //        .tvOS(.v13),
         //        .watchOS(.v6)
@@ -132,6 +132,14 @@ let package = Package(
                 "StructuredQueriesPostgresTestSupport",
                 .product(name: "CustomDump", package: "swift-custom-dump"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
+            ]
+        ),
+        .testTarget(
+            name: "READMEExamplesTests",
+            dependencies: [
+                "StructuredQueriesPostgres",
+                "StructuredQueriesPostgresTestSupport",
                 .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
             ]
         ),

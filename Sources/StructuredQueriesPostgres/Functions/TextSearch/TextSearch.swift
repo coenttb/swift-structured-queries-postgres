@@ -1,6 +1,5 @@
 import Foundation
 import StructuredQueriesCore
-import StructuredQueriesPostgresSupport
 
 // MARK: - TextSearch Namespace
 
@@ -25,7 +24,7 @@ extension TextSearch {
     ///     let id: Int
     ///     var title: String
     ///     var body: String
-    ///     var search_vector: TextSearch.Vector
+    ///     var searchVector: TextSearch.Vector
     /// }
     /// ```
     public struct Vector: Sendable, Hashable, Codable {
@@ -231,12 +230,12 @@ extension TextSearch.RankNormalization {
 ///
 /// ```swift
 /// Article.where { $0.match("swift") }
-/// // Generates: WHERE "articles"."search_vector" @@ to_tsquery('swift')
+/// // Generates: WHERE "articles"."searchVector" @@ to_tsquery('swift')
 /// ```
 ///
 /// ## Default Implementation
 ///
-/// The protocol provides a default of `"search_vector"` following PostgreSQL conventions.
+/// The protocol provides a default of `"searchVector"` following PostgreSQL conventions.
 /// Most tables work without any override:
 ///
 /// ```swift
@@ -245,7 +244,7 @@ extension TextSearch.RankNormalization {
 ///   let id: Int
 ///   var title: String
 ///   var body: String
-///   var search_vector: TextSearch.Vector  // Uses default "search_vector"
+///   var searchVector: TextSearch.Vector  // Uses default "searchVector"
 ///   // No override needed!
 /// }
 /// ```
@@ -289,7 +288,7 @@ extension TextSearch.RankNormalization {
 public protocol FullTextSearchable: Table {
     /// The name of the tsvector column used for full-text search.
     ///
-    /// Default implementation returns `"search_vector"` following PostgreSQL conventions.
+    /// Default implementation returns `"searchVector"` following PostgreSQL conventions.
     /// Override this when your schema uses a different column name.
     ///
     /// ## Why This is Required
@@ -314,7 +313,7 @@ public protocol FullTextSearchable: Table {
 
 extension FullTextSearchable {
     /// Default tsvector column name.
-    public static var searchVectorColumn: String { "search_vector" }
+    public static var searchVectorColumn: String { "searchVector" }
 }
 
 // MARK: - Convenience Extensions

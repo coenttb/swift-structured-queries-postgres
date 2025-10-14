@@ -1,6 +1,5 @@
 import Foundation
 import StructuredQueriesCore
-import StructuredQueriesPostgresSupport
 
 // MARK: - Convenience Helpers
 

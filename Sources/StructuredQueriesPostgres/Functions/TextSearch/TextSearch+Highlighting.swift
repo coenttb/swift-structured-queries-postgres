@@ -2,7 +2,6 @@
 
 import Foundation
 import StructuredQueriesCore
-import StructuredQueriesPostgresSupport
 
 extension TableColumnExpression where Value == String {
     /// Highlight search matches in text with delimiters.

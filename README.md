@@ -1,40 +1,21 @@
 # swift-structured-queries-postgres
 
+[![CI](https://github.com/coenttb/swift-structured-queries-postgres/actions/workflows/ci.yml/badge.svg)](https://github.com/coenttb/swift-structured-queries-postgres/actions/workflows/ci.yml)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcoenttb%2Fswift-structured-queries-postgres%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/coenttb/swift-structured-queries-postgres)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcoenttb%2Fswift-structured-queries-postgres%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/coenttb/swift-structured-queries-postgres)
 
-Type-safe PostgreSQL query builder for Swift. Generates SQL queries without executing them.
+Type-safe PostgreSQL query builder for Swift. Build complex SQL queries with compile-time validation and zero runtime overhead.
 
 **PostgreSQL fork** of [Point-Free's swift-structured-queries](https://github.com/pointfreeco/swift-structured-queries) with comprehensive PostgreSQL feature support.
 
-## Overview
+## Key Features
 
-**swift-structured-queries-postgres**: Query generation only (returns `Statement<T>` types)
-**[swift-records](https://github.com/coenttb/swift-records)**: Database operations (connection pooling, execution, migrations)
-
-### Key Features
-
-- 🔒 Type-safe query building with compile-time validation
-- 🎯 85% PostgreSQL Chapter 9 coverage (Functions & Operators)
-- 📦 Modular architecture (Core + Postgres separation)
-- 🧪 280+ tests with SQL snapshot testing
-- 🔌 Seamless swift-records integration
-
-### PostgreSQL Highlights
-
-- ✅ Complete JSONB (23 operators, GIN indexing)
-- ✅ Full-text search (Chapter 12)
-- ✅ Window functions (11 functions)
-- ✅ PostgreSQL aggregates (STRING_AGG, ARRAY_AGG, JSONB_AGG)
-- ✅ All standard SQL (SELECT, INSERT, UPDATE, DELETE, CTEs)
-
-## Installation
-
-```swift
-dependencies: [
-  .package(url: "https://github.com/coenttb/swift-structured-queries-postgres", from: "0.0.1")
-]
-```
+- 🔒 **Type-safe query building** with compile-time validation
+- 🎯 **85% PostgreSQL Chapter 9 coverage** (Functions & Operators)
+- 🚀 **PostgreSQL-native features**: JSONB, triggers, window functions, CTEs, full-text search
+- ⚡ **Production-ready**: Swift 6.0+ with strict concurrency
+- 🧪 **280+ tests** with SQL snapshot testing
+- 🔌 **Seamless integration** with [swift-records](https://github.com/coenttb/swift-records)
 
 ## Quick Start
 
@@ -43,120 +24,484 @@ import StructuredQueriesPostgres
 
 @Table
 struct User {
-  var id: Int
-  var name: String
-  var email: String
+    let id: Int
+    var name: String
+    var email: String
 }
 
-// Build query
+// Build query (this package)
 let statement = User
-  .where { $0.email.hasSuffix("@example.com") }
-  .order(by: \.name)
-  .limit(10)
+    .where { $0.email.hasSuffix("@example.com") }
+    .order(by: \.name)
+    .limit(10)
 
 // Execute with swift-records
 let users = try await statement.fetchAll(db)
 ```
 
-## NULL PRIMARY KEY Handling
+## Installation
 
-**PostgreSQL forbids NULL in PRIMARY KEYs** (SQLite allows it). Use Draft types:
+### Swift Package Manager
 
 ```swift
+dependencies: [
+    .package(url: "https://github.com/coenttb/swift-structured-queries-postgres", from: "0.23.0")
+]
+```
+
+### Critical: Build Requirement
+
+**Always use release mode** for building and testing:
+
+```bash
+swift build -c release
+swift test -c release
+```
+
+Debug builds have Swift 6.x compiler linker issues. This is a known Swift compiler bug, not a package issue. Xcode debug builds work fine.
+
+### Optional Features
+
+Enable optional traits in your `Package.swift`:
+
+```swift
+.target(
+    name: "YourTarget",
+    dependencies: [
+        .product(name: "StructuredQueriesPostgres", package: "swift-structured-queries-postgres")
+    ],
+    swiftSettings: [
+        .enableExperimentalFeature("Trait"),
+        .enableTrait("StructuredQueriesPostgresCasePaths"),  // Enum table support
+        .enableTrait("StructuredQueriesPostgresSQLValidation")  // SQL validation (heavy dependency)
+    ]
+)
+```
+
+## Usage Examples
+
+### Basic CRUD Operations
+
+**SELECT with WHERE, ORDER BY, LIMIT:**
+
+```swift
+User
+    .where { $0.isActive }
+    .order(by: \.name)
+    .limit(10)
+// SQL: SELECT * FROM "users" WHERE "users"."isActive" ORDER BY "users"."name" LIMIT 10
+```
+
+**INSERT with Draft types** (PostgreSQL NULL PRIMARY KEY handling):
+
+```swift
+// Single insert - PK column excluded
+User.insert {
+    User.Draft(name: "Alice", email: "alice@example.com")
+}
+// SQL: INSERT INTO "users" ("name", "email") VALUES ('Alice', 'alice@example.com')
+
+// Mixed records - uses DEFAULT for NULL PKs
+User.insert {
+    User(id: 1, name: "Alice", email: "alice@example.com")
+    User.Draft(name: "Bob", email: "bob@example.com")
+}
+// SQL: INSERT INTO "users" ("id", "name", "email") VALUES (1, 'Alice', 'alice@example.com'), (DEFAULT, 'Bob', 'bob@example.com')
+```
+
+**UPDATE with RETURNING:**
+
+```swift
+User
+    .where { $0.id == 1 }
+    .update { $0.isActive = false }
+    .returning { ($0.id, $0.name) }
+// SQL: UPDATE "users" SET "isActive" = false WHERE "users"."id" = 1 RETURNING "users"."id", "users"."name"
+```
+
+**DELETE with RETURNING:**
+
+```swift
+User
+    .where { $0.isActive == false }
+    .delete()
+    .returning(\.email)
+// SQL: DELETE FROM "users" WHERE "users"."isActive" = false RETURNING "users"."email"
+```
+
+### PostgreSQL JSONB
+
+**Containment operators (@>, <@):**
+
+```swift
+struct UserSettings: Codable {
+    var theme: String
+    var notifications: Bool
+}
+
+@Table
+struct User {
+    let id: Int
+    var settings: UserSettings
+}
+
+// Find users with dark theme
+User.where { $0.settings.contains(UserSettings(theme: "dark", notifications: true)) }
+// SQL: WHERE "users"."settings" @> '{"theme":"dark","notifications":true}'
+```
+
+**JSON path operators (->, ->>):**
+
+```swift
+User.where { $0.settings.getText("theme") == "dark" }
+// SQL: WHERE ("users"."settings" ->> 'theme') = 'dark'
+```
+
+**GIN indexing for fast JSONB queries:**
+
+```swift
+User.createGINIndex(on: \.settings, operatorClass: .jsonb_path_ops)
+// SQL: CREATE INDEX "users_settings_gin_idx" ON "users" USING GIN ("settings" jsonb_path_ops)
+```
+
+### Window Functions
+
+**ROW_NUMBER(), RANK(), DENSE_RANK():**
+
+```swift
+@Table
+struct Employee {
+    let id: Int
+    var department: String
+    var salary: Double
+}
+
+Employee
+    .select {
+        (
+            $0.name,
+            $0.salary,
+            rank().over {
+                $0.partition(by: $1.department)
+                    .order(by: $1.salary, .desc)
+            }
+        )
+    }
+// SQL: SELECT "name", "salary", RANK() OVER (PARTITION BY "department" ORDER BY "salary" DESC)
+```
+
+**Named windows (WINDOW clause):**
+
+```swift
+Employee
+    .window("dept_salary") {
+        WindowSpec()
+            .partition(by: $0.department)
+            .order(by: $0.salary, .desc)
+    }
+    .select {
+        (
+            $0.name,
+            rank().over("dept_salary"),
+            denseRank().over("dept_salary"),
+            rowNumber().over("dept_salary")
+        )
+    }
+// SQL: SELECT "name", RANK() OVER dept_salary, DENSE_RANK() OVER dept_salary, ROW_NUMBER() OVER dept_salary
+//      FROM "employees"
+//      WINDOW dept_salary AS (PARTITION BY "department" ORDER BY "salary" DESC)
+```
+
+**Running totals with SUM() window function:**
+
+```swift
+Sale
+    .select {
+        (
+            $0.date,
+            $0.amount,
+            sum($0.amount).over { $0.order(by: $1.date) }
+        )
+    }
+// SQL: SELECT "date", "amount", SUM("amount") OVER (ORDER BY "date")
+```
+
+### Triggers
+
+**BEFORE UPDATE trigger with automatic timestamps:**
+
+```swift
+@Table
+struct Product {
+    let id: Int
+    var name: String
+    var updatedAt: Date?
+}
+
+Product.createTrigger(
+    name: "update_timestamp",
+    timing: .before,
+    event: .update,
+    function: .plpgsql(
+        "set_updated_at",
+        """
+        NEW."updatedAt" = CURRENT_TIMESTAMP;
+        RETURN NEW;
+        """
+    )
+)
+// SQL: CREATE TRIGGER "update_timestamp" BEFORE UPDATE ON "products"
+//      FOR EACH ROW EXECUTE FUNCTION "set_updated_at"()
+```
+
+**Conditional trigger with WHEN clause:**
+
+```swift
+Product.createTrigger(
+    name: "low_stock_alert",
+    timing: .after,
+    event: .update(of: { $0.stock }, when: { new in new.stock < 10 }),
+    function: .plpgsql(
+        "notify_low_stock",
+        """
+        PERFORM pg_notify('low_stock', json_build_object('product_id', NEW.id, 'stock', NEW.stock)::text);
+        RETURN NEW;
+        """
+    )
+)
+// SQL: CREATE TRIGGER "low_stock_alert" AFTER UPDATE OF "stock" ON "products"
+//      FOR EACH ROW WHEN (NEW."stock" < 10) EXECUTE FUNCTION "notify_low_stock"()
+```
+
+**Access NEW and OLD records:**
+
+```swift
+Product.createTrigger(
+    timing: .after,
+    event: .update,
+    function: .plpgsql(
+        "log_price_change",
+        """
+        IF NEW.price != OLD.price THEN
+            INSERT INTO price_history (product_id, old_price, new_price, changed_at)
+            VALUES (NEW.id, OLD.price, NEW.price, CURRENT_TIMESTAMP);
+        END IF;
+        RETURN NEW;
+        """
+    )
+)
+```
+
+### Full-Text Search
+
+**Basic search on text columns with `.match()`:**
+
+```swift
+@Table
+struct Article {
+    let id: Int
+    var title: String
+    var content: String
+}
+
+// Simple search
+Article.where { $0.content.match("postgresql") }
+
+// AND operator
+Article.where { $0.content.match("postgresql & query") }
+
+// OR operator
+Article.where { $0.content.match("postgresql | mysql") }
+```
+
+**Search with ranking (requires tsvector column):**
+
+```swift
+@Table
+struct Article: FullTextSearchable {
+    let id: Int
+    var title: String
+    var searchVector: String  // Pre-computed tsvector column
+
+    static var searchVectorColumn: String { "searchVector" }
+}
+
+// Search with ranking
+Article
+    .where { $0.match("swift") }
+    .select { ($0.title, $0.rank(by: "swift")) }
+    .order { $0.rank(by: "swift").desc() }
+    .limit(10)
+```
+
+## NULL PRIMARY KEY Handling
+
+**Critical Difference from SQLite:**
+
+PostgreSQL **forbids NULL** in PRIMARY KEY columns, while SQLite allows it. This affects INSERT operations with auto-generated IDs.
+
+**Solution: Use Draft types**
+
+The `@Table` macro generates a `Draft` nested type that excludes the primary key:
+
+```swift
+@Table
+struct User {
+    let id: Int  // Primary key
+    var name: String
+}
+
 // ✅ Draft excludes PK column
 User.insert { User.Draft(name: "Alice") }
 // SQL: INSERT INTO "users" ("name") VALUES ('Alice')
 
 // ✅ Mixed records use DEFAULT
 User.insert {
-  User(id: 1, name: "Alice")
-  User.Draft(name: "Bob")
+    User(id: 1, name: "Alice")
+    User.Draft(name: "Bob")
 }
 // SQL: INSERT INTO "users" ("id", "name") VALUES (1, 'Alice'), (DEFAULT, 'Bob')
+
+// ❌ This would fail in PostgreSQL
+User.insert { User(id: nil, name: "Alice") }
+// Error: null value in column "id" violates not-null constraint
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md#null-primary-key-handling) for details.
+## PostgreSQL Feature Coverage
+
+### Comprehensive Support (85% of Chapter 9)
+
+**Window Functions:**
+- ✅ ROW_NUMBER, RANK, DENSE_RANK, NTILE
+- ✅ FIRST_VALUE, LAST_VALUE, NTH_VALUE
+- ✅ LAG, LEAD
+- ✅ PERCENT_RANK, CUME_DIST
+- ✅ Named windows (WINDOW clause)
+
+**Triggers:**
+- ✅ BEFORE / AFTER / INSTEAD OF timing
+- ✅ INSERT / UPDATE / DELETE / TRUNCATE events
+- ✅ FOR EACH ROW / FOR EACH STATEMENT levels
+- ✅ WHEN conditions with NEW/OLD pseudo-records
+- ✅ UPDATE OF specific columns
+- ✅ PL/pgSQL function generation
+
+**JSONB:**
+- ✅ 23 operators (@>, <@, ?, ?|, ?&, ->, ->>, #>, #>>, etc.)
+- ✅ 6 core functions (jsonb_agg, jsonb_object_agg, etc.)
+- ✅ GIN indexing with jsonb_path_ops
+
+**Full-Text Search (Chapter 12):**
+- ✅ to_tsvector, to_tsquery, plainto_tsquery, phraseto_tsquery
+- ✅ @@ match operator
+- ✅ ts_rank, ts_rank_cd ranking
+- ✅ ts_headline highlighting
+- ✅ Weighted multi-column search
+
+**Aggregate Functions:**
+- ✅ Standard: COUNT, SUM, AVG, MIN, MAX
+- ✅ PostgreSQL-specific: STRING_AGG, ARRAY_AGG, JSONB_AGG
+- ✅ Statistical: STDDEV, VARIANCE, CORR, PERCENTILE_CONT
+
+**Array Operations:**
+- ✅ Array construction and operators
+- ✅ Array functions (array_length, array_agg, unnest)
+- ✅ Containment operators (@>, <@, &&)
+
+**String Functions:**
+- ✅ CONCAT, SUBSTRING, POSITION, UPPER, LOWER
+- ✅ LIKE, ILIKE pattern matching
+- ✅ String aggregation
+
+**Date/Time Functions:**
+- ✅ EXTRACT, DATE_TRUNC
+- ✅ CURRENT_TIMESTAMP, NOW()
+- ✅ Interval arithmetic
+
+**Advanced Features:**
+- ✅ Common Table Expressions (CTEs)
+- ✅ Subqueries and EXISTS
+- ✅ CASE expressions
+- ✅ Type casting (::type syntax)
+- ✅ COALESCE, NULLIF
+- ✅ DISTINCT ON (PostgreSQL-specific)
 
 ## Documentation
 
 ### Quick Reference
-📘 [**CLAUDE.md**](CLAUDE.md) - LLM-optimized quick reference (build commands, troubleshooting)
+📘 [**CLAUDE.md**](CLAUDE.md) - LLM-optimized quick reference (build commands, troubleshooting, key differences)
 
 ### Detailed Guides
 - 📖 [**ARCHITECTURE.md**](ARCHITECTURE.md) - Design decisions, PostgreSQL features, module architecture
-- 🧪 [**TESTING.md**](TESTING.md) - Test patterns, snapshot testing, SQL expectations
+- 🧪 [**TESTING.md**](TESTING.md) - Test patterns, snapshot testing, SQL validation
 - 📜 [**HISTORY.md**](HISTORY.md) - Evolution timeline, decisions, learnings
 
-## Build & Test
+## Requirements
 
-```bash
-swift build              # Build package
-swift test               # Run tests
-open Package.swift       # Use Xcode
-```
+- **Swift**: 6.0 or later
+- **Platforms**: macOS 13+, iOS 13+, Linux
+- **Build**: Use `swift build -c release` (debug mode has linker issues)
+- **PostgreSQL**: Designed for PostgreSQL 12+
 
-## Examples
+### CI Status
 
-### Column Groups
+Tested on:
+- ✅ Swift 6.0, 6.1, 6.2
+- ✅ macOS (latest)
+- ✅ Linux (Ubuntu)
 
-```swift
-@Selection
-struct Timestamps {
-  var createdAt: Date
-  var updatedAt: Date
-}
+## Migration from SQLite
 
-@Table
-struct Document {
-  let id: Int
-  var title: String
-  var timestamps: Timestamps
-}
+Key differences from Point-Free's swift-structured-queries (SQLite):
 
-// Full group operations
-Document.update { $0.timestamps.updatedAt = Date() }
-Document.where { $0.timestamps.eq(Timestamps(...)) }
-```
+| Aspect | SQLite | PostgreSQL |
+|--------|--------|------------|
+| **NULL in PK** | Allowed | **Forbidden** (use Draft types) |
+| **Conflict syntax** | `INSERT OR REPLACE` | `ON CONFLICT DO UPDATE` |
+| **JSON type** | `JSON` | `JSONB` (binary, indexed) |
+| **String aggregation** | `group_concat()` | `string_agg()` |
+| **Case sensitivity** | `LIKE` (case-insensitive) | `ILIKE` (case-insensitive) |
+| **Array support** | Limited | Native array types |
+| **Full-text search** | FTS5 extension | Built-in (Chapter 12) |
 
-### JSONB Operations
+**See [ARCHITECTURE.md](ARCHITECTURE.md#postgresql-vs-sqlite-differences) for complete migration guide.**
 
-```swift
-// Containment
-User.where { $0.settings.contains(["theme": "dark"]) }
+## Integration with swift-records
 
-// GIN indexing
-User.createGINIndex(on: \.settings, operatorClass: .jsonb_path_ops)
-```
-
-### Full-Text Search
+This package provides **query building only**. For database operations (connection pooling, execution, migrations), use [swift-records](https://github.com/coenttb/swift-records):
 
 ```swift
-Post.where { $0.content.match("postgresql & (query | search)") }
-  .select { tsHeadline($0.content, query) }
+// Query building (this package)
+let statement = User.where { $0.isActive }
+
+// Execution (swift-records)
+let users = try await statement.fetchAll(db)
+let user = try await statement.fetchOne(db)
+try await statement.execute(db)
 ```
 
-### Window Functions
+## Learn More
 
-```swift
-Sale.select {
-  ($0.amount, sum($0.amount).over {
-    $0.order { $1.date }
-  })
-}
-```
+This library is a PostgreSQL adaptation of [swift-structured-queries](https://github.com/pointfreeco/swift-structured-queries) by [Point-Free](https://www.pointfree.co). The original library was designed and explored in depth over many episodes of their video series on advanced programming topics in Swift, hosted by [Brandon Williams](https://twitter.com/mbrandonw) and [Stephen Celis](https://twitter.com/stephencelis).
+
+To learn about the core concepts behind structured query building in Swift, check out Point-Free's [SQL Building](https://www.pointfree.co/collections/sqlite/sql-building) collection.
 
 ## License
 
 Dual-licensed:
-- **Apache 2.0**: swift-structured-queries components (inherited from Point-Free)
-- **AGPL 3.0**: PostgreSQL-specific additions
 
-## Related
+- **Apache License 2.0**: Core query building infrastructure (inherited from Point-Free's swift-structured-queries)
+- **AGPL 3.0**: PostgreSQL-specific additions and features
 
-- [swift-records](https://github.com/coenttb/swift-records) - Database operations
-- [Point-Free's swift-structured-queries](https://github.com/pointfreeco/swift-structured-queries) - Upstream package
+See [LICENSE-APACHE](LICENSE-APACHE) and [LICENSE-AGPL](LICENSE-AGPL) for details.
+
+## Related Projects
+
+- [**swift-records**](https://github.com/coenttb/swift-records) - High-level database operations layer (connection pooling, transactions, migrations)
+- [**swift-structured-queries**](https://github.com/pointfreeco/swift-structured-queries) - Upstream SQLite-focused query builder by Point-Free
 
 ## Support
 
 - 🐛 [Report issues](https://github.com/coenttb/swift-structured-queries-postgres/issues)
+- 💬 [Discussions](https://github.com/coenttb/swift-structured-queries-postgres/discussions)
 - 📧 Contact: dev@coenttb.com

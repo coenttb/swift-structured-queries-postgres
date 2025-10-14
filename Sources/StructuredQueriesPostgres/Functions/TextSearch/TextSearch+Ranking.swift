@@ -1,5 +1,4 @@
 import StructuredQueriesCore
-import StructuredQueriesPostgresSupport
 
 // MARK: - 12.9.3: Ranking Search Results (ts_rank, ts_rank_cd)
 
@@ -13,9 +12,9 @@ extension TableDefinition where QueryValue: FullTextSearchable {
     /// Article.where { $0.match("swift") }
     ///   .select { ($0, $0.rank(by: "swift")) }
     ///   .order(by: \.1, .desc)
-    /// // SELECT *, ts_rank("search_vector", to_tsquery('english', 'swift'))
+    /// // SELECT *, ts_rank("searchVector", to_tsquery('english', 'swift'))
     /// // FROM "articles"
-    /// // WHERE "articles"."search_vector" @@ to_tsquery('english', 'swift')
+    /// // WHERE "articles"."searchVector" @@ to_tsquery('english', 'swift')
     /// // ORDER BY ts_rank(...) DESC
     /// ```
     ///
@@ -91,7 +90,7 @@ extension TableDefinition where QueryValue: FullTextSearchable {
     /// Article.where { $0.match("swift") }
     ///   .select { ($0, $0.rank(by: "swift", weights: [0.1, 0.2, 0.4, 1.0])) }
     ///   .order(by: \.1, .desc)
-    /// // SELECT *, ts_rank('{0.1, 0.2, 0.4, 1.0}', "search_vector", to_tsquery('swift'))
+    /// // SELECT *, ts_rank('{0.1, 0.2, 0.4, 1.0}', "searchVector", to_tsquery('swift'))
     /// ```
     ///
     /// ## Weight Array Format
