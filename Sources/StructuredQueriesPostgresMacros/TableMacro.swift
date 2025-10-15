@@ -1529,7 +1529,7 @@ extension TableMacro: MemberMacro {
             }
             """,
             """
-            public nonisolated struct Selection: \(moduleName).TableExpression {
+            public \(nonisolated)struct Selection: \(moduleName).TableExpression {
             public typealias QueryValue = \(type.trimmed)
             public let allColumns: [any \(moduleName).QueryExpression]
             \(selectionInitializers, separator: "\n")

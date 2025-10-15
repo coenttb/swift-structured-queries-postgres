@@ -80,6 +80,110 @@ import Testing
 }
 ```
 
+### README Examples Test Suite
+
+**Location**: `Tests/READMEExamplesTests/`
+
+**Purpose**: Every code example in README.md has a corresponding validated test ensuring documentation accuracy.
+
+**Why This Matters**:
+- ✅ Documentation never goes stale - examples are validated with every test run
+- ✅ SQL syntax is verified against PostgreSQL
+- ✅ Users can copy-paste examples with confidence
+- ✅ Breaking changes in API immediately show up as README test failures
+
+**Test Files**:
+```
+Tests/READMEExamplesTests/
+├── WindowFunctionsExamplesTests.swift     # Window function examples
+├── JSONBExamplesTests.swift               # JSONB operation examples
+├── FullTextSearchExamplesTests.swift      # Full-text search examples
+└── [other example categories]
+```
+
+**Pattern**:
+```swift
+@Suite("README Examples - Window Functions")
+struct WindowFunctionsExamplesTests {
+
+    @Test("README Example: RANK() window function")
+    func rankWindowFunction() async {
+        await assertSQL(
+            of: Employee.all
+                .select { employee in
+                    (
+                        employee.name,
+                        employee.salary,
+                        rank().over {
+                            $0.partition(by: employee.department)
+                                .order(by: employee.salary.desc())
+                        }
+                    )
+                }
+        ) {
+            """
+            SELECT "employees"."name", "employees"."salary", RANK() OVER (PARTITION BY "employees"."department" ORDER BY "employees"."salary" DESC)
+            FROM "employees"
+            """
+        }
+    }
+
+    @Test("README Example: Named window definition")
+    func namedWindow() async {
+        await assertSQL(
+            of: Employee.all
+                .window("dept_salary") {
+                    $0.partition(by: $1.department)
+                        .order(by: $1.salary.desc())
+                }
+                .select {
+                    (
+                        $0.name,
+                        rank().over("dept_salary"),
+                        denseRank().over("dept_salary"),
+                        rowNumber().over("dept_salary")
+                    )
+                }
+        ) {
+            """
+            SELECT "employees"."name", RANK() OVER dept_salary, DENSE_RANK() OVER dept_salary, ROW_NUMBER() OVER dept_salary
+            FROM "employees"
+            WINDOW dept_salary AS (PARTITION BY "employees"."department" ORDER BY "employees"."salary" DESC)
+            """
+        }
+    }
+}
+```
+
+**Benefits of This Approach**:
+
+1. **Living Documentation**: README examples are executable tests, not stale comments
+2. **SQL Validation**: All examples validated against PostgreSQL for correctness
+3. **Refactoring Safety**: API changes that break examples fail tests immediately
+4. **User Confidence**: Users know examples work because they're tested
+5. **Maintenance Signal**: Test failures indicate README needs updates
+
+**Workflow**:
+
+When adding a new README example:
+1. Write the example in README.md
+2. Add corresponding test in `READMEExamplesTests/`
+3. Use `await assertSQL` for SQL validation
+4. Test name should reference README: `@Test("README Example: ...")`
+5. Commit both README and test together
+
+**Example Categories Covered**:
+- ✅ Window functions (RANK, ROW_NUMBER, named windows)
+- ✅ JSONB operations (@>, ->>, ?, field access)
+- ✅ Full-text search (@@, ranking, highlighting)
+- ✅ Array operations
+- ✅ Triggers
+- ✅ CTEs
+
+**This is a competitive advantage** - most database libraries don't validate their documentation examples.
+
+---
+
 ### Two Testing Approaches
 
 #### 1. SQL Validation (Preferred for most tests)

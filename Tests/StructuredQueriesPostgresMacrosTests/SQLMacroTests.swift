@@ -12,7 +12,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression("CURRENT_TIMESTAMP")
+                StructuredQueriesCore.SQLQueryExpression("CURRENT_TIMESTAMP")
                 """
             }
         }
@@ -90,7 +90,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression("'('")
+                StructuredQueriesCore.SQLQueryExpression("'('")
                 """
             }
             assertMacro {
@@ -99,7 +99,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression("[it's fine]")
+                StructuredQueriesCore.SQLQueryExpression("[it's fine]")
                 """
             }
         }
@@ -169,7 +169,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression(#""text" = 'hello?'"#)
+                StructuredQueriesCore.SQLQueryExpression(#""text" = 'hello?'"#)
                 """
             }
             assertMacro {
@@ -178,7 +178,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression(#""text" = 'hello?1'"#)
+                StructuredQueriesCore.SQLQueryExpression(#""text" = 'hello?1'"#)
                 """
             }
             assertMacro {
@@ -187,7 +187,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression(#""text" = 'hello:hi'"#)
+                StructuredQueriesCore.SQLQueryExpression(#""text" = 'hello:hi'"#)
                 """
             }
             assertMacro {
@@ -196,7 +196,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression(#""text" = 'hello@hi'"#)
+                StructuredQueriesCore.SQLQueryExpression(#""text" = 'hello@hi'"#)
                 """
             }
             assertMacro {
@@ -205,7 +205,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression(#""text" = 'hello$hi'"#)
+                StructuredQueriesCore.SQLQueryExpression(#""text" = 'hello$hi'"#)
                 """
             }
         }
@@ -228,7 +228,7 @@ extension SnapshotTests {
                 """#
             } expansion: {
                 #"""
-                SQLQueryExpression(SQLQueryExpression("'\(raw: 42)'")
+                StructuredQueriesCore.SQLQueryExpression("'\(raw: 42)'")
                 """#
             }
         }
@@ -240,7 +240,7 @@ extension SnapshotTests {
                 """#
             } expansion: {
                 #"""
-                SQLQueryExpression(SQLQueryExpression("'\(raw: 42)'")
+                StructuredQueriesCore.SQLQueryExpression("'\(raw: 42)'")
                 """#
             }
         }
@@ -252,7 +252,7 @@ extension SnapshotTests {
                 """#
             } expansion: {
                 #"""
-                SQLQueryExpression(SQLQueryExpression("\($0.dueDate) < date('now', '-\(raw: monthsAgo) months')")
+                StructuredQueriesCore.SQLQueryExpression("\($0.dueDate) < date('now', '-\(raw: monthsAgo) months')")
                 """#
             }
         }
@@ -264,7 +264,7 @@ extension SnapshotTests {
                 """#
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression("''")
+                StructuredQueriesCore.SQLQueryExpression("''")
                 """
             }
             assertMacro {
@@ -277,7 +277,7 @@ extension SnapshotTests {
                 """#
             } expansion: {
                 #"""
-                SQLQueryExpression(SQLQueryExpression(
+                StructuredQueriesCore.SQLQueryExpression(
                   """
                   ""
                   """)
@@ -289,7 +289,7 @@ extension SnapshotTests {
                 """#
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression("[]")
+                StructuredQueriesCore.SQLQueryExpression("[]")
                 """
             }
         }
@@ -305,7 +305,7 @@ extension SnapshotTests {
                 """#
             } expansion: {
                 #"""
-                SQLQueryExpression(SQLQueryExpression(
+                StructuredQueriesCore.SQLQueryExpression(
                   """
                   SELECT 1 AS "a ""real"" one"
                   """)
@@ -356,7 +356,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression("json_extract(notes, '$.body')")
+                StructuredQueriesCore.SQLQueryExpression("json_extract(notes, '$.body')")
                 """
             }
         }
@@ -382,7 +382,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression("SELECT 1 -- TODO: Implement logic")
+                StructuredQueriesCore.SQLQueryExpression("SELECT 1 -- TODO: Implement logic")
                 """
             }
             assertMacro {
@@ -391,7 +391,7 @@ extension SnapshotTests {
                 """
             } expansion: {
                 """
-                SQLQueryExpression(SQLQueryExpression("SELECT '1 -- TODO: Implement logic'")
+                StructuredQueriesCore.SQLQueryExpression("SELECT '1 -- TODO: Implement logic'")
                 """
             }
             assertMacro {
@@ -405,7 +405,7 @@ extension SnapshotTests {
                 """#
             } expansion: {
                 #"""
-                SQLQueryExpression(SQLQueryExpression(
+                StructuredQueriesCore.SQLQueryExpression(
                   """
                   SELECT * FROM reminders  -- TODO: We should write columns out by hand
                   WHERE isCompleted        -- TODO: Double-check this logic
@@ -424,7 +424,7 @@ extension SnapshotTests {
                 """#
             } expansion: {
                 #"""
-                SQLQueryExpression(SQLQueryExpression(
+                StructuredQueriesCore.SQLQueryExpression(
                   """
                   SELECT (  -- TODO: ;-)
                     1 = 1

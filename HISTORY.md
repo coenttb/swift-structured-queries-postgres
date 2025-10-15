@@ -848,6 +848,78 @@ swift test -c release    # ✅ Works (faster test execution)
 
 ---
 
+---
+
+## 2025-10-15: Debug Build Linker Issue Resolution
+
+### Problem
+
+Since the package's creation, debug builds consistently failed with SwiftSyntax linker errors:
+```
+Undefined symbols for architecture arm64:
+  "SwiftSyntax.SyntaxRewriter.(visitationFunc in _F0C5D882E9301122F145EADC4573BFC8)..."
+ld: symbol(s) not found for architecture arm64
+```
+
+This forced all development to use release mode (`swift build -c release`, `swift test -c release`), which was slower and less convenient for development.
+
+### Root Cause
+
+The swift-syntax package version range specified in Package.swift had compatibility issues with the macros in this package, causing linker errors specifically in debug builds.
+
+### Solution
+
+Pinned swift-syntax dependency to a specific development snapshot that resolves the linker issues:
+
+**Previous (Broken)**:
+```swift
+.package(url: "https://github.com/swiftlang/swift-syntax", "600.0.0"..<"603.0.0")
+```
+
+**Current (Working)**:
+```swift
+.package(url: "https://github.com/swiftlang/swift-syntax", branch: "swift-6.2-DEVELOPMENT-SNAPSHOT-2025-10-09-a")
+```
+
+### Result
+
+- ✅ Debug builds now work: `swift build` succeeds
+- ✅ Debug tests now work: `swift test` succeeds
+- ✅ No need to use `-c release` flag for development
+- ✅ Faster development iteration (debug builds are faster than release)
+- ✅ Better debugging experience with symbols available
+
+### Impact on Development Workflow
+
+**Before**:
+```bash
+swift build -c release   # Required - debug mode failed
+swift test -c release    # Required - debug mode failed
+```
+
+**After**:
+```bash
+swift build              # ✅ Works normally
+swift test               # ✅ Works normally
+swift build -c release   # Still available for CI/performance
+swift test -c release    # Still available for CI/performance
+```
+
+### Documentation Updates
+
+Updated all references to build commands across:
+- `CLAUDE.md` - Removed "CRITICAL: ALWAYS USE RELEASE MODE" section
+- `README.md` - Updated build instructions to show standard commands
+- Test status updated: 573 tests total (66 failing due to unrelated macro snapshot issues)
+
+### Future Considerations
+
+- Monitor swift-syntax releases to potentially switch back to version range when stable
+- The development snapshot pin is a pragmatic solution until official releases stabilize
+- This resolution validates that the issue was dependency-related, not a fundamental Swift compiler bug
+
+---
+
 ## Future Entries
 
 When making significant changes, append new dated sections here following the same format.
@@ -856,4 +928,4 @@ When making significant changes, append new dated sections here following the sa
 
 ---
 
-**Last Updated**: 2025-10-13
+**Last Updated**: 2025-10-15

@@ -12,9 +12,9 @@ Type-safe PostgreSQL query builder for Swift. Build complex SQL queries with com
 
 - 🔒 **Type-safe query building** with compile-time validation
 - 🚀 **PostgreSQL-native features**: JSONB, triggers, window functions, CTEs, full-text search
-- 🔌 **Built for [swift-records](https://github.com/coenttb/swift-records)**: High-level database operations with connection pooling, transactions, and migrations
+- 🔌 **Built for [swift-records](https://github.com/coenttb/swift-records)**: The swift Postgres database package
 - ⚡ **Swift 6.1+** with strict concurrency
-- 🧪 **467 tests** with SQL snapshot testing
+- 🧪 **573 tests** with SQL snapshot testing
 
 ## Quick Start
 
@@ -48,17 +48,6 @@ dependencies: [
     .package(url: "https://github.com/coenttb/swift-structured-queries-postgres", from: "0.23.0")
 ]
 ```
-
-### Critical: Build Requirement
-
-**Always use release mode** for building and testing:
-
-```bash
-swift build -c release
-swift test -c release
-```
-
-Debug builds have Swift 6.x compiler linker issues. This is a known Swift compiler bug, not a package issue. Xcode debug builds work fine.
 
 ### Optional Features
 
@@ -449,7 +438,6 @@ User.insert { User(id: nil, name: "Alice") }
 
 - **Swift**: 6.1 or later
 - **Platforms**: macOS 13+, iOS 13+, Linux
-- **Build**: Use `swift build -c release` (debug mode has linker issues)
 - **PostgreSQL**: Designed for PostgreSQL 12+
 
 ### CI Status
