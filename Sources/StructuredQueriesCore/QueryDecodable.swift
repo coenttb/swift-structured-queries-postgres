@@ -187,13 +187,13 @@ extension QueryDecodable where Self: RawRepresentable, RawValue: QueryDecodable 
 }
 
 @usableFromInline
-struct DataCorruptedError: Error {
+struct DataCorruptedError: Swift.Error {
     @usableFromInline
     internal init() {}
 }
 
 @usableFromInline
-struct OverflowError: Error {
+struct OverflowError: Swift.Error {
     @usableFromInline
     internal init() {}
 }

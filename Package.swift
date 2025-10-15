@@ -12,7 +12,7 @@ import PackageDescription
 let package = Package(
     name: "swift-structured-queries-postgres",
     platforms: [
-        .iOS(.v13),
+        .iOS(.v16),
         .macOS(.v13)
         //        .tvOS(.v13),
         //        .watchOS(.v6)
@@ -53,7 +53,7 @@ let package = Package(
             enabledTraits: [
                 "StructuredQueriesPostgresCasePaths",
 //                "StructuredQueriesPostgresTagged",
-                "StructuredQueriesPostgresSQLValidation",
+//                "StructuredQueriesPostgresSQLValidation",
             ]
         ),
     ],

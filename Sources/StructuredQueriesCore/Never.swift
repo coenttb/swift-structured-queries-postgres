@@ -23,5 +23,5 @@ extension Never: Table {
         throw NotDecodable()
     }
 
-    private struct NotDecodable: Error {}
+    private struct NotDecodable: Swift.Error {}
 }

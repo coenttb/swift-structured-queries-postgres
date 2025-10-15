@@ -1422,7 +1422,7 @@ Conducted comprehensive audit against [PostgreSQL SELECT Documentation](https://
      // Define named window once
      Employee
          .window("dept_salary") {
-             WindowSpec()
+              $0
                  .partition(by: $0.department)
                  .order(by: $0.salary.desc())
          }
@@ -1729,3 +1729,49 @@ func distinct(
 **For historical context on how we arrived at these architectural decisions, see HISTORY.md**
 **For testing patterns and best practices, see TESTING.md**
 **For PostgreSQL Chapter 9 coverage, see "PostgreSQL Coverage" section above**
+
+
+
+I realize the AI output wasn't too helpful last time. Sorry about that..
+ was doing my best but squeezed for time.
+ 
+ Wanted to let you know about the next SQ-postgres release, and some firsthand experience that might be more useful!
+
+Release URL: v0.1.0 of swift-structured-queries-postgres:
+https://github.com/coenttb/swift-structured-queries-postgres/releases/ta
+g/0.1.0
+
+I've added quite a few PostgreSQL-specific features, all following SQ's API
+patterns, such as FTS, Triggers, Window functions, JSONB operations, Postgres Array, and advanced aggregates.
+
+FTS and Triggers sections were particularly tricky to get right. My compliments to you both for figuring those out from scatch.
+
+585 tests pass almost instantly, including parallel execution. I added
+postgres-nio behind a trait to upgrade assertSQL to both print generated
+ SQL AND validate syntax against PostgreSQL. swift-records has the full
+assertQuery (printing + database execution) for integration tests.
+
+Technical challanges I faced:
+
+Swift-syntax linker errors: Solved by pinning to
+swift-6.2-DEVELOPMENT-SNAPSHOT-2025-10-09-a. If you have insights on a
+more robust approach, I'd love to hear them.
+
+Replacing `any`: I noticed you mentioned some cases crash the compiler
+requiring `any`. I experimented and replaced most `any` uses with `some` without issues
+- though I'm on Xcode+toolchain 26.1 with latest swift-syntax snapshot, which
+might explain the difference. Happy to share specifics if you're
+curious.
+
+Upstream sync
+
+The packages have diverged significantly, so it's not currently trivial to sync via pull and merge. Workable to do it manually (AI helps), but if you have better ideas I'd love to hear. 
+
+I haven't had the chance to experiment with enum tables and nested
+Selections in a real-world project yet, but I'll let you know my
+findings once I get to that.
+
+Working on SQ and SQ-postgres is a joy because no other project I work on has such
+advanced mechanics, especially parameter packs. I learn something new every day.
+
+Thanks for building such a solid foundation!

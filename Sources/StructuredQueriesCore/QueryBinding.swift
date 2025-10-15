@@ -51,15 +51,15 @@ public enum QueryBinding: Hashable, Sendable {
     case invalid(QueryBindingError)
 
     @_disfavoredOverload
-    public static func invalid(_ error: any Error) -> Self {
+    public static func invalid(_ error: any Swift.Error) -> Self {
         .invalid(QueryBindingError(underlyingError: error))
     }
 }
 
 /// A type that wraps errors encountered when trying to bind a value to a statement.
-public struct QueryBindingError: Error, Hashable {
-    public let underlyingError: any Error
-    public init(underlyingError: any Error) {
+public struct QueryBindingError: Swift.Error, Hashable {
+    public let underlyingError: any Swift.Error
+    public init(underlyingError: any Swift.Error) {
         self.underlyingError = underlyingError
     }
     public static func == (lhs: Self, rhs: Self) -> Bool { true }

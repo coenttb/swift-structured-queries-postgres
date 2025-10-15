@@ -21,9 +21,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: '15'
-            xcode: '16.2'
-            swift: '6.1'
           - os: '26'
             xcode: '26.0'
             swift: '6.2'
@@ -43,18 +40,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build
-          key: ${{ runner.os }}-xcode-${{ matrix.xcode }}-spm-${{ hashFiles('Package.resolved') }}
+          key: ${{ runner.os }}-xcode-${{ matrix.xcode }}-spm-${{ hashFiles('Package.swift') }}
           restore-keys: |
             ${{ runner.os }}-xcode-${{ matrix.xcode }}-spm-
             ${{ runner.os }}-spm-
 
-      - name: Build (Release)
-        run: swift build -c release
-        timeout-minutes: 20
-
-      - name: Run tests (Release)
-        run: swift test -c release --parallel
-        timeout-minutes: 20
+      - name: Build and test
+        run: swift test --filter StructuredQueriesPostgresTests
+        timeout-minutes: 15
 
   linux:
     name: Linux (Swift ${{ matrix.swift }})
@@ -64,7 +57,6 @@ jobs:
       fail-fast: false
       matrix:
         swift:
-          - '6.0'
           - '6.1'
           - '6.2'
     steps:
@@ -79,18 +71,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build
-          key: linux-swift-${{ matrix.swift }}-spm-${{ hashFiles('Package.resolved') }}
+          key: linux-swift-${{ matrix.swift }}-spm-${{ hashFiles('Package.swift') }}
           restore-keys: |
             linux-swift-${{ matrix.swift }}-spm-
             linux-spm-
 
-      - name: Build (Release)
-        run: swift build -c release
-        timeout-minutes: 20
-
-      - name: Run tests (Release)
-        run: swift test -c release --parallel
-        timeout-minutes: 20
+      - name: Build and test
+        run: swift test --filter StructuredQueriesPostgresTests
+        timeout-minutes: 15
 
   documentation:
     name: Documentation

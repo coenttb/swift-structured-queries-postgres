@@ -56,7 +56,7 @@ extension Date {
                     ?? DateFormatter.iso8601(includingFractionalSeconds: false).date(
                         from: iso8601String)
             else {
-                struct InvalidDate: Error { let string: String }
+                struct InvalidDate: Swift.Error { let string: String }
                 throw InvalidDate(string: iso8601String)
             }
             self = date

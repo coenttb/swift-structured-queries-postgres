@@ -387,26 +387,24 @@ extension SnapshotTests {
             }
         }
         // NB: This currently crashes in Xcode 26.
-        #if swift(<6.2)
-            @Test func onConflict_invalidUpdateFilters() async {
-                withKnownIssue {
-                    await assertSQL(
-                        of: Reminder.insert {
-                            Reminder.Draft(remindersListID: 1)
-                        } where: {
-                            $0.isFlagged
-                        }
-                    ) {
-                        """
-                        INSERT INTO "reminders"
-                        ("id", "assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt")
-                        VALUES
-                        (NULL, NULL, NULL, false, false, '', NULL, 1, '', '2040-02-14 23:31:30.000')
-                        """
+        @Test func onConflict_invalidUpdateFilters() async {
+            await withKnownIssue {
+                await assertSQL(
+                    of: Reminder.insert {
+                        Reminder.Draft(remindersListID: 1)
+                    } where: {
+                        $0.isFlagged
                     }
+                ) {
+                    """
+                    INSERT INTO "reminders"
+                    ("id", "assignedUserID", "dueDate", "isCompleted", "isFlagged", "notes", "priority", "remindersListID", "title", "updatedAt")
+                    VALUES
+                    (DEFAULT, NULL, NULL, false, false, '', NULL, 1, '', '2040-02-14 23:31:30.000')
+                    """
                 }
             }
-        #endif
+        }
         @Test func onConflict_conditionalWhere() async {
             let condition = false
             await assertSQL(

@@ -104,6 +104,6 @@ extension QueryDecoder {
     }
 }
 
-public enum QueryDecodingError: Error {
+public enum QueryDecodingError: Swift.Error {
     case missingRequiredColumn
 }

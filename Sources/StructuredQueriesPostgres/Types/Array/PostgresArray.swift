@@ -121,7 +121,7 @@ extension Array: QueryDecodable where Element: QueryDecodable {
     }
 }
 
-private struct ArrayDecodingNotImplementedError: Error {}
+private struct ArrayDecodingNotImplementedError: Swift.Error {}
 
 // MARK: - Array QueryRepresentable Conformance
 

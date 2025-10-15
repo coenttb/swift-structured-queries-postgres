@@ -26,4 +26,4 @@ extension URL: QueryBindable {
     }
 }
 
-private struct InvalidURL: Error {}
+private struct InvalidURL: Swift.Error {}
