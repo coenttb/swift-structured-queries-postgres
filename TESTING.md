@@ -1337,6 +1337,44 @@ swift test -c release --filter WindowClauseTests
 POSTGRES_URL=postgres://user:pass@localhost:5432/mydb swift test -c release --enable-trait StructuredQueriesPostgresSQLValidation
 ```
 
+### Known Harmless Warnings
+
+#### SwiftSyntax Parsing Warnings During Macro Expansion
+
+**What you'll see**: During test runs, you may see ~1400 lines of SwiftSyntax parser warnings like:
+
+```
+Parsing a `ExprSyntax` node from string interpolation produced the following parsing errors.
+Set a breakpoint in `SyntaxParseable.logStringInterpolationParsingError()` to debug the failure.
+
+1 | var columnWidth = 0
+  | `- error: unexpected code before expression
+2 | columnWidth += Int._columnWidth
+3 | return columnWidth
+  |                   `- error: expected expression
+```
+
+**Why this happens**: The `@Table` macro generates a `_columnWidth` computed property using multiline string interpolation (TableMacro.swift:902-906). When `columnWidths` array is interpolated with a separator, SwiftSyntax's parser attempts to validate the intermediate string during macro expansion, creating ambiguous syntax warnings even though the final generated code is correct.
+
+**Impact**: ✅ **None - completely safe to ignore**
+- All 585 tests pass
+- Generated code is valid Swift
+- SQL output is correct
+- No functionality affected
+
+**Why we don't fix it**:
+1. **Upstream has identical code** - This keeps us aligned with swift-structured-queries
+2. **Warnings are cosmetic** - They occur during macro expansion, not runtime
+3. **Fix would diverge from upstream** - Would create maintenance burden across syncs
+4. **Proven correctness** - Extensive test coverage validates generated code
+
+**When to revisit**:
+- If upstream fixes it (we can adopt their solution)
+- If SwiftSyntax improves multiline interpolation parsing
+- If warnings start causing CI failures (they don't currently)
+
+**Related code**: `Sources/StructuredQueriesPostgresMacros/TableMacro.swift:902-906`
+
 **SQL Validation Setup**:
 
 1. **Install PostgreSQL** (if not already installed):

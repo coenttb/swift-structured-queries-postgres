@@ -17,6 +17,6 @@ import Testing
             "sql": SQLMacro.self,
             "Table": TableMacro.self,
         ],
-        record: .failed
+        record: .never
     )
 ) struct SnapshotTests {}

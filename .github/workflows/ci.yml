@@ -106,7 +106,7 @@ jobs:
           swift package \
             --allow-writing-to-directory ./docs \
             generate-documentation \
-            --target StructuredQueriesPostgresCore \
+            --target StructuredQueriesCore \
             --output-path ./docs \
             --transform-for-static-hosting \
             --hosting-base-path swift-structured-queries-postgres

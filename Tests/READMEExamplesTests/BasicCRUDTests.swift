@@ -7,7 +7,7 @@ import Testing
 /// Tests for Basic CRUD examples shown in README.md
 @Suite(
     "README Examples - Basic CRUD",
-    .snapshots(record: .failed)
+    .snapshots(record: .never)
 )
 struct BasicCRUDTests {
 
