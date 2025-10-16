@@ -10,14 +10,16 @@ This file tracks which aggregate functions have complete "lifted" support across
 
 ## File Organization
 
-Each aggregate has its own folder with primitives. Example structure:
+Each aggregate has its own folder following Swift naming conventions. Example structure:
 ```
 Count/
-  CountPrimitive.swift   # $0.id.count()
-  Table+Count.swift      # User.count()
-  Where+Count.swift      # User.where{...}.count()
-  Select+Count.swift     # User.select{...}.count()
+  QueryExpression+Count.swift   # $0.id.count() - extends QueryExpression
+  Table+Count.swift             # User.count() - extends Table
+  Where+Count.swift             # User.where{...}.count() - extends Where
+  Select+Count.swift            # User.select{...}.count() - extends Select
 ```
+
+File names indicate **what they extend**, making it clear where each method lives.
 
 ## Standard SQL Aggregates
 
