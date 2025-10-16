@@ -8,25 +8,45 @@ This file tracks which aggregate functions have complete "lifted" support across
 - 🟡 **Primitive Only** - Only column-level usage (`$0.column.aggregate()`)
 - ❌ **Missing** - Not yet implemented
 
+## File Organization
+
+Each aggregate has its own folder with primitives. Example structure:
+```
+Count/
+  CountPrimitive.swift   # $0.id.count()
+  Table+Count.swift      # User.count()
+  Where+Count.swift      # User.where{...}.count()
+  Select+Count.swift     # User.select{...}.count()
+```
+
 ## Standard SQL Aggregates
 
-| Aggregate    | Primitive | Table.X | Where.X | Select.X | Status | Notes |
-|--------------|-----------|---------|---------|----------|--------|-------|
-| `count`      | ✅        | ✅      | ✅      | ✅ (5)   | ✅     | Complete coverage |
-| `sum`        | ✅        | ❌      | ❌      | ❌       | 🟡     | TODO: Add lifted variants |
-| `avg`        | ✅        | ❌      | ❌      | ❌       | 🟡     | TODO: Add lifted variants |
-| `max`        | ✅        | ❌      | ❌      | ❌       | 🟡     | Column-level sufficient? |
-| `min`        | ✅        | ❌      | ❌      | ❌       | 🟡     | Column-level sufficient? |
-| `total`      | ✅        | ❌      | ❌      | ❌       | 🟡     | Low priority (SQLite-specific) |
-| `groupConcat`| ✅        | ❌      | ❌      | ❌       | 🟡     | Low priority (complex args) |
+| Aggregate    | Primitive | Table.X | Where.X | Select.X | Folder | Status | Notes |
+|--------------|-----------|---------|---------|----------|--------|--------|-------|
+| `count`      | ✅        | ✅      | ✅      | ✅ (5)   | `Count/` | ✅ | Complete coverage |
+| `sum`        | ✅        | ❌      | ❌      | ❌       | _(in Count/)_ | 🟡 | Primitive only |
+| `avg`        | ✅        | ❌      | ❌      | ❌       | `Avg/` | 🟡 | Column-level sufficient? |
+| `max`        | ✅        | ❌      | ❌      | ❌       | `Max/` | 🟡 | Column-level sufficient? |
+| `min`        | ✅        | ❌      | ❌      | ❌       | `Min/` | 🟡 | Column-level sufficient? |
+| `total`      | ✅        | ❌      | ❌      | ❌       | `Total/` | 🟡 | Low priority (SQLite-specific) |
+| `groupConcat`| ✅        | ❌      | ❌      | ❌       | `GroupConcat/` | 🟡 | Low priority (complex args) |
 
 ## PostgreSQL-Specific Aggregates
 
-| Aggregate     | Primitive | Table.X | Where.X | Select.X | Status | Notes |
-|---------------|-----------|---------|---------|----------|--------|-------|
-| `arrayAgg`    | ✅        | ❌      | ❌      | ❌       | 🟡     | PostgreSQL arrays |
-| `stringAgg`   | ✅        | ❌      | ❌      | ❌       | 🟡     | PostgreSQL string concat |
-| `jsonbAgg`    | ✅        | ❌      | ❌      | ❌       | 🟡     | PostgreSQL JSONB |
+| Aggregate     | Primitive | Table.X | Where.X | Select.X | Folder | Status | Notes |
+|---------------|-----------|---------|---------|----------|--------|--------|-------|
+| `arrayAgg`    | ✅        | ❌      | ❌      | ❌       | `ArrayAgg/` | 🟡 | PostgreSQL arrays |
+| `stringAgg`   | ✅        | ❌      | ❌      | ❌       | `StringAgg/` | 🟡 | PostgreSQL string concat |
+| `jsonAgg`     | ✅        | ❌      | ❌      | ❌       | `JsonAgg/` | 🟡 | PostgreSQL JSON |
+| `jsonbAgg`    | ✅        | ❌      | ❌      | ❌       | `JsonbAgg/` | 🟡 | PostgreSQL JSONB |
+| Statistical   | ✅        | ❌      | ❌      | ❌       | `Statistical/` | 🟡 | stddev, variance, etc. |
+
+## Infrastructure
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `AggregateFunction` | `_Infrastructure/` | Main aggregate struct with FILTER support |
+| `SimpleAggregateFunction` | `_Infrastructure/` | Helper for single/two-arg aggregates |
 
 ## Implementation Status
 
@@ -59,39 +79,15 @@ Due to Swift's type system, each Select.aggregate method requires 5 overloads:
   - NO → Column-level is sufficient
 
 **Priority for lifting:**
-1. **High**: count (✅ done), sum, avg
-2. **Medium**: max, min
-3. **Low**: total, groupConcat, arrayAgg, stringAgg, jsonbAgg
-
-## File Locations
-
-### Primitives (PostgreSQL SQL generation)
-```
-Sources/StructuredQueriesPostgres/Functions/Aggregate/
-  Count/CountPrimitive.swift
-  Sum/SumPrimitive.swift      (to be created)
-  Avg/AvgPrimitive.swift      (to be created)
-```
-
-### Lifted Variants (Universal query building)
-```
-Sources/StructuredQueriesCore/Functions/Aggregate/
-  Count/
-    Table+Count.swift
-    Where+Count.swift
-    Select+Count.swift
-  Sum/                         (to be created)
-    Table+Sum.swift
-    Where+Sum.swift
-    Select+Sum.swift
-```
+1. **High**: count (✅ done)
+2. **Medium**: sum, avg
+3. **Low**: max, min, total, groupConcat, arrayAgg, stringAgg, jsonbAgg, statistical
 
 ## Adding a New Lifted Aggregate
 
 1. Create folder: `Aggregate/{Name}/`
-2. Extract primitive from `StandardAggregates.swift` → `{Name}Primitive.swift`
-3. Copy `Count/Table+Count.swift` → `{Name}/Table+{Name}.swift`
-4. Find-replace: `count` → `{name}`, update types
-5. Repeat for Where and Select
-6. Update this coverage matrix
-7. Build & test
+2. Copy `Count/Table+Count.swift` → `{Name}/Table+{Name}.swift`
+3. Find-replace: `count` → `{name}`, update types
+4. Repeat for Where and Select
+5. Update this coverage matrix
+6. Build & test

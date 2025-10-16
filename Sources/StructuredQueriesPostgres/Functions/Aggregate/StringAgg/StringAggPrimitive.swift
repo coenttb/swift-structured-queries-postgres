@@ -1,7 +1,7 @@
 import Foundation
 import StructuredQueriesCore
 
-// MARK: - PostgreSQL String Aggregation Functions
+// MARK: - PostgreSQL STRING_AGG Function
 
 extension QueryExpression where QueryValue == String {
     /// PostgreSQL's `STRING_AGG` function - aggregates string values with a separator
@@ -120,5 +120,24 @@ extension QueryExpression {
         }
 
         return SQLQueryExpression(fragment, as: String?.self)
+    }
+}
+
+// MARK: - Legacy TableColumn API (deprecated in favor of QueryExpression)
+
+extension TableColumn {
+    /// PostgreSQL STRING_AGG function - concatenates strings with a separator
+    /// Equivalent to SQLite's GROUP_CONCAT
+    ///
+    /// ```swift
+    /// User.select { $0.name.stringAgg(", ") }
+    /// // SELECT string_agg("users"."name", ', ') FROM "users"
+    /// ```
+    public func stringAgg(_ separator: String) -> some QueryExpression<String?> {
+        SimpleAggregateFunction<String?>(
+            name: "string_agg",
+            column: queryFragment,
+            separator: separator.queryFragment
+        )
     }
 }
