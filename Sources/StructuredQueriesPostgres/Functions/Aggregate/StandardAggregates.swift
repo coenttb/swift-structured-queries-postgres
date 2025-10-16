@@ -1,36 +1,5 @@
 import StructuredQueriesCore
 
-extension QueryExpression where QueryValue: QueryBindable {
-    /// A count aggregate of this expression.
-    ///
-    /// Counts the number of non-`NULL` times the expression appears in a group.
-    ///
-    /// ```swift
-    /// Reminder.select { $0.id.count() }
-    /// // SELECT count("reminders"."id") FROM "reminders"
-    ///
-    /// Reminder.select { $0.title.count(distinct: true) }
-    /// // SELECT count(DISTINCT "reminders"."title") FROM "reminders"
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - isDistinct: Whether or not to include a `DISTINCT` clause, which filters duplicates from
-    ///     the aggregation.
-    ///   - filter: A `FILTER` clause to apply to the aggregation.
-    /// - Returns: A count aggregate of this expression.
-    public func count(
-        distinct isDistinct: Bool = false,
-        filter: (some QueryExpression<Bool>)? = Bool?.none
-    ) -> some QueryExpression<Int> {
-        AggregateFunction(
-            "count",
-            isDistinct: isDistinct,
-            [queryFragment],
-            filter: filter?.queryFragment
-        )
-    }
-}
-
 extension QueryExpression
 where QueryValue: _OptionalPromotable, QueryValue._Optionalized.Wrapped == String {
     /// A string concatenation aggregate of this expression
@@ -140,35 +109,6 @@ where QueryValue: _OptionalPromotable, QueryValue._Optionalized.Wrapped: Numeric
             "avg", isDistinct: isDistinct, [queryFragment], filter: filter?.queryFragment)
     }
 
-    /// An sum aggregate of this expression.
-    ///
-    /// ```swift
-    /// Item.select { $0.quantity.sum() }
-    /// // SELECT sum("items"."quantity") FROM "items"
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - isDistinct: Whether or not to include a `DISTINCT` clause, which filters duplicates from
-    ///     the aggregation.
-    ///   - filter: A `FILTER` clause to apply to the aggregation.
-    /// - Returns: A sum aggregate of this expression.
-    public func sum(
-        distinct isDistinct: Bool = false,
-        filter: (some QueryExpression<Bool>)? = Bool?.none
-    ) -> SQLQueryExpression<QueryValue._Optionalized> {
-        // NB: We must explicitly erase here to avoid a runtime crash with opaque return types
-        // TODO: Report issue to Swift team.
-        SQLQueryExpression(
-            AggregateFunction<QueryValue._Optionalized>(
-                "sum",
-                isDistinct: isDistinct,
-                [queryFragment],
-                filter: filter?.queryFragment
-            )
-            .queryFragment
-        )
-    }
-
     /// An total aggregate of this expression.
     ///
     /// ```swift
@@ -191,23 +131,6 @@ where QueryValue: _OptionalPromotable, QueryValue._Optionalized.Wrapped: Numeric
             [queryFragment],
             filter: filter?.queryFragment
         )
-    }
-}
-
-extension QueryExpression where Self == AggregateFunction<Int> {
-    /// A `count(*)` aggregate.
-    ///
-    /// ```swift
-    /// Reminder.select { .count() }
-    /// // SELECT count(*) FROM "reminders"
-    /// ```
-    ///
-    /// - Parameter filter: A `FILTER` clause to apply to the aggregation.
-    /// - Returns: A `count(*)` aggregate.
-    public static func count(
-        filter: (any QueryExpression<Bool>)? = nil
-    ) -> Self {
-        AggregateFunction("count", ["*"], filter: filter?.queryFragment)
     }
 }
 
@@ -249,3 +172,4 @@ public struct AggregateFunction<QueryValue>: QueryExpression, Sendable {
         return query
     }
 }
+
