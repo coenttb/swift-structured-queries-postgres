@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "943A70E3-7B07-42F8-AB3E-5A1CBBC3876D",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "StructuredQueriesPostgresTests",
+        "name" : "StructuredQueriesPostgresTests"
+      }
+    }
+  ],
+  "version" : 1
+}
