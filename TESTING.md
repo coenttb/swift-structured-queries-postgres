@@ -46,13 +46,13 @@ This is a living testing guide. Update this file when test patterns evolve.
 
 ```bash
 # Development (fast, no PostgreSQL required)
-swift test -c release
+swift test
 
 # CI/CD (validates SQL, requires PostgreSQL)
-swift test -c release --enable-trait StructuredQueriesPostgresSQLValidation
+swift test --enable-trait StructuredQueriesPostgresSQLValidation
 ```
 
-**Note**: Always use `-c release` (debug builds have linker errors)
+**Note**: Always use ` (debug builds have linker errors)
 
 ---
 
@@ -228,7 +228,7 @@ EXPLAIN (FORMAT TEXT) <your_sql>
 
 **Requirements**:
 - Requires PostgreSQL database connection
-- Enable trait: `swift test -c release --enable-trait StructuredQueriesPostgresSQLValidation`
+- Enable trait: `swift test --enable-trait StructuredQueriesPostgresSQLValidation`
 - Or set default in Package.swift
 - Connection via `POSTGRES_URL` env var or defaults to `postgres://postgres@localhost:5432/test`
 
@@ -1325,16 +1325,16 @@ Actual:
 
 ```bash
 # Run all tests WITHOUT SQL validation (fast, ~0.5s)
-swift test -c release
+swift test
 
 # Run all tests WITH SQL validation (slower, ~2-3s, requires PostgreSQL)
-swift test -c release --enable-trait StructuredQueriesPostgresSQLValidation
+swift test --enable-trait StructuredQueriesPostgresSQLValidation
 
 # Run specific test suite
-swift test -c release --filter WindowClauseTests
+swift test --filter WindowClauseTests
 
 # Run with custom PostgreSQL connection
-POSTGRES_URL=postgres://user:pass@localhost:5432/mydb swift test -c release --enable-trait StructuredQueriesPostgresSQLValidation
+POSTGRES_URL=postgres://user:pass@localhost:5432/mydb swift test --enable-trait StructuredQueriesPostgresSQLValidation
 ```
 
 ### Known Harmless Warnings

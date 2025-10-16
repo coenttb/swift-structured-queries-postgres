@@ -13,13 +13,13 @@ import StructuredQueriesCore
 /// PostgreSQL's `array_append(anyarray, anyelement)` function.
 ///
 /// ```swift
-/// Post.select { $0.tags.arrayAppend("swift") }
+/// Post.select { $0.tags.append("swift") }
 /// // SELECT array_append("posts"."tags", 'swift') FROM "posts"
 /// ```
 ///
 /// - Parameter element: The element to append to the array
 /// - Returns: A new array with the element appended
-public func arrayAppend<Element>(
+public func append<Element>(
     _ array: some QueryExpression<[Element]>,
     _ element: Element
 ) -> some QueryExpression<[Element]> where Element: QueryBindable {
@@ -34,10 +34,10 @@ extension QueryExpression where QueryValue: Collection, QueryValue.Element: Quer
     /// Appends an element to the end of an array
     ///
     /// ```swift
-    /// Post.select { $0.tags.arrayAppend("swift") }
+    /// Post.select { $0.tags.append("swift") }
     /// // SELECT array_append("posts"."tags", 'swift') FROM "posts"
     /// ```
-    public func arrayAppend(_ element: QueryValue.Element) -> some QueryExpression<QueryValue> {
+    public func append(_ element: QueryValue.Element) -> some QueryExpression<QueryValue> {
         SQLQueryExpression(
             "array_append(\(self.queryFragment), \(bind: element))",
             as: QueryValue.self

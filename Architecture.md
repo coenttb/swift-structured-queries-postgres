@@ -601,7 +601,7 @@ PostgreSQL's `::type` casting syntax for explicit type conversions.
 - `ilike()` - Case-insensitive LIKE operator (PostgreSQL-specific)
 - Supports ESCAPE clause for literal wildcard matching
 
-**Conditional Functions** (`Functions/Conditional/PostgreSQLConditional.swift`):
+**Conditional Functions** (`Functions/Conditional/Conditional.swift`):
 - `coalesce()` - Return first non-NULL value (PostgreSQL's IFNULL equivalent)
 - `exists()` - Test if subquery returns rows
 - `notExists()` - Test if subquery returns no rows

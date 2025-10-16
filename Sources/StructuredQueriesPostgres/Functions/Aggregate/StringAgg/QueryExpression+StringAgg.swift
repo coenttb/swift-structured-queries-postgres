@@ -134,10 +134,10 @@ extension TableColumn {
     /// // SELECT string_agg("users"."name", ', ') FROM "users"
     /// ```
     public func stringAgg(_ separator: String) -> some QueryExpression<String?> {
-        SimpleAggregateFunction<String?>(
-            name: "string_agg",
-            column: queryFragment,
-            separator: separator.queryFragment
-        )
+        var fragment: QueryFragment = "string_agg("
+        fragment.append(queryFragment)
+        fragment.append(", \(bind: separator)")
+        fragment.append(")")
+        return SQLQueryExpression(fragment, as: String?.self)
     }
 }

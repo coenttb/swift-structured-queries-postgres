@@ -48,7 +48,6 @@ File names indicate **what they extend**, making it clear where each method live
 | Component | Location | Purpose |
 |-----------|----------|---------|
 | `AggregateFunction` | `_Infrastructure/` | Main aggregate struct with FILTER support |
-| `SimpleAggregateFunction` | `_Infrastructure/` | Helper for single/two-arg aggregates |
 
 ## Implementation Status
 
