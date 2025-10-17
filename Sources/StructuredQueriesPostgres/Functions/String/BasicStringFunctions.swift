@@ -30,15 +30,6 @@ extension QueryExpression where QueryValue: Collection {
     public func length() -> some QueryExpression<Int> {
         QueryFunction("length", self)
     }
-
-    @available(
-        *,
-        deprecated,
-        message: "Use 'count()' for SQL's 'count' aggregate function, or 'length()'"
-    )
-    public var count: some QueryExpression<Int> {
-        length()
-    }
 }
 
 extension QueryExpression where QueryValue == String {
