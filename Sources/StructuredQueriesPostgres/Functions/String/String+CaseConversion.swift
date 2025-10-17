@@ -97,36 +97,6 @@ extension PostgreSQL.String {
 
 // MARK: - QueryExpression Extension (Fluent API)
 
-extension QueryExpression where QueryValue: _OptionalPromotable<Swift.String?> {
-    /// Converts the string to lowercase
-    ///
-    /// PostgreSQL's `lower()` function.
-    ///
-    /// ```swift
-    /// User.select { $0.email.lower() }
-    /// // SELECT lower("users"."email") FROM "users"
-    /// ```
-    ///
-    /// - Returns: An expression wrapped with the `lower` function.
-    public func lower() -> some QueryExpression<QueryValue> {
-        QueryFunction("lower", self)
-    }
-
-    /// Converts the string to uppercase
-    ///
-    /// PostgreSQL's `upper()` function.
-    ///
-    /// ```swift
-    /// User.select { $0.name.upper() }
-    /// // SELECT upper("users"."name") FROM "users"
-    /// ```
-    ///
-    /// - Returns: An expression wrapped with the `upper` function.
-    public func upper() -> some QueryExpression<QueryValue> {
-        QueryFunction("upper", self)
-    }
-}
-
 extension QueryExpression where QueryValue == Swift.String {
     /// Converts the string to uppercase
     ///
