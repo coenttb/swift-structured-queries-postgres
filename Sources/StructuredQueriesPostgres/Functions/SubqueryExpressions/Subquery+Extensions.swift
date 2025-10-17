@@ -1,82 +1,6 @@
 import Foundation
 import StructuredQueriesCore
 
-// MARK: - PostgreSQL Quantified Comparison Operators
-//
-// PostgreSQL Chapter 9.24: Subquery Expressions
-// https://www.postgresql.org/docs/18/functions-subquery.html
-//
-// Quantified comparison operators for comparing a value against a set of values from a subquery.
-// Syntax: expression operator ANY/ALL/SOME (subquery)
-
-// MARK: - ANY Operator
-
-/// Wrapper for ANY quantified comparison
-///
-/// PostgreSQL's ANY operator returns true if the comparison is true for any value in the subquery.
-///
-/// ```swift
-/// Product.where { $0.price < .any(competitorPrices) }
-/// // SELECT … FROM "products" WHERE "products"."price" < ANY (SELECT price FROM competitors)
-/// ```
-public struct AnyQuantifier<Value: QueryBindable>: QueryExpression {
-    public typealias QueryValue = Value
-
-    public let queryFragment: QueryFragment
-
-    public init<Q: QueryExpression>(_ subquery: Q) where Q.QueryValue == [Value] {
-        self.queryFragment = "ANY (\(subquery.queryFragment))"
-    }
-
-    public init(_ subquery: QueryFragment) {
-        self.queryFragment = "ANY (\(subquery))"
-    }
-}
-
-/// Wrapper for ALL quantified comparison
-///
-/// PostgreSQL's ALL operator returns true if the comparison is true for all values in the subquery.
-///
-/// ```swift
-/// User.where { $0.score > .all(teamScores) }
-/// // SELECT … FROM "users" WHERE "users"."score" > ALL (SELECT score FROM team_members)
-/// ```
-public struct AllQuantifier<Value: QueryBindable>: QueryExpression {
-    public typealias QueryValue = Value
-
-    public let queryFragment: QueryFragment
-
-    public init<Q: QueryExpression>(_ subquery: Q) where Q.QueryValue == [Value] {
-        self.queryFragment = "ALL (\(subquery.queryFragment))"
-    }
-
-    public init(_ subquery: QueryFragment) {
-        self.queryFragment = "ALL (\(subquery))"
-    }
-}
-
-/// Wrapper for SOME quantified comparison (synonym for ANY)
-///
-/// PostgreSQL's SOME operator is a synonym for ANY.
-///
-/// ```swift
-/// Product.where { $0.price < .some(competitorPrices) }
-/// // SELECT … FROM "products" WHERE "products"."price" < SOME (SELECT price FROM competitors)
-/// ```
-public struct SomeQuantifier<Value: QueryBindable>: QueryExpression {
-    public typealias QueryValue = Value
-
-    public let queryFragment: QueryFragment
-
-    public init<Q: QueryExpression>(_ subquery: Q) where Q.QueryValue == [Value] {
-        self.queryFragment = "SOME (\(subquery.queryFragment))"
-    }
-
-    public init(_ subquery: QueryFragment) {
-        self.queryFragment = "SOME (\(subquery))"
-    }
-}
-
 // MARK: - Quantified Comparison Extensions
 
 extension QueryExpression where QueryValue: Comparable & QueryBindable {
@@ -315,9 +239,9 @@ extension QueryExpression where QueryValue: Equatable & QueryBindable {
 /// Product.where { $0.price < any(competitorPrices) }
 /// // WHERE "products"."price" < ANY (SELECT price FROM competitors)
 /// ```
-public func any<Value: QueryBindable, Q: QueryExpression>(_ subquery: Q) -> AnyQuantifier<Value>
+public func any<Value: QueryBindable, Q: QueryExpression>(_ subquery: Q) -> Subquery.`Any`<Value>
 where Q.QueryValue == [Value] {
-    AnyQuantifier(subquery)
+    Subquery.`Any`(subquery)
 }
 
 /// Creates an ALL quantifier from a subquery
@@ -326,9 +250,9 @@ where Q.QueryValue == [Value] {
 /// User.where { $0.score > all(teamScores) }
 /// // WHERE "users"."score" > ALL (SELECT score FROM team_members)
 /// ```
-public func all<Value: QueryBindable, Q: QueryExpression>(_ subquery: Q) -> AllQuantifier<Value>
+public func all<Value: QueryBindable, Q: QueryExpression>(_ subquery: Q) -> Subquery.`All`<Value>
 where Q.QueryValue == [Value] {
-    AllQuantifier(subquery)
+    Subquery.`All`(subquery)
 }
 
 /// Creates a SOME quantifier from a subquery (synonym for ANY)
@@ -337,7 +261,7 @@ where Q.QueryValue == [Value] {
 /// Product.where { $0.price < some(competitorPrices) }
 /// // WHERE "products"."price" < SOME (SELECT price FROM competitors)
 /// ```
-public func some<Value: QueryBindable, Q: QueryExpression>(_ subquery: Q) -> SomeQuantifier<Value>
+public func some<Value: QueryBindable, Q: QueryExpression>(_ subquery: Q) -> Subquery.`Some`<Value>
 where Q.QueryValue == [Value] {
-    SomeQuantifier(subquery)
+    Subquery.`Some`(subquery)
 }
