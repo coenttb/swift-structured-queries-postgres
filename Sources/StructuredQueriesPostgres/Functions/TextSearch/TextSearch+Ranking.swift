@@ -129,7 +129,7 @@ extension TableDefinition where QueryValue: FullTextSearchable {
         var fragment: QueryFragment = "ts_rank("
 
         // Weight array as PostgreSQL array constructor: ARRAY[0.1, 0.2, 0.4, 1.0]
-        let weightsStr = weights.map { "\($0)" }.joined(separator: ", ")
+        let weightsStr: String = weights.map { String($0) }.joined(separator: ", ")
         fragment.append("ARRAY[\(raw: weightsStr)], ")
 
         // Vector and query
@@ -172,7 +172,7 @@ extension TableDefinition where QueryValue: FullTextSearchable {
         var fragment: QueryFragment = "ts_rank_cd("
 
         // Weight array as PostgreSQL array constructor: ARRAY[0.1, 0.2, 0.4, 1.0]
-        let weightsStr = weights.map { "\($0)" }.joined(separator: ", ")
+        let weightsStr: String = weights.map { String($0) }.joined(separator: ", ")
         fragment.append("ARRAY[\(raw: weightsStr)], ")
 
         // Vector and query
@@ -248,7 +248,7 @@ extension TableColumnExpression where Value == TextSearch.Vector {
         var fragment: QueryFragment = "ts_rank("
 
         // Weight array as PostgreSQL array constructor: ARRAY[0.1, 0.2, 0.4, 1.0]
-        let weightsStr = weights.map { "\($0)" }.joined(separator: ", ")
+        let weightsStr: String = weights.map { String($0) }.joined(separator: ", ")
         fragment.append("ARRAY[\(raw: weightsStr)], ")
 
         // Vector and query
