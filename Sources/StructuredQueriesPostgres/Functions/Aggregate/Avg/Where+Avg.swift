@@ -12,12 +12,12 @@ extension Where {
     ///   - expression: A closure that returns the column to average.
     ///   - filter: An optional additional filter clause (FILTER WHERE) to apply to the aggregation.
     /// - Returns: A select statement that returns the average as `Double?`.
+    @inlinable
     public func avg<Value>(
         of expression: (From.TableColumns) -> some QueryExpression<Value>
     ) -> Select<Double?, From, ()>
     where Value: _OptionalPromotable, Value._Optionalized.Wrapped: Numeric {
-        let expr = expression(From.columns)
-        return asSelect().select { _ in expr.avg() }
+        _aggregateSelect(of: expression) { $0.avg() }
     }
 
     /// Computes the average of a numeric column for rows matching the WHERE clause with a filter.
@@ -31,15 +31,12 @@ extension Where {
     ///   - expression: A closure that returns the column to average.
     ///   - filter: A FILTER clause to apply to the aggregation.
     /// - Returns: A select statement that returns the average as `Double?`.
+    @inlinable
     public func avg<Value, Filter: QueryExpression<Bool>>(
         of expression: (From.TableColumns) -> some QueryExpression<Value>,
         filter: @escaping (From.TableColumns) -> Filter
     ) -> Select<Double?, From, ()>
     where Value: _OptionalPromotable, Value._Optionalized.Wrapped: Numeric {
-        asSelect()
-            .select { _ in 
-                expression(From.columns)
-                    .avg(filter: filter(From.columns))
-            }
+        _aggregateSelect(of: expression, filter: filter) { $0.avg(filter: $1) }
     }
 }

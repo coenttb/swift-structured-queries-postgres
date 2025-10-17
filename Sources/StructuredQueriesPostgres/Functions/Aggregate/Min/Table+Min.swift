@@ -13,6 +13,7 @@ extension Table {
     ///
     /// - Parameter expression: A closure that takes table columns and returns an expression to find the minimum of.
     /// - Returns: A select statement that selects the minimum of the expression.
+    @inlinable
     public static func min<Value>(
         of expression: (TableColumns) -> some QueryExpression<Value>
     ) -> Select<Value._Optionalized.Wrapped?, Self, ()>
@@ -20,11 +21,7 @@ extension Table {
         Value: QueryBindable & _OptionalPromotable,
         Value._Optionalized.Wrapped: QueryRepresentable
     {
-        Self.all
-            .asSelect()
-            .select { _ in
-                expression(columns).min()
-            }
+        _aggregateSelect(of: expression) { $0.min() }
     }
 
     /// A select statement for the minimum of an expression from this table with a filter clause.
@@ -41,6 +38,7 @@ extension Table {
     ///   - expression: A closure that takes table columns and returns an expression to find the minimum of.
     ///   - filter: A `FILTER` clause to apply to the aggregation.
     /// - Returns: A select statement that selects the minimum of the expression.
+    @inlinable
     public static func min<Value, Filter: QueryExpression<Bool>>(
         of expression: (TableColumns) -> some QueryExpression<Value>,
         filter: @escaping (TableColumns) -> Filter
@@ -49,10 +47,6 @@ extension Table {
         Value: QueryBindable & _OptionalPromotable,
         Value._Optionalized.Wrapped: QueryRepresentable
     {
-        Self.all
-            .asSelect()
-            .select { _ in
-                expression(columns).min(filter: filter(columns))
-            }
+        _aggregateSelect(of: expression, filter: filter) { $0.min(filter: $1) }
     }
 }

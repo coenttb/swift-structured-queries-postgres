@@ -13,6 +13,7 @@ extension Where {
     ///
     /// - Parameter expression: A closure that takes table columns and returns an expression to find the maximum of.
     /// - Returns: A select statement that selects the maximum of the expression.
+    @inlinable
     public func max<Value>(
         of expression: (From.TableColumns) -> some QueryExpression<Value>
     ) -> Select<Value._Optionalized.Wrapped?, From, ()>
@@ -20,8 +21,7 @@ extension Where {
         Value: QueryBindable & _OptionalPromotable,
         Value._Optionalized.Wrapped: QueryRepresentable
     {
-        let expr = expression(From.columns)
-        return asSelect().select { _ in expr.max() }
+        _aggregateSelect(of: expression) { $0.max() }
     }
 
     /// A select statement for the maximum of an expression from the filtered table with a filter clause.
@@ -35,6 +35,7 @@ extension Where {
     ///   - expression: A closure that takes table columns and returns an expression to find the maximum of.
     ///   - filter: A `FILTER` clause to apply to the aggregation.
     /// - Returns: A select statement that selects the maximum of the expression.
+    @inlinable
     public func max<Value, Filter: QueryExpression<Bool>>(
         of expression: (From.TableColumns) -> some QueryExpression<Value>,
         filter: @escaping (From.TableColumns) -> Filter
@@ -43,10 +44,6 @@ extension Where {
         Value: QueryBindable & _OptionalPromotable,
         Value._Optionalized.Wrapped: QueryRepresentable
     {
-        return asSelect()
-            .select { _ in
-                expression(From.columns)
-                    .max(filter: filter(From.columns))
-            }
+        _aggregateSelect(of: expression, filter: filter) { $0.max(filter: $1) }
     }
 }

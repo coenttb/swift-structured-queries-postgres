@@ -19,6 +19,10 @@ where QueryValue: _OptionalPromotable, QueryValue._Optionalized.Wrapped: Numeric
         filter: (some QueryExpression<Bool>)? = Bool?.none
     ) -> some QueryExpression<Double?> {
         AggregateFunction(
-            "avg", isDistinct: isDistinct, [queryFragment], filter: filter?.queryFragment)
+            "avg",
+            isDistinct: isDistinct,
+            [queryFragment],
+            filter: filter?.queryFragment
+        )
     }
 }

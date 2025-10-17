@@ -13,15 +13,12 @@ extension Table {
     ///
     /// - Parameter expression: A closure that takes table columns and returns an expression to average.
     /// - Returns: A select statement that selects the average of the expression.
+    @inlinable
     public static func avg<Value>(
         of expression: (TableColumns) -> some QueryExpression<Value>
     ) -> Select<Double?, Self, ()>
     where Value: _OptionalPromotable, Value._Optionalized.Wrapped: Numeric {
-        Self.all
-            .asSelect()
-            .select { _ in
-                expression(columns).avg()
-            }
+        _aggregateSelect(of: expression) { $0.avg() }
     }
 
     /// A select statement for the average of an expression from this table with a filter clause.
@@ -38,15 +35,12 @@ extension Table {
     ///   - expression: A closure that takes table columns and returns an expression to average.
     ///   - filter: A `FILTER` clause to apply to the aggregation.
     /// - Returns: A select statement that selects the average of the expression.
+    @inlinable
     public static func avg<Value, Filter: QueryExpression<Bool>>(
         of expression: (TableColumns) -> some QueryExpression<Value>,
         filter: @escaping (TableColumns) -> Filter
     ) -> Select<Double?, Self, ()>
     where Value: _OptionalPromotable, Value._Optionalized.Wrapped: Numeric {
-        Self.all
-            .asSelect()
-            .select { _ in
-                expression(columns).avg(filter: filter(columns))
-            }
+        _aggregateSelect(of: expression, filter: filter) { $0.avg(filter: $1) }
     }
 }

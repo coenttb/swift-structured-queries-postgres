@@ -13,6 +13,7 @@ extension Table {
     ///
     /// - Parameter expression: A closure that takes table columns and returns an expression to sum.
     /// - Returns: A select statement that selects the sum of the expression.
+    @inlinable
     public static func sum<Value>(
         of expression: (TableColumns) -> some QueryExpression<Value>
     ) -> Select<Value._Optionalized.Wrapped?, Self, ()>
@@ -21,11 +22,7 @@ extension Table {
         Value._Optionalized.Wrapped: Numeric,
         Value._Optionalized.Wrapped: QueryRepresentable
     {
-        Self.all
-            .asSelect()
-            .select { _ in
-                expression(columns).sum()
-            }
+        _aggregateSelect(of: expression) { $0.sum() }
     }
 
     /// A select statement for the sum of an expression from this table with a filter clause.
@@ -42,6 +39,7 @@ extension Table {
     ///   - expression: A closure that takes table columns and returns an expression to sum.
     ///   - filter: A `FILTER` clause to apply to the aggregation.
     /// - Returns: A select statement that selects the sum of the expression.
+    @inlinable
     public static func sum<Value, Filter: QueryExpression<Bool>>(
         of expression: (TableColumns) -> some QueryExpression<Value>,
         filter: @escaping (TableColumns) -> Filter
@@ -51,10 +49,6 @@ extension Table {
         Value._Optionalized.Wrapped: Numeric,
         Value._Optionalized.Wrapped: QueryRepresentable
     {
-        Self.all
-            .asSelect()
-            .select { _ in
-                expression(columns).sum(filter: filter(columns))
-            }
+        _aggregateSelect(of: expression, filter: filter) { $0.sum(filter: $1) }
     }
 }
