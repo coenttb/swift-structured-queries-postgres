@@ -278,8 +278,8 @@ extension SnapshotTests.UUIDFunctions {
                 of: UUIDEvent.insert {
                     ($0.id, $0.title)
                 } values: {
-                    (PostgreSQL.UUID.timeOrdered(shift: "-1 day"), #sql("'Yesterday\\'s Event'"))
-                    (PostgreSQL.UUID.timeOrdered(shift: "-2 days"), #sql("'Event from 2 days ago'"))
+                    (PostgreSQL.UUID.timeOrdered(shift: "-1 day"), SQLQueryExpression("'Yesterday\\'s Event'"))
+                    (PostgreSQL.UUID.timeOrdered(shift: "-2 days"), SQLQueryExpression("'Event from 2 days ago'"))
                 }
             ) {
                 """
