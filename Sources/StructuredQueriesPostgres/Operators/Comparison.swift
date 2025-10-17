@@ -160,6 +160,93 @@ extension QueryExpression where QueryValue: QueryRepresentable & _OptionalProtoc
     ) -> some QueryExpression<Bool> {
         BinaryOperator(lhs: self, operator: "IS NOT", rhs: other)
     }
+
+    // MARK: - Comparison Operators with Optional/Non-Optional Support
+
+    @_documentation(visibility: private)
+    public func gt(_ other: some QueryExpression<QueryValue.Wrapped>) -> some QueryExpression<Bool> {
+        BinaryOperator(lhs: self, operator: ">", rhs: other)
+    }
+
+    @_documentation(visibility: private)
+    public func lt(_ other: some QueryExpression<QueryValue.Wrapped>) -> some QueryExpression<Bool> {
+        BinaryOperator(lhs: self, operator: "<", rhs: other)
+    }
+
+    @_documentation(visibility: private)
+    public func gte(_ other: some QueryExpression<QueryValue.Wrapped>) -> some QueryExpression<Bool>
+    {
+        BinaryOperator(lhs: self, operator: ">=", rhs: other)
+    }
+
+    @_documentation(visibility: private)
+    public func lte(_ other: some QueryExpression<QueryValue.Wrapped>) -> some QueryExpression<Bool>
+    {
+        BinaryOperator(lhs: self, operator: "<=", rhs: other)
+    }
+
+    /// A predicate expression indicating whether an optional value is greater than a non-optional
+    /// value.
+    ///
+    /// This overload enables comparing optional aggregate results with non-optional values:
+    /// ```swift
+    /// Order.group(by: \.customerID)
+    ///   .having { $0.amount.sum() > 1000 }
+    /// // SELECT ... HAVING SUM("orders"."amount") > (1000)
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - lhs: An optional expression to compare.
+    ///   - rhs: A non-optional expression to compare.
+    /// - Returns: A predicate expression.
+    public static func > (
+        lhs: Self,
+        rhs: some QueryExpression<QueryValue.Wrapped>
+    ) -> some QueryExpression<Bool> {
+        lhs.gt(rhs)
+    }
+
+    /// A predicate expression indicating whether an optional value is less than a non-optional
+    /// value.
+    ///
+    /// - Parameters:
+    ///   - lhs: An optional expression to compare.
+    ///   - rhs: A non-optional expression to compare.
+    /// - Returns: A predicate expression.
+    public static func < (
+        lhs: Self,
+        rhs: some QueryExpression<QueryValue.Wrapped>
+    ) -> some QueryExpression<Bool> {
+        lhs.lt(rhs)
+    }
+
+    /// A predicate expression indicating whether an optional value is greater than or equal to a
+    /// non-optional value.
+    ///
+    /// - Parameters:
+    ///   - lhs: An optional expression to compare.
+    ///   - rhs: A non-optional expression to compare.
+    /// - Returns: A predicate expression.
+    public static func >= (
+        lhs: Self,
+        rhs: some QueryExpression<QueryValue.Wrapped>
+    ) -> some QueryExpression<Bool> {
+        lhs.gte(rhs)
+    }
+
+    /// A predicate expression indicating whether an optional value is less than or equal to a
+    /// non-optional value.
+    ///
+    /// - Parameters:
+    ///   - lhs: An optional expression to compare.
+    ///   - rhs: A non-optional expression to compare.
+    /// - Returns: A predicate expression.
+    public static func <= (
+        lhs: Self,
+        rhs: some QueryExpression<QueryValue.Wrapped>
+    ) -> some QueryExpression<Bool> {
+        lhs.lte(rhs)
+    }
 }
 
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
