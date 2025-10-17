@@ -45,9 +45,10 @@ extension Where {
         Value._Optionalized.Wrapped: Numeric,
         Value._Optionalized.Wrapped: QueryRepresentable
     {
-        let expr = expression(From.columns)
-        let filterExpr = filter(From.columns)
-        return asSelect().select { _ in expr.sum(filter: filterExpr) }
+        return asSelect()
+            .select { _ in
+                expression(From.columns)
+                    .sum(filter: filter(From.columns))
+            }
     }
-
 }
