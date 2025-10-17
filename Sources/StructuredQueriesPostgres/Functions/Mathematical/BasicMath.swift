@@ -278,6 +278,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// ```
     ///
     /// > Note: For finding minimum across multiple values, use `least()` function.
+    /// > The `@_disfavoredOverload` attribute ensures Swift's stdlib `Sequence.min()` is preferred
+    /// > for regular Swift collections, while this method is available for QueryExpressions.
+    @_disfavoredOverload
     public func min(_ other: QueryValue) -> some QueryExpression<QueryValue> {
         SQLQueryExpression(
             "least(\(self.queryFragment), \(bind: other))",
@@ -288,6 +291,10 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// Returns the smaller of two expression values
     ///
     /// PostgreSQL's `least()` function for two values.
+    ///
+    /// > Note: The `@_disfavoredOverload` attribute ensures Swift's stdlib `Sequence.min()` is preferred
+    /// > for regular Swift collections, while this method is available for QueryExpressions.
+    @_disfavoredOverload
     public func min(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<QueryValue> {
         SQLQueryExpression(
             "least(\(self.queryFragment), \(other.queryFragment))",
@@ -305,6 +312,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// ```
     ///
     /// > Note: For finding maximum across multiple values, use `greatest()` function.
+    /// > The `@_disfavoredOverload` attribute ensures Swift's stdlib `Sequence.max()` is preferred
+    /// > for regular Swift collections, while this method is available for QueryExpressions.
+    @_disfavoredOverload
     public func max(_ other: QueryValue) -> some QueryExpression<QueryValue> {
         SQLQueryExpression(
             "greatest(\(self.queryFragment), \(bind: other))",
@@ -315,6 +325,10 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// Returns the larger of two expression values
     ///
     /// PostgreSQL's `greatest()` function for two values.
+    ///
+    /// > Note: The `@_disfavoredOverload` attribute ensures Swift's stdlib `Sequence.max()` is preferred
+    /// > for regular Swift collections, while this method is available for QueryExpressions.
+    @_disfavoredOverload
     public func max(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<QueryValue> {
         SQLQueryExpression(
             "greatest(\(self.queryFragment), \(other.queryFragment))",
