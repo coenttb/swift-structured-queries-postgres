@@ -11,10 +11,10 @@ Type-safe PostgreSQL query builder for Swift. Build complex SQL queries with com
 ## Key Features
 
 - 🔒 **Type-safe query building** with compile-time validation
-- 🚀 **PostgreSQL-native features**: JSONB, triggers, window functions, CTEs, full-text search
+- 🚀 **PostgreSQL-native features**: JSONB, triggers, window functions, CTEs, full-text search, UUID generation
 - 🔌 **Built for [swift-records](https://github.com/coenttb/swift-records)**: The swift Postgres database package
 - ⚡ **Swift 6.1+** with strict concurrency
-- 🧪 **573 tests** with SQL snapshot testing
+- 🧪 **880 tests** with SQL snapshot testing
 
 ## Quick Start
 
@@ -298,6 +298,68 @@ Product.createTrigger(
 // Intercepts DELETE and converts to UPDATE with timestamp
 ```
 
+### UUID Functions
+
+**Server-side UUID generation:**
+
+```swift
+@Table
+struct Event {
+    let id: UUID
+    var title: String
+    var timestamp: Date
+}
+
+// Random UUID (v4) - traditional approach
+Event.insert {
+    Event.Columns(id: UUID.random, title: #sql("'Login'"))
+}
+// SQL: INSERT INTO "events" ("id", "title") VALUES (gen_random_uuid(), 'Login')
+
+// Time-ordered UUID (v7) - better for indexes
+Event.insert {
+    Event.Columns(id: UUID.timeOrdered, title: #sql("'Purchase'"))
+}
+// SQL: INSERT INTO "events" ("id", "title") VALUES (uuidv7(), 'Purchase')
+```
+
+**Time-shifted UUIDs for backdating:**
+
+```swift
+// Backdate events by shifting timestamp
+Event.insert {
+    ($0.id, $0.title)
+} values: {
+    (UUID.timeOrdered(shift: "-1 day"), "Historical Event")
+    (UUID.timeOrdered(shift: "-2 days"), "Earlier Event")
+}
+// SQL: INSERT INTO "events" ("id", "title")
+//      VALUES (uuidv7('-1 day'::interval), 'Historical Event'),
+//             (uuidv7('-2 days'::interval), 'Earlier Event')
+```
+
+**Extract version and timestamp:**
+
+```swift
+// Filter by UUID version
+Event.where { $0.id.extractVersion() == 7 }
+// SQL: WHERE uuid_extract_version("events"."id") = 7
+
+// Extract embedded timestamp from UUIDv7
+Event.select { $0.id.extractTimestamp() }
+// SQL: SELECT uuid_extract_timestamp("events"."id") FROM "events"
+
+// Order by UUID creation time
+Event.order(by: { $0.id.extractTimestamp() })
+// SQL: ORDER BY uuid_extract_timestamp("events"."id")
+```
+
+**Why UUIDv7 over UUIDv4?**
+- ✅ Better B-tree index performance (sequential inserts)
+- ✅ Natural chronological ordering
+- ✅ Embedded timestamp - no separate `createdAt` column needed
+- ✅ Reduces index fragmentation
+
 ### Full-Text Search
 
 **Basic search on text columns with `.match()`:**
@@ -419,6 +481,13 @@ User.insert { User(id: nil, name: "Alice") }
 - ✅ EXTRACT, DATE_TRUNC
 - ✅ CURRENT_TIMESTAMP, NOW()
 - ✅ Interval arithmetic
+
+**UUID Functions (Chapter 9.14):**
+- ✅ gen_random_uuid(), uuidv4() - Random UUIDs
+- ✅ uuidv7() - Time-ordered UUIDs for better index performance
+- ✅ uuidv7(interval) - Time-shifted UUIDs for backdating/scheduling
+- ✅ uuid_extract_version() - Extract version number (1-7)
+- ✅ uuid_extract_timestamp() - Extract creation timestamp from v1/v7
 
 **Advanced Features:**
 - ✅ Common Table Expressions (CTEs)
