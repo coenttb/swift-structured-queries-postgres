@@ -17,6 +17,6 @@ extension Table {
         filter: ((TableColumns) -> some QueryExpression<Bool>)? = nil
     ) -> Select<Int, Self, ()> {
         let filterExpr = filter?(columns)
-        return Where<Self>().asSelect().select { _ in .count(filter: filterExpr) }
+        return Self.all.asSelect().select { _ in .count(filter: filterExpr) }
     }
 }
