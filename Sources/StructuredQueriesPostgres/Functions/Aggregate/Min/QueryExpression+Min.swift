@@ -8,7 +8,7 @@ extension QueryExpression where QueryValue: QueryBindable & _OptionalPromotable 
     /// // SELECT min("reminders"."date") FROM "reminders"
     /// ```
     ///
-    /// - Parameters filter: A `FILTER` clause to apply to the aggregation.
+    /// - Parameter filter: A `FILTER` clause to apply to the aggregation.
     /// - Returns: A minimum aggregate of this expression.
     public func min(
         filter: (some QueryExpression<Bool>)? = Bool?.none

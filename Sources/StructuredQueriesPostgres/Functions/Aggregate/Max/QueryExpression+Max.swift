@@ -8,7 +8,7 @@ extension QueryExpression where QueryValue: QueryBindable & _OptionalPromotable 
     /// // SELECT max("reminders"."date") FROM "reminders"
     /// ```
     ///
-    /// - Parameters filter: A `FILTER` clause to apply to the aggregation.
+    /// - Parameter filter: A `FILTER` clause to apply to the aggregation.
     /// - Returns: A maximum aggregate of this expression.
     public func max(
         filter: (some QueryExpression<Bool>)? = Bool?.none
