@@ -2,7 +2,7 @@ import StructuredQueriesCore
 
 // MARK: - Result Builder Extension for Materialized CTEs
 
-extension CommonTableExpressionBuilder {
+extension CTE.Builder {
     /// Build expression overload that extracts materialization hint from MaterializedSelect.
     ///
     /// This allows materialized CTEs to be used in the WITH clause:
@@ -13,8 +13,8 @@ extension CommonTableExpressionBuilder {
     /// ```
     public static func buildExpression<CTETable: Table, Base: PartialSelectStatement<CTETable>>(
         _ expression: MaterializedSelect<Base>
-    ) -> CommonTableExpressionClause {
-        CommonTableExpressionClause(
+    ) -> CTE.Clause {
+        CTE.Clause(
             tableName: "\(CTETable.self)",
             select: expression.base.query,
             materialization: expression.materialization
