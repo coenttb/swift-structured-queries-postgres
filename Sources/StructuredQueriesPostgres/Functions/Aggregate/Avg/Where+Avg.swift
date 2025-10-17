@@ -36,9 +36,6 @@ extension Where {
         filter: @escaping (From.TableColumns) -> Filter
     ) -> Select<Double?, From, ()>
     where Value: _OptionalPromotable, Value._Optionalized.Wrapped: Numeric {
-        let expr = expression(From.columns)
-        let filterExpr = filter(From.columns)
-        return asSelect().select { _ in expr.avg(filter: filterExpr) }
+        asSelect().select { _ in expression(From.columns).avg(filter: filter(From.columns)) }
     }
-
 }
