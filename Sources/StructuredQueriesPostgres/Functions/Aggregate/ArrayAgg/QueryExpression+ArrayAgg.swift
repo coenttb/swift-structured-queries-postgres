@@ -26,7 +26,7 @@ extension QueryExpression {
         filter: (some QueryExpression<Bool>)? = Bool?.none
     ) -> some QueryExpression<String?> {
         AggregateFunction<String?>(
-            "ARRAY_AGG",
+            "array_agg",
             isDistinct: isDistinct,
             [queryFragment],
             order: order?.queryFragment,

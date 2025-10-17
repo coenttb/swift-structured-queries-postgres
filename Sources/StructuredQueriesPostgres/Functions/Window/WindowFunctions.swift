@@ -1,6 +1,13 @@
 import Foundation
 import StructuredQueriesCore
 
+// MARK: - PostgreSQL Window Functions
+//
+// PostgreSQL Chapter 9.22: Window Functions
+// https://www.postgresql.org/docs/current/functions-window.html
+//
+// Window functions perform calculations across sets of rows related to the current row.
+
 // MARK: - Window Function Protocol
 
 /// Protocol for window functions that can use OVER clauses

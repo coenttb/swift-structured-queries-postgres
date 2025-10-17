@@ -1,9 +1,12 @@
 import Foundation
 import StructuredQueriesCore
 
-// MARK: - PostgreSQL NULL-handling Functions
+// MARK: - PostgreSQL COALESCE Function
 //
-// These are SQL functions (coalesce, ifnull), not infrastructure.
+// PostgreSQL Chapter 9.18: Conditional Expressions
+// https://www.postgresql.org/docs/current/functions-conditional.html
+//
+// COALESCE returns the first non-NULL value from its arguments.
 
 /// A query expression of a coalesce function.
 ///
