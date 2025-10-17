@@ -1,7 +1,13 @@
 import Foundation
 import StructuredQueriesCore
 
-// MARK: - PostgreSQL Date/Time Field Extraction
+// MARK: - Date/Time Field Extraction
+//
+// PostgreSQL Chapter 9.9: Date/Time Functions and Operators
+// https://www.postgresql.org/docs/18/functions-datetime.html
+//
+// EXTRACT function for extracting date/time fields
+
 /// Fields that can be extracted from a date/time value using `EXTRACT`
 ///
 /// Each field has a specific return type based on PostgreSQL behavior.
@@ -52,17 +58,7 @@ extension DateField where ReturnType == Double {
     public static var second: DateField<Double> { DateField("SECOND") }
 }
 
-/// Precision levels for date/time truncation using `DATE_TRUNC`
-public enum DateTruncPrecision: String {
-    case year = "year"
-    case month = "month"
-    case day = "day"
-    case hour = "hour"
-    case minute = "minute"
-    case second = "second"
-}
-
-// MARK: - PostgreSQL Date/Time Functions
+// MARK: - EXTRACT Function
 
 extension QueryExpression where QueryValue == Date {
     /// PostgreSQL's `EXTRACT` function - extracts a specific field from a date/time value
@@ -91,56 +87,5 @@ extension QueryExpression where QueryValue == Date {
             "EXTRACT(\(raw: field.sqlName) FROM \(self.queryFragment))",
             as: T.self
         )
-    }
-
-    /// PostgreSQL's `DATE_TRUNC` function - truncates a date/time to the specified precision
-    ///
-    /// Rounds down the timestamp to the beginning of the specified time unit.
-    ///
-    /// ```swift
-    /// Event.select { $0.timestamp.dateTrunc(.day) }
-    /// // SELECT DATE_TRUNC('day', "events"."timestamp") FROM "events"
-    ///
-    /// Event.select { $0.timestamp.dateTrunc(.hour) }
-    /// // SELECT DATE_TRUNC('hour', "events"."timestamp") FROM "events"
-    /// ```
-    ///
-    /// - Parameter precision: The time unit to truncate to
-    /// - Returns: A date expression truncated to the specified precision
-    public func dateTrunc(_ precision: DateTruncPrecision) -> some QueryExpression<Date> {
-        SQLQueryExpression(
-            "DATE_TRUNC('\(raw: precision.rawValue)', \(self.queryFragment))",
-            as: Date.self
-        )
-    }
-}
-
-// MARK: - PostgreSQL Current Date/Time
-
-extension Date {
-    /// PostgreSQL's `CURRENT_TIMESTAMP` - returns the current date and time
-    ///
-    /// Returns the start time of the current transaction (does not change during the transaction).
-    ///
-    /// ```swift
-    /// Reminder.insert {
-    ///   Reminder.Draft(title: "New reminder", createdAt: .currentTimestamp)
-    /// }
-    /// // INSERT INTO "reminders" ("title", "createdAt") VALUES ('New reminder', CURRENT_TIMESTAMP)
-    /// ```
-    public static var currentTimestamp: some QueryExpression<Date> {
-        SQLQueryExpression("CURRENT_TIMESTAMP", as: Date.self)
-    }
-
-    /// PostgreSQL's `CURRENT_DATE` - returns the current date (without time)
-    ///
-    /// Returns the current date at the start of the transaction.
-    ///
-    /// ```swift
-    /// Event.where { $0.eventDate >= .currentDate }
-    /// // SELECT … FROM "events" WHERE "events"."eventDate" >= CURRENT_DATE
-    /// ```
-    public static var currentDate: some QueryExpression<Date> {
-        SQLQueryExpression("CURRENT_DATE", as: Date.self)
     }
 }
