@@ -21,7 +21,11 @@ extension Table {
         Value._Optionalized.Wrapped: Numeric,
         Value._Optionalized.Wrapped: QueryRepresentable
     {
-        Where().sum(of: expression)
+        Self.all
+            .asSelect()
+            .select { _ in
+                expression(columns).sum()
+            }
     }
 
     /// A select statement for the sum of an expression from this table with a filter clause.
@@ -47,6 +51,10 @@ extension Table {
         Value._Optionalized.Wrapped: Numeric,
         Value._Optionalized.Wrapped: QueryRepresentable
     {
-        Where().sum(of: expression, filter: filter)
+        Self.all
+            .asSelect()
+            .select { _ in
+                expression(columns).sum(filter: filter(columns))
+            }
     }
 }

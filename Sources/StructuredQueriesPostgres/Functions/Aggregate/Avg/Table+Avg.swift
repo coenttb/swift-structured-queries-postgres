@@ -17,7 +17,11 @@ extension Table {
         of expression: (TableColumns) -> some QueryExpression<Value>
     ) -> Select<Double?, Self, ()>
     where Value: _OptionalPromotable, Value._Optionalized.Wrapped: Numeric {
-        Where().avg(of: expression)
+        Self.all
+            .asSelect()
+            .select { _ in
+                expression(columns).avg()
+            }
     }
 
     /// A select statement for the average of an expression from this table with a filter clause.
@@ -39,6 +43,10 @@ extension Table {
         filter: @escaping (TableColumns) -> Filter
     ) -> Select<Double?, Self, ()>
     where Value: _OptionalPromotable, Value._Optionalized.Wrapped: Numeric {
-        Where().avg(of: expression, filter: filter)
+        Self.all
+            .asSelect()
+            .select { _ in
+                expression(columns).avg(filter: filter(columns))
+            }
     }
 }

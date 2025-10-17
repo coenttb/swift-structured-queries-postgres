@@ -16,7 +16,10 @@ extension Table {
     public static func count(
         filter: ((TableColumns) -> some QueryExpression<Bool>)? = nil
     ) -> Select<Int, Self, ()> {
-        let filterExpr = filter?(columns)
-        return Self.all.asSelect().select { _ in .count(filter: filterExpr) }
+        Self.all
+            .asSelect()
+            .select { _ in
+                    .count(filter: filter?(columns))
+            }
     }
 }
