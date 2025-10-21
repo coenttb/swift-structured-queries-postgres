@@ -395,6 +395,63 @@ Implement PostgreSQL-specific features when they provide value:
 
 ## PostgreSQL vs SQLite Differences
 
+### Optional Comparison Operators (Enhancement - 2025-10-17)
+
+**Status**: ✅ **Enhancement beyond upstream** - Enables HAVING clauses with aggregates
+
+**Problem**: Aggregate functions return optional types (`sum()` → `Double?`), but comparison operators required matching types on both sides. This prevented HAVING clauses from working:
+
+```swift
+// Previously didn't compile:
+Order.group(by: \.customerID)
+  .having { $0.amount.sum() > 1000 }  // ❌ Double? > Double type mismatch
+```
+
+**Solution**: Added optional comparison operator overloads following upstream's pattern for equality operators.
+
+**Implementation** (`Comparison.swift:164-250`):
+- Added methods: `.gt()`, `.lt()`, `.gte()`, `.lte()` for `Optional<T>` vs `T`
+- Added operators: `>`, `<`, `>=`, `<=` delegating to methods
+- Mirrors upstream's existing `eq/neq` optional handling (lines 127-163)
+- Marked `@_documentation(visibility: private)` to reduce overload space
+- Constraint: `QueryValue: QueryRepresentable & _OptionalProtocol`
+
+**Performance Note** (from upstream CompilerPerformance.md):
+- Operators can strain Swift's type checker in complex queries
+- Use **methods** (`.gt()`, `.lt()`) for performance-critical code
+- Use **operators** (`>`, `<`) for ergonomic code
+- Methods have smaller overload space, compile faster
+
+**Usage**:
+```swift
+// Ergonomic API (operators)
+Order.group(by: \.customerID)
+  .having { $0.amount.sum() > 1000 }  // ✅ Now works
+
+// Performance API (methods) - use in complex queries
+Order.group(by: \.customerID)
+  .having { $0.amount.sum().gt(1000) }  // ✅ Faster compilation
+
+// All comparison operators supported
+.having { $0.amount.sum() < 100 }
+.having { $0.amount.sum() >= 500 }
+.having { $0.amount.sum() <= 5000 }
+```
+
+**Rationale**:
+1. **Fills upstream gap**: Upstream has `eq/neq` for optionals but not `gt/lt/gte/lte`
+2. **Enables fundamental SQL**: HAVING clauses are core SQL functionality
+3. **Follows established pattern**: Exact same approach as upstream's equality operators
+4. **Performance-conscious**: Provides both methods (fast) and operators (ergonomic)
+
+**SQL Semantics**: PostgreSQL handles NULL comparisons correctly - `NULL > 1000` returns NULL (unknown), which HAVING treats as false per SQL standard.
+
+**Tests**:
+- `OperatorsTests.swift:139-183` - Optional comparison operators
+- `SumTests.swift:302-384` - HAVING clause tests with all operators
+
+**Potential Upstream Contribution**: This enhancement could benefit upstream's multi-database support.
+
 ### NULL PRIMARY KEY Handling
 
 **The Core Issue**: PostgreSQL and SQLite handle NULL values in PRIMARY KEY columns fundamentally differently:
@@ -601,7 +658,7 @@ PostgreSQL's `::type` casting syntax for explicit type conversions.
 - `ilike()` - Case-insensitive LIKE operator (PostgreSQL-specific)
 - Supports ESCAPE clause for literal wildcard matching
 
-**Conditional Functions** (`Functions/Conditional/PostgreSQLConditional.swift`):
+**Conditional Functions** (`Functions/Conditional/Conditional.swift`):
 - `coalesce()` - Return first non-NULL value (PostgreSQL's IFNULL equivalent)
 - `exists()` - Test if subquery returns rows
 - `notExists()` - Test if subquery returns no rows

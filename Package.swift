@@ -52,7 +52,7 @@ let package = Package(
         .default(
             enabledTraits: [
                 "StructuredQueriesPostgresCasePaths",
-//                "StructuredQueriesPostgresTagged",
+                "StructuredQueriesPostgresTagged",
 //                "StructuredQueriesPostgresSQLValidation",
             ]
         ),

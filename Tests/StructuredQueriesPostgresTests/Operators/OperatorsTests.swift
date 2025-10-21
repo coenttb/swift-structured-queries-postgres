@@ -136,6 +136,52 @@ extension SnapshotTests {
             }
         }
 
+        @Test func comparisonWithOptionals() {
+            // Optional > Non-optional
+            assertInlineSnapshot(of: Row.columns.a > Row.columns.c, as: .sql) {
+                """
+                ("rows"."a") > ("rows"."c")
+                """
+            }
+            assertInlineSnapshot(of: Row.columns.a < Row.columns.c, as: .sql) {
+                """
+                ("rows"."a") < ("rows"."c")
+                """
+            }
+            assertInlineSnapshot(of: Row.columns.a >= Row.columns.c, as: .sql) {
+                """
+                ("rows"."a") >= ("rows"."c")
+                """
+            }
+            assertInlineSnapshot(of: Row.columns.a <= Row.columns.c, as: .sql) {
+                """
+                ("rows"."a") <= ("rows"."c")
+                """
+            }
+
+            // With literal values
+            assertInlineSnapshot(of: Row.columns.a > 100, as: .sql) {
+                """
+                ("rows"."a") > (100)
+                """
+            }
+            assertInlineSnapshot(of: Row.columns.b < 50, as: .sql) {
+                """
+                ("rows"."b") < (50)
+                """
+            }
+            assertInlineSnapshot(of: Row.columns.a >= 0, as: .sql) {
+                """
+                ("rows"."a") >= (0)
+                """
+            }
+            assertInlineSnapshot(of: Row.columns.b <= 1000, as: .sql) {
+                """
+                ("rows"."b") <= (1000)
+                """
+            }
+        }
+
         @Test func logic() async {
             assertInlineSnapshot(of: Row.columns.bool && Row.columns.bool, as: .sql) {
                 """
