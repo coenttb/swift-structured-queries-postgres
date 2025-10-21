@@ -270,6 +270,7 @@ extension QueryExpression where QueryValue: _OptionalProtocol {
     ///
     /// - Parameter transform: A closure that takes an unwrapped version of this expression.
     /// - Returns: The result of the transform function, optionalized.
+    @_disfavoredOverload
     public func map<T>(
         _ transform: (SQLQueryExpression<QueryValue.Wrapped>) -> some QueryExpression<T>
     ) -> some QueryExpression<T?> {
@@ -289,6 +290,7 @@ extension QueryExpression where QueryValue: _OptionalProtocol {
     ///
     /// - Parameter transform: A closure that takes an unwrapped version of this expression.
     /// - Returns: The result of the transform function.
+    @_disfavoredOverload
     public func flatMap<T>(
         _ transform: (SQLQueryExpression<QueryValue.Wrapped>) -> some QueryExpression<T?>
     ) -> some QueryExpression<T?> {

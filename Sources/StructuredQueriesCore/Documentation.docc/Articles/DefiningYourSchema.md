@@ -264,20 +264,10 @@ With that you can insert reminders with notes like so:
 #### Tagged identifiers
 
 The [Tagged](https://github.com/pointfreeco/swift-tagged) library provides lightweight syntax for
-introducing type-safe identifiers (and more) to your models. StructuredQueries ships support for
-Tagged with a `StructuredQueriesTagged` package trait, which is available starting from Swift 6.1.
+introducing type-safe identifiers (and more) to your models. StructuredQueriesPostgres ships with
+support for Tagged **enabled by default** (available starting from Swift 6.1).
 
-To enable the trait, specify it in the Package.swift file that depends on StructuredQueries:
-
-```diff
- .package(
-   url: "https://github.com/pointfreeco/swift-structured-queries",
-   from: "0.22.0",
-+  traits: ["StructuredQueriesTagged"]
- ),
-```
-
-This will allow you to introduce distinct `Tagged` identifiers throughout your schema:
+This allows you to introduce distinct `Tagged` identifiers throughout your schema:
 
 ```diff
  @Table
@@ -307,18 +297,44 @@ RemindersList.leftJoin(Reminder.all) {
 }
 ```
 
-Tagged works with any query-representable value. For example, if you want a Tagged UUID to use the
-`UUID` type (PostgreSQL has native UUID support):
+##### PostgreSQL UUID with Tagged
+
+Tagged works with any query-representable value. PostgreSQL has native UUID support, which works
+seamlessly with Tagged:
 
 ```swift
 @Table
-struct RemindersList: Identifiable {
+struct User: Identifiable {
   typealias ID = Tagged<Self, UUID>
-
-  @Column(as: Tagged<Self, UUID.BytesRepresentation>.self)
   let id: ID
-  // ...
+  var name: String
 }
+
+// PostgreSQL will use native UUID type:
+// CREATE TABLE "users" (
+//   "id" UUID PRIMARY KEY,
+//   "name" TEXT NOT NULL
+// )
+```
+
+You can generate new tagged UUIDs easily:
+
+```swift
+let userId = User.ID()  // Generates a new UUID
+let user = User(id: userId, name: "Alice")
+
+User.insert { user }
+```
+
+And query by tagged UUIDs with full type safety:
+
+```swift
+func fetchUser(id: User.ID) -> Statement<User?> {
+  User.where { $0.id == id }
+}
+
+// Compile-time safety: can't accidentally pass wrong ID type
+let user = try await fetchUser(id: userId).fetchOne(db)
 ```
 
 ### Primary-keyed tables
