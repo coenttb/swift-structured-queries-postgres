@@ -1,7 +1,7 @@
 import Foundation
 import StructuredQueriesCore
 
-// MARK: - PostgreSQL String Aggregation Functions
+// MARK: - PostgreSQL STRING_AGG Function
 
 extension QueryExpression where QueryValue == String {
     /// PostgreSQL's `STRING_AGG` function - aggregates string values with a separator
@@ -27,22 +27,14 @@ extension QueryExpression where QueryValue == String {
     public func stringAgg(
         _ separator: String = ",",
         order: (any QueryExpression)? = nil,
-        filter: (some QueryExpression<Bool>)? = nil
+        filter: (some QueryExpression<Bool>)? = Bool?.none
     ) -> some QueryExpression<String?> {
-        var fragment: QueryFragment = "STRING_AGG("
-        fragment.append(self.queryFragment)
-        fragment.append(", \(bind: separator)")
-
-        if let order {
-            fragment.append(" ORDER BY \(order.queryFragment)")
-        }
-        fragment.append(")")
-
-        if let filter {
-            fragment.append(" FILTER (WHERE \(filter.queryFragment))")
-        }
-
-        return SQLQueryExpression(fragment, as: String?.self)
+        AggregateFunction<String?>(
+            "STRING_AGG",
+            [queryFragment, "\(bind: separator)"],
+            order: order?.queryFragment,
+            filter: filter?.queryFragment
+        )
     }
 
     /// PostgreSQL's `STRING_AGG` function with `DISTINCT` modifier
@@ -55,34 +47,24 @@ extension QueryExpression where QueryValue == String {
     /// ```
     ///
     /// - Parameters:
-    ///   - distinct: Whether to aggregate only distinct values
+    ///   - isDistinct: Whether to aggregate only distinct values
     ///   - separator: The delimiter to place between values (default: ",")
     ///   - order: Optional ordering expression for the aggregated values
     ///   - filter: Optional filter condition (FILTER WHERE clause)
     /// - Returns: An optional string with all distinct values concatenated, or NULL if no values
     public func stringAgg(
-        distinct: Bool,
+        distinct isDistinct: Bool,
         separator: String = ",",
         order: (any QueryExpression)? = nil,
-        filter: (some QueryExpression<Bool>)? = nil
+        filter: (some QueryExpression<Bool>)? = Bool?.none
     ) -> some QueryExpression<String?> {
-        var fragment: QueryFragment = "STRING_AGG("
-        if distinct {
-            fragment.append("DISTINCT ")
-        }
-        fragment.append(self.queryFragment)
-        fragment.append(", \(bind: separator)")
-
-        if let order {
-            fragment.append(" ORDER BY \(order.queryFragment)")
-        }
-        fragment.append(")")
-
-        if let filter {
-            fragment.append(" FILTER (WHERE \(filter.queryFragment))")
-        }
-
-        return SQLQueryExpression(fragment, as: String?.self)
+        AggregateFunction<String?>(
+            "STRING_AGG",
+            isDistinct: isDistinct,
+            [queryFragment, "\(bind: separator)"],
+            order: order?.queryFragment,
+            filter: filter?.queryFragment
+        )
     }
 }
 
@@ -104,21 +86,34 @@ extension QueryExpression {
     public func stringAgg(
         _ separator: String = ",",
         order: (any QueryExpression)? = nil,
-        filter: (some QueryExpression<Bool>)? = nil
+        filter: (some QueryExpression<Bool>)? = Bool?.none
     ) -> some QueryExpression<String?> {
-        var fragment: QueryFragment = "STRING_AGG(CAST("
-        fragment.append(self.queryFragment)
-        fragment.append(" AS TEXT), \(bind: separator)")
+        AggregateFunction<String?>(
+            "STRING_AGG",
+            ["CAST(\(queryFragment) AS TEXT)", "\(bind: separator)"],
+            order: order?.queryFragment,
+            filter: filter?.queryFragment
+        )
+    }
+}
 
-        if let order {
-            fragment.append(" ORDER BY \(order.queryFragment)")
-        }
-        fragment.append(")")
+// MARK: - Legacy TableColumn API (deprecated in favor of QueryExpression)
 
-        if let filter {
-            fragment.append(" FILTER (WHERE \(filter.queryFragment))")
-        }
-
-        return SQLQueryExpression(fragment, as: String?.self)
+extension TableColumn {
+    /// PostgreSQL STRING_AGG function - concatenates strings with a separator
+    ///
+    /// > Warning: This is a legacy API. Use `QueryExpression.stringAgg(_:order:filter:)` instead
+    /// for full DISTINCT, ORDER BY, and FILTER support.
+    ///
+    /// ```swift
+    /// User.select { $0.name.stringAgg(", ") }
+    /// // SELECT string_agg("users"."name", ', ') FROM "users"
+    /// ```
+    @available(*, deprecated, message: "Use QueryExpression.stringAgg(_:order:filter:) instead for DISTINCT, ORDER BY, and FILTER support")
+    public func stringAgg(_ separator: String) -> some QueryExpression<String?> {
+        AggregateFunction<String?>(
+            "string_agg",
+            [queryFragment, "\(bind: separator)"]
+        )
     }
 }
