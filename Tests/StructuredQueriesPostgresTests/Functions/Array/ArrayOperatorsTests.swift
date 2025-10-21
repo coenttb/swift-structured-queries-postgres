@@ -116,19 +116,6 @@ extension SnapshotTests.PostgresArrayOps {
             }
         }
 
-        // Note: prependToArray needs type-specific overload for _PostgresArrayRepresentation
-        // Skipping for now as it requires additional implementation
-        // @Test func prependElement() async {
-        //     await assertSQL(
-        //         of: Post.select { prependToArray("featured", $0.tags) }
-        //     ) {
-        //             """
-        //             SELECT ('featured' || "posts"."tags")
-        //             FROM "posts"
-        //             """
-        //     }
-        // }
-
         // MARK: - Array Equality & Comparison Tests
 
         @Test func arrayEquals() async {
@@ -187,6 +174,193 @@ extension SnapshotTests.PostgresArrayOps {
                 SELECT "posts"."id", "posts"."title", "posts"."tags"
                 FROM "posts"
                 WHERE ("posts"."tags" > ARRAY['aaa'])
+                """
+            }
+        }
+
+        // MARK: - Special Characters & SQL Injection Prevention Tests
+
+        @Test("Array operators properly escape special characters")
+        func specialCharactersEscaped() async {
+            // Test that single quotes, backslashes, and other special characters are properly escaped
+            await assertSQL(
+                of: Post.where { $0.tags.contains(["it's", "\"quoted\"", "back\\slash"]) }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" @> ARRAY['it''s', '"quoted"', 'back\\slash'])
+                """
+            }
+        }
+
+        @Test("Array operators handle unicode correctly")
+        func unicodeHandling() async {
+            await assertSQL(
+                of: Post.where { $0.tags.contains(["🚀", "日本語", "émoji"]) }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" @> ARRAY['🚀', '日本語', 'émoji'])
+                """
+            }
+        }
+
+        @Test("Unicode normalization: Combining characters")
+        func unicodeCombiningCharacters() async {
+            // é can be represented as:
+            // - U+00E9 (single codepoint: LATIN SMALL LETTER E WITH ACUTE)
+            // - U+0065 + U+0301 (combining: LATIN SMALL LETTER E + COMBINING ACUTE ACCENT)
+            let precomposed = "café"  // Uses U+00E9
+            let decomposed = "cafe\u{0301}"  // Uses U+0065 + U+0301
+
+            await assertSQL(
+                of: Post.where { $0.tags.contains([precomposed, decomposed]) }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" @> ARRAY['café', 'café'])
+                """
+            }
+        }
+
+        @Test("Unicode: Right-to-left text (Arabic)")
+        func rightToLeftText() async {
+            await assertSQL(
+                of: Post.where { $0.tags.contains(["مرحبا", "العربية"]) }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" @> ARRAY['مرحبا', 'العربية'])
+                """
+            }
+        }
+
+        @Test("Unicode: Mixed scripts and emoji with skin tones")
+        func mixedScriptsAndComplexEmoji() async {
+            await assertSQL(
+                of: Post.where { $0.tags.contains(["Hello世界", "👨‍👩‍👧‍👦", "🏳️‍🌈"]) }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" @> ARRAY['Hello世界', '👨‍👩‍👧‍👦', '🏳️‍🌈'])
+                """
+            }
+        }
+
+        @Test("Empty arrays are handled correctly")
+        func emptyArrays() async {
+            await assertSQL(
+                of: Post.where { $0.tags.contains([]) }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" @> ARRAY[])
+                """
+            }
+        }
+
+        // MARK: - Real-World Use Cases
+
+        @Test("Find posts with required tags (AND logic)")
+        func findPostsWithAllRequiredTags() async {
+            // Real-world: Find posts that have ALL of these tags
+            await assertSQL(
+                of: Post.where { $0.tags.contains(["swift", "tutorial", "beginner"]) }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" @> ARRAY['swift', 'tutorial', 'beginner'])
+                """
+            }
+        }
+
+        @Test("Find posts with any matching tag (OR logic)")
+        func findPostsWithAnyMatchingTag() async {
+            // Real-world: Find posts that have ANY of these tags
+            await assertSQL(
+                of: Post.where { $0.tags.overlaps(["swift", "rust", "go"]) }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" && ARRAY['swift', 'rust', 'go'])
+                """
+            }
+        }
+
+        @Test("Find posts tagged as subset of allowed tags")
+        func findPostsOnlyWithAllowedTags() async {
+            // Real-world: Ensure post tags are only from approved list
+            await assertSQL(
+                of: Post.where {
+                    $0.tags.isContainedBy(["swift", "postgres", "vapor", "server"])
+                }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" <@ ARRAY['swift', 'postgres', 'vapor', 'server'])
+                """
+            }
+        }
+
+        @Test("Add tag to existing tags")
+        func addTagToPost() async {
+            // Real-world: Add a new tag to a post's existing tags
+            await assertSQL(
+                of: Post.select { $0.tags.arrayConcat("featured") }
+            ) {
+                """
+                SELECT ("posts"."tags" || 'featured')
+                FROM "posts"
+                """
+            }
+        }
+
+        @Test("Merge two tag arrays")
+        func mergeTags() async {
+            // Real-world: Combine tags from two different sources
+            await assertSQL(
+                of: Post.select { $0.tags.arrayConcat(["archived", "reviewed"]) }
+            ) {
+                """
+                SELECT ("posts"."tags" || ARRAY['archived', 'reviewed'])
+                FROM "posts"
+                """
+            }
+        }
+
+        @Test("Filter posts not tagged with default tags")
+        func filterNonDefaultPosts() async {
+            // Real-world: Find posts that have custom tags (not the defaults)
+            await assertSQL(
+                of: Post.where { $0.tags.arrayNotEquals(["uncategorized"]) }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" <> ARRAY['uncategorized'])
+                """
+            }
+        }
+
+        @Test("Compare tags alphabetically")
+        func compareTagsAlphabetically() async {
+            // Real-world: Lexicographic comparison (useful for sorting or filtering)
+            await assertSQL(
+                of: Post.where { $0.tags.arrayLessThan(["zzz"]) }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ("posts"."tags" < ARRAY['zzz'])
                 """
             }
         }
@@ -283,33 +457,39 @@ extension SnapshotTests.PostgresArrayOps {
             }
         }
 
-        // Note: unnest functions need type-specific overloads for _PostgresArrayRepresentation
-        // Skipping for now as they require additional implementation
-        // @Test func unnest() async {
-        //     // Note: unnest is a set-returning function, testing the syntax
-        //     assertInlineSnapshot(
-        //         of: Post.select { unnest($0.tags) },
-        //         as: .sql
-        //     ) {
-        //         """
-        //         SELECT unnest("posts"."tags")
-        //         FROM "posts"
-        //         """
-        //     }
-        // }
+        // MARK: - Complex Real-World Queries
 
-        // @Test func unnestMultiple() async {
-        //     // Note: unnest with multiple arrays, testing the syntax
-        //     assertInlineSnapshot(
-        //         of: Post.select { unnestArrays($0.tags, $0.tags) },
-        //         as: .sql
-        //     ) {
-        //         """
-        //         SELECT unnest("posts"."tags", "posts"."tags")
-        //         FROM "posts"
-        //         """
-        //     }
-        // }
+        @Test("Posts with at least 3 tags including 'swift'")
+        func complexTagFiltering() async {
+            // Real-world: Find well-tagged Swift posts
+            await assertSQL(
+                of: Post.where {
+                    ($0.tags.cardinality() ?? 0) >= 3 && $0.tags.contains(["swift"])
+                }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE ((coalesce(cardinality("posts"."tags"), 0)) >= (3)) AND ("posts"."tags" @> ARRAY['swift'])
+                """
+            }
+        }
+
+        @Test("Posts with overlapping interests but not exactly matching")
+        func similarButNotIdentical() async {
+            // Real-world: Recommendation system - similar tags but not identical posts
+            await assertSQL(
+                of: Post.where {
+                    $0.tags.overlaps(["swift", "vapor"]) && !$0.tags.arrayEquals(["swift", "vapor"])
+                }
+            ) {
+                """
+                SELECT "posts"."id", "posts"."title", "posts"."tags"
+                FROM "posts"
+                WHERE (("posts"."tags" && ARRAY['swift', 'vapor'])) AND (NOT (("posts"."tags" = ARRAY['swift', 'vapor'])))
+                """
+            }
+        }
     }
 }
 

@@ -20,7 +20,7 @@ public struct MaterializedSelect<Base: PartialSelectStatement>: PartialSelectSta
     public typealias Joins = Base.Joins
 
     let base: Base
-    let materialization: MaterializationHint
+    let materialization: CTE.Clause.MaterializationHint
 
     public var query: QueryFragment { base.query }
 }

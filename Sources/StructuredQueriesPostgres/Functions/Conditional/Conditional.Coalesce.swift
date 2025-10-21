@@ -1,39 +1,44 @@
 import Foundation
 import StructuredQueriesCore
 
-// MARK: - PostgreSQL NULL-handling Functions
+// MARK: - PostgreSQL COALESCE Function
 //
-// These are SQL functions (coalesce, ifnull), not infrastructure.
+// PostgreSQL Chapter 9.18: Conditional Expressions
+// https://www.postgresql.org/docs/current/functions-conditional.html
+//
+// COALESCE returns the first non-NULL value from its arguments.
 
-/// A query expression of a coalesce function.
-///
-/// Represents PostgreSQL's `COALESCE` function which returns the first non-NULL value.
-/// This is used to implement Swift's `??` operator for query expressions.
-///
-/// ```swift
-/// User.select { $0.nickname ?? $0.name }
-/// // SELECT coalesce("users"."nickname", "users"."name") FROM "users"
-/// ```
-public struct CoalesceFunction<QueryValue>: QueryExpression {
-    private let arguments: [QueryFragment]
+extension Conditional {
+    /// A query expression of a COALESCE function.
+    ///
+    /// Represents PostgreSQL's `COALESCE` function which returns the first non-NULL value.
+    /// This is used to implement Swift's `??` operator for query expressions.
+    ///
+    /// ```swift
+    /// User.select { $0.nickname ?? $0.name }
+    /// // SELECT coalesce("users"."nickname", "users"."name") FROM "users"
+    /// ```
+    public struct Coalesce<QueryValue>: QueryExpression {
+        private let arguments: [QueryFragment]
 
-    fileprivate init(_ arguments: [QueryFragment]) {
-        self.arguments = arguments
-    }
+        fileprivate init(_ arguments: [QueryFragment]) {
+            self.arguments = arguments
+        }
 
-    public var queryFragment: QueryFragment {
-        "coalesce(\(arguments.joined(separator: ", ")))"
-    }
+        public var queryFragment: QueryFragment {
+            "coalesce(\(arguments.joined(separator: ", ")))"
+        }
 
-    public static func ?? <T: _OptionalProtocol<QueryValue>>(
-        lhs: some QueryExpression<T>,
-        rhs: Self
-    ) -> CoalesceFunction<QueryValue> {
-        Self([lhs.queryFragment] + rhs.arguments)
+        public static func ?? <T: _OptionalProtocol<QueryValue>>(
+            lhs: some QueryExpression<T>,
+            rhs: Self
+        ) -> Coalesce<QueryValue> {
+            Self([lhs.queryFragment] + rhs.arguments)
+        }
     }
 }
 
-extension CoalesceFunction where QueryValue: _OptionalProtocol {
+extension Conditional.Coalesce where QueryValue: _OptionalProtocol {
     public static func ?? (
         lhs: some QueryExpression<QueryValue>,
         rhs: Self
@@ -101,8 +106,8 @@ extension QueryExpression where QueryValue: _OptionalProtocol {
     public static func ?? (
         lhs: Self,
         rhs: some QueryExpression<QueryValue.Wrapped>
-    ) -> CoalesceFunction<QueryValue.Wrapped> {
-        CoalesceFunction([lhs.queryFragment, rhs.queryFragment])
+    ) -> Conditional.Coalesce<QueryValue.Wrapped> {
+        Conditional.Coalesce([lhs.queryFragment, rhs.queryFragment])
     }
 
     /// Applies each side of the operator to the `coalesce` function
@@ -123,8 +128,8 @@ extension QueryExpression where QueryValue: _OptionalProtocol {
     public static func ?? (
         lhs: Self,
         rhs: some QueryExpression<QueryValue>
-    ) -> CoalesceFunction<QueryValue> {
-        CoalesceFunction([lhs.queryFragment, rhs.queryFragment])
+    ) -> Conditional.Coalesce<QueryValue> {
+        Conditional.Coalesce([lhs.queryFragment, rhs.queryFragment])
     }
 
     @_documentation(visibility: private)
@@ -137,8 +142,8 @@ extension QueryExpression where QueryValue: _OptionalProtocol {
     public static func ?? (
         lhs: some QueryExpression<QueryValue.Wrapped>,
         rhs: Self
-    ) -> CoalesceFunction<QueryValue> {
-        CoalesceFunction([lhs.queryFragment, rhs.queryFragment])
+    ) -> Conditional.Coalesce<QueryValue> {
+        Conditional.Coalesce([lhs.queryFragment, rhs.queryFragment])
     }
 }
 
@@ -153,7 +158,7 @@ extension QueryExpression {
     public static func ?? (
         lhs: some QueryExpression<QueryValue>,
         rhs: Self
-    ) -> CoalesceFunction<QueryValue> {
-        CoalesceFunction([lhs.queryFragment, rhs.queryFragment])
+    ) -> Conditional.Coalesce<QueryValue> {
+        Conditional.Coalesce([lhs.queryFragment, rhs.queryFragment])
     }
 }

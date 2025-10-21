@@ -209,7 +209,7 @@ extension SnapshotTests.FullTextSearch {
         }
 
         @Test("Count search results")
-        func countSearchResults() async {
+        func searchResultsCount() async {
             await assertSQL(
                 of:
                     Article

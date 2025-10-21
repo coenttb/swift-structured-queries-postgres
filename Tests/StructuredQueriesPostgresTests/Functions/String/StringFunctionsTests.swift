@@ -24,9 +24,9 @@ extension SnapshotTests.StringFunctions {
 
         // MARK: - Case Conversion Tests
 
-        @Test func upper() async {
+        @Test func uppercased() async {
             await assertSQL(
-                of: Person.select { $0.name.upper() }
+                of: Person.select { $0.name.uppercased() }
             ) {
                 """
                 SELECT upper("persons"."name")
@@ -35,9 +35,9 @@ extension SnapshotTests.StringFunctions {
             }
         }
 
-        @Test func lower() async {
+        @Test func lowercased() async {
             await assertSQL(
-                of: Person.select { $0.email.lower() }
+                of: Person.select { $0.email.lowercased() }
             ) {
                 """
                 SELECT lower("persons"."email")
