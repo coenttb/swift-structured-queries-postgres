@@ -1,8 +1,7 @@
 # swift-structured-queries-postgres
 
-[![CI](https://github.com/coenttb/swift-structured-queries-postgres/actions/workflows/ci.yml/badge.svg)](https://github.com/coenttb/swift-structured-queries-postgres/actions/workflows/ci.yml)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcoenttb%2Fswift-structured-queries-postgres%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/coenttb/swift-structured-queries-postgres)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcoenttb%2Fswift-structured-queries-postgres%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/coenttb/swift-structured-queries-postgres)
+[![CI](https://github.com/coenttb/swift-structured-queries-postgres/workflows/CI/badge.svg)](https://github.com/coenttb/swift-structured-queries-postgres/actions/workflows/ci.yml)
+![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
 Type-safe PostgreSQL query builder for Swift. Build complex SQL queries with compile-time validation and zero runtime overhead.
 
@@ -10,11 +9,11 @@ Type-safe PostgreSQL query builder for Swift. Build complex SQL queries with com
 
 ## Key Features
 
-- 🔒 **Type-safe query building** with compile-time validation
-- 🚀 **PostgreSQL-native features**: JSONB, triggers, window functions, CTEs, full-text search, UUID generation
-- 🔌 **Built for [swift-records](https://github.com/coenttb/swift-records)**: The swift Postgres database package
-- ⚡ **Swift 6.1+** with strict concurrency
-- 🧪 **880 tests** with SQL snapshot testing
+- Type-safe query building with compile-time validation
+- PostgreSQL-native features: JSONB, triggers, window functions, CTEs, full-text search, UUID generation
+- Built for swift-records: High-level PostgreSQL database operations
+- Swift 6.1+ with strict concurrency
+- 880 tests with SQL snapshot testing
 
 ## Quick Start
 
@@ -53,9 +52,11 @@ dependencies: [
 
 The following traits are enabled by default:
 - **StructuredQueriesPostgresCasePaths**: Enum table support via swift-case-paths
-- **StructuredQueriesPostgresSQLValidation**: SQL validation using PostgresNIO (heavy dependency)
+- **StructuredQueriesPostgresTagged**: Type-safe IDs with swift-tagged
 
-These traits are configured at the package level and automatically available when you add the dependency:
+The **StructuredQueriesPostgresSQLValidation** trait (SQL validation using PostgresNIO) is available but disabled by default due to its heavy dependencies.
+
+Add the package to your target dependencies:
 
 ```swift
 .target(
@@ -355,10 +356,10 @@ Event.order(by: { $0.id.extractTimestamp() })
 ```
 
 **Why UUIDv7 over UUIDv4?**
-- ✅ Better B-tree index performance (sequential inserts)
-- ✅ Natural chronological ordering
-- ✅ Embedded timestamp - no separate `createdAt` column needed
-- ✅ Reduces index fragmentation
+- Better B-tree index performance (sequential inserts)
+- Natural chronological ordering
+- Embedded timestamp - no separate `createdAt` column needed
+- Reduces index fragmentation
 
 ### Full-Text Search
 
@@ -436,72 +437,72 @@ User.insert { User(id: nil, name: "Alice") }
 ## PostgreSQL Feature Coverage
 
 **Window Functions:**
-- ✅ ROW_NUMBER, RANK, DENSE_RANK, NTILE
-- ✅ FIRST_VALUE, LAST_VALUE, NTH_VALUE
-- ✅ LAG, LEAD
-- ✅ PERCENT_RANK, CUME_DIST
-- ✅ Named windows (WINDOW clause)
+- ROW_NUMBER, RANK, DENSE_RANK, NTILE
+- FIRST_VALUE, LAST_VALUE, NTH_VALUE
+- LAG, LEAD
+- PERCENT_RANK, CUME_DIST
+- Named windows (WINDOW clause)
 
 **Triggers:**
-- ✅ BEFORE / AFTER / INSTEAD OF timing
-- ✅ INSERT / UPDATE / DELETE / TRUNCATE events
-- ✅ FOR EACH ROW / FOR EACH STATEMENT levels
-- ✅ WHEN conditions with NEW/OLD pseudo-records
-- ✅ UPDATE OF specific columns
-- ✅ PL/pgSQL function generation
+- BEFORE / AFTER / INSTEAD OF timing
+- INSERT / UPDATE / DELETE / TRUNCATE events
+- FOR EACH ROW / FOR EACH STATEMENT levels
+- WHEN conditions with NEW/OLD pseudo-records
+- UPDATE OF specific columns
+- PL/pgSQL function generation
 
 **JSONB:**
-- ✅ 23 operators (@>, <@, ?, ?|, ?&, ->, ->>, #>, #>>, etc.)
-- ✅ 6 core functions (jsonb_agg, jsonb_object_agg, etc.)
-- ✅ GIN indexing with jsonb_path_ops
+- 23 operators (@>, <@, ?, ?|, ?&, ->, ->>, #>, #>>, etc.)
+- 6 core functions (jsonb_agg, jsonb_object_agg, etc.)
+- GIN indexing with jsonb_path_ops
 
 **Full-Text Search (Chapter 12):**
-- ✅ to_tsvector, to_tsquery, plainto_tsquery, phraseto_tsquery
-- ✅ @@ match operator
-- ✅ ts_rank, ts_rank_cd ranking
-- ✅ ts_headline highlighting
-- ✅ Weighted multi-column search
+- to_tsvector, to_tsquery, plainto_tsquery, phraseto_tsquery
+- @@ match operator
+- ts_rank, ts_rank_cd ranking
+- ts_headline highlighting
+- Weighted multi-column search
 
 **Aggregate Functions:**
-- ✅ Standard: COUNT, SUM, AVG, MIN, MAX
-- ✅ PostgreSQL-specific: STRING_AGG, ARRAY_AGG, JSONB_AGG
-- ✅ Statistical: STDDEV, VARIANCE, CORR, PERCENTILE_CONT
+- Standard: COUNT, SUM, AVG, MIN, MAX
+- PostgreSQL-specific: STRING_AGG, ARRAY_AGG, JSONB_AGG
+- Statistical: STDDEV, VARIANCE, CORR, PERCENTILE_CONT
 
 **Array Operations:**
-- ✅ Array construction and operators
-- ✅ Array functions (array_length, array_agg, unnest)
-- ✅ Containment operators (@>, <@, &&)
+- Array construction and operators
+- Array functions (array_length, array_agg, unnest)
+- Containment operators (@>, <@, &&)
 
 **String Functions:**
-- ✅ CONCAT, SUBSTRING, POSITION, UPPER, LOWER
-- ✅ LIKE, ILIKE pattern matching
-- ✅ String aggregation
+- CONCAT, SUBSTRING, POSITION, UPPER, LOWER
+- LIKE, ILIKE pattern matching
+- String aggregation
 
 **Date/Time Functions:**
-- ✅ EXTRACT, DATE_TRUNC
-- ✅ CURRENT_TIMESTAMP, NOW()
-- ✅ Interval arithmetic
+- EXTRACT, DATE_TRUNC
+- CURRENT_TIMESTAMP, NOW()
+- Interval arithmetic
 
 **UUID Functions (Chapter 9.14):**
-- ✅ gen_random_uuid(), uuidv4() - Random UUIDs
-- ✅ uuidv7() - Time-ordered UUIDs for better index performance
-- ✅ uuidv7(interval) - Time-shifted UUIDs for backdating/scheduling
-- ✅ uuid_extract_version() - Extract version number (1-7)
-- ✅ uuid_extract_timestamp() - Extract creation timestamp from v1/v7
+- gen_random_uuid(), uuidv4() - Random UUIDs
+- uuidv7() - Time-ordered UUIDs for better index performance
+- uuidv7(interval) - Time-shifted UUIDs for backdating/scheduling
+- uuid_extract_version() - Extract version number (1-7)
+- uuid_extract_timestamp() - Extract creation timestamp from v1/v7
 
 **Advanced Features:**
-- ✅ Common Table Expressions (CTEs)
-- ✅ Subqueries and EXISTS
-- ✅ CASE expressions
-- ✅ Type casting (::type syntax)
-- ✅ COALESCE, NULLIF
-- ✅ DISTINCT ON (PostgreSQL-specific)
+- Common Table Expressions (CTEs)
+- Subqueries and EXISTS
+- CASE expressions
+- Type casting (::type syntax)
+- COALESCE, NULLIF
+- DISTINCT ON (PostgreSQL-specific)
 
 ## Documentation
 
-- 📖 [**ARCHITECTURE.md**](ARCHITECTURE.md) - Design decisions, PostgreSQL features, module architecture
-- 🧪 [**TESTING.md**](TESTING.md) - Test patterns, snapshot testing, SQL validation
-- 📜 [**HISTORY.md**](HISTORY.md) - Evolution timeline, decisions, learnings
+- [**ARCHITECTURE.md**](ARCHITECTURE.md) - Design decisions, PostgreSQL features, module architecture
+- [**TESTING.md**](TESTING.md) - Test patterns, snapshot testing, SQL validation
+- [**HISTORY.md**](HISTORY.md) - Evolution timeline, decisions, learnings
 
 ## Requirements
 
@@ -512,9 +513,9 @@ User.insert { User(id: nil, name: "Alice") }
 ### CI Status
 
 Tested on:
-- ✅ Swift 6.1, 6.2
-- ✅ macOS (latest)
-- ✅ Linux (Ubuntu)
+- Swift 6.1, 6.2
+- macOS (latest)
+- Linux (Ubuntu)
 
 ## Migration from SQLite
 
@@ -538,10 +539,10 @@ This package provides **query building only**. For complete database functionali
 
 ### What swift-records Provides
 
-- 🔄 **Connection pooling** with automatic lifecycle management
-- 💾 **Transaction support** with isolation levels and savepoints
-- 🔄 **Migration management** with version tracking
-- 🧪 **Test utilities** with schema isolation for parallel testing
+- Connection pooling with automatic lifecycle management
+- Transaction support with isolation levels and savepoints
+- Migration management with version tracking
+- Test utilities with schema isolation for parallel testing
 
 ### Usage
 
@@ -575,6 +576,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- 🐛 [Report issues](https://github.com/coenttb/swift-structured-queries-postgres/issues)
-- 💬 [Discussions](https://github.com/coenttb/swift-structured-queries-postgres/discussions)
-- 📧 Contact: dev@coenttb.com
+- [Report issues](https://github.com/coenttb/swift-structured-queries-postgres/issues)
+- [Discussions](https://github.com/coenttb/swift-structured-queries-postgres/discussions)
+- Contact: dev@coenttb.com

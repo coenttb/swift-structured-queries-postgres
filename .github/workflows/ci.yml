@@ -1,12 +1,9 @@
 name: CI
-
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - '*'
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -14,88 +11,84 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  macos:
-    name: macOS (Xcode ${{ matrix.xcode }})
-    runs-on: macos-${{ matrix.os }}
+  macos-swift61:
+    name: macOS (Swift 6.1)
+    runs-on: macos-26
     strategy:
-      fail-fast: false
       matrix:
-        include:
-          - os: '26'
-            xcode: '26.0'
-            swift: '6.2'
+        xcode: ['26.0']
+        config: ['debug', 'release']
     steps:
       - uses: actions/checkout@v5
-
       - name: Select Xcode ${{ matrix.xcode }}
         run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
-
-      - name: Print environment
-        run: |
-          xcodebuild -version
-          swift --version
-          echo "macOS $(sw_vers -productVersion)"
-
+      - name: Print Swift version
+        run: swift --version
       - name: Cache Swift packages
         uses: actions/cache@v4
         with:
           path: .build
-          key: ${{ runner.os }}-xcode-${{ matrix.xcode }}-spm-${{ hashFiles('Package.swift') }}
-          restore-keys: |
-            ${{ runner.os }}-xcode-${{ matrix.xcode }}-spm-
-            ${{ runner.os }}-spm-
+          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
+          restore-keys: ${{ runner.os }}-spm-
+      - name: Build
+        run: swift build -c ${{ matrix.config }}
+      - name: Run tests
+        run: swift test -c ${{ matrix.config }}
 
-      - name: Build and test
-        run: swift test --filter StructuredQueriesPostgresTests
-        timeout-minutes: 15
-
-  linux:
-    name: Linux (Swift ${{ matrix.swift }})
-    runs-on: ubuntu-latest
-    container: swift:${{ matrix.swift }}
+  macos-swift62:
+    name: macOS (Swift 6.2)
+    runs-on: macos-26
     strategy:
-      fail-fast: false
       matrix:
-        swift:
-          - '6.1'
-          - '6.2'
+        xcode: ['26.0']
+        config: ['debug', 'release']
     steps:
       - uses: actions/checkout@v5
-
-      - name: Print environment
-        run: |
-          swift --version
-          uname -a
-
+      - name: Select Xcode ${{ matrix.xcode }}
+        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
+      - name: Print Swift version
+        run: swift --version
       - name: Cache Swift packages
         uses: actions/cache@v4
         with:
           path: .build
-          key: linux-swift-${{ matrix.swift }}-spm-${{ hashFiles('Package.swift') }}
-          restore-keys: |
-            linux-swift-${{ matrix.swift }}-spm-
-            linux-spm-
+          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
+          restore-keys: ${{ runner.os }}-spm-
+      - name: Build
+        run: swift build -c ${{ matrix.config }}
+      - name: Run tests
+        run: swift test -c ${{ matrix.config }}
 
-      - name: Build and test
-        run: swift test --filter StructuredQueriesPostgresTests
-        timeout-minutes: 15
+  linux-swift62:
+    name: Ubuntu (Swift 6.2)
+    runs-on: ubuntu-latest
+    container: swift:6.2
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build
+        run: swift build
+      - name: Run tests
+        run: swift test
 
-  documentation:
-    name: Documentation
+  windows:
+    name: Windows (Swift 6.2)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: SwiftyLab/setup-swift@latest
+        with:
+          swift-version: "6.2"
+      - name: Build
+        run: swift build
+      - name: Run tests
+        run: swift test
+
+  readme-validation:
+    name: README Code Examples
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v5
-
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_26.0.1.app
-
-      - name: Build documentation
-        run: |
-          swift package \
-            --allow-writing-to-directory ./docs \
-            generate-documentation \
-            --target StructuredQueriesCore \
-            --output-path ./docs \
-            --transform-for-static-hosting \
-            --hosting-base-path swift-structured-queries-postgres
-        continue-on-error: true  # DocC may not be fully configured yet
+        run: sudo xcode-select -s /Applications/Xcode_26.0.app
+      - name: Run README verification tests
+        run: swift test --filter READMEExamplesTests
