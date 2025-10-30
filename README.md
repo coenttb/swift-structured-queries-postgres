@@ -5,7 +5,7 @@
 
 Type-safe PostgreSQL query builder for Swift. Build complex SQL queries with compile-time validation and zero runtime overhead.
 
-**PostgreSQL fork** of [Point-Free's swift-structured-queries](https://github.com/pointfreeco/swift-structured-queries) with comprehensive PostgreSQL feature support.
+**PostgreSQL fork** of [Point-Free's swift-structured-queries](https://github.com/pointfreeco/swift-structured-queries) with PostgreSQL-native features: JSONB, triggers, window functions, CTEs, full-text search, and UUID generation.
 
 ## Key Features
 
