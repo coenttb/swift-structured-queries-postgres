@@ -9,6 +9,6 @@ import Foundation
 import Testing
 
 extension SnapshotTests {
-    @Suite
-    struct TriggerTests {}
+  @Suite
+  struct TriggerTests {}
 }

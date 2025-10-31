@@ -8,57 +8,57 @@ import Testing
 @Suite("README Examples - JSONB Operations")
 struct JSONBExamplesTests {
 
-    // MARK: - Test Model
+  // MARK: - Test Model
 
-    @Table
-    struct User {
-        let id: Int
-        var name: String
-        var settings: Data
+  @Table
+  struct User {
+    let id: Int
+    var name: String
+    var settings: Data
+  }
+
+  // MARK: - JSONB Containment
+
+  @Test("README Example: JSONB contains (@>) operator")
+  func jsonbContains() async {
+    await assertSQL(
+      of: User.where { $0.settings.contains(["theme": "dark"]) }
+    ) {
+      """
+      SELECT "users"."id", "users"."name", "users"."settings"
+      FROM "users"
+      WHERE ("users"."settings" @> '{"theme":"dark"}'::jsonb)
+      """
     }
+  }
 
-    // MARK: - JSONB Containment
+  // MARK: - JSONB Path Operators
 
-    @Test("README Example: JSONB contains (@>) operator")
-    func jsonbContains() async {
-        await assertSQL(
-            of: User.where { $0.settings.contains(["theme": "dark"]) }
-        ) {
-            """
-            SELECT "users"."id", "users"."name", "users"."settings"
-            FROM "users"
-            WHERE ("users"."settings" @> '{"theme":"dark"}'::jsonb)
-            """
-        }
+  @Test("README Example: JSONB get text field (->>) operator")
+  func jsonbGetTextField() async {
+    await assertSQL(
+      of: User.where { $0.settings.fieldAsText("theme") == "dark" }
+    ) {
+      """
+      SELECT "users"."id", "users"."name", "users"."settings"
+      FROM "users"
+      WHERE (("users"."settings" ->> 'theme')) = ('dark')
+      """
     }
+  }
 
-    // MARK: - JSONB Path Operators
+  // MARK: - JSONB Key Existence
 
-    @Test("README Example: JSONB get text field (->>) operator")
-    func jsonbGetTextField() async {
-        await assertSQL(
-            of: User.where { $0.settings.fieldAsText("theme") == "dark" }
-        ) {
-            """
-            SELECT "users"."id", "users"."name", "users"."settings"
-            FROM "users"
-            WHERE (("users"."settings" ->> 'theme')) = ('dark')
-            """
-        }
+  @Test("README Example: JSONB has key (?) operator")
+  func jsonbHasKey() async {
+    await assertSQL(
+      of: User.where { $0.settings.hasKey("notifications") }
+    ) {
+      """
+      SELECT "users"."id", "users"."name", "users"."settings"
+      FROM "users"
+      WHERE ("users"."settings" ? 'notifications')
+      """
     }
-
-    // MARK: - JSONB Key Existence
-
-    @Test("README Example: JSONB has key (?) operator")
-    func jsonbHasKey() async {
-        await assertSQL(
-            of: User.where { $0.settings.hasKey("notifications") }
-        ) {
-            """
-            SELECT "users"."id", "users"."name", "users"."settings"
-            FROM "users"
-            WHERE ("users"."settings" ? 'notifications')
-            """
-        }
-    }
+  }
 }

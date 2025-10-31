@@ -32,8 +32,8 @@ import StructuredQueriesCore
 // Both compile to identical SQL. Choose based on context and readability.
 
 extension PostgreSQL {
-    /// Namespace for PostgreSQL array functions
-    ///
-    /// This enum cannot be instantiated - it serves purely as a namespace.
-    public enum Array {}
+  /// Namespace for PostgreSQL array functions
+  ///
+  /// This enum cannot be instantiated - it serves purely as a namespace.
+  public enum Array {}
 }

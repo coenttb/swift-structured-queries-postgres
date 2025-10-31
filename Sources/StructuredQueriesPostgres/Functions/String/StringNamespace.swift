@@ -38,8 +38,8 @@ import StructuredQueriesCore
 // Both compile to identical SQL. Choose based on context and readability.
 
 extension PostgreSQL {
-    /// Namespace for PostgreSQL string functions
-    ///
-    /// This enum cannot be instantiated - it serves purely as a namespace.
-    public enum String {}
+  /// Namespace for PostgreSQL string functions
+  ///
+  /// This enum cannot be instantiated - it serves purely as a namespace.
+  public enum String {}
 }

@@ -23,9 +23,9 @@ public enum Conditional {}
 /// Case(myValue).when(condition1, then: result1)
 /// ```
 public func Case<Base, QueryValue: _OptionalPromotable>(
-    _ base: some QueryExpression<Base>
+  _ base: some QueryExpression<Base>
 ) -> Conditional.Case<Base, QueryValue> {
-    Conditional.Case(base)
+  Conditional.Case(base)
 }
 
 /// Creates a SQL `CASE` expression builder without a base expression.
@@ -34,5 +34,5 @@ public func Case<Base, QueryValue: _OptionalPromotable>(
 /// Case().when(boolCondition, then: result)
 /// ```
 public func Case<QueryValue: _OptionalPromotable>() -> Conditional.Case<Bool, QueryValue> {
-    Conditional.Case()
+  Conditional.Case()
 }

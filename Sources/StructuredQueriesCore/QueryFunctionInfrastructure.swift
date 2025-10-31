@@ -15,18 +15,18 @@ import Foundation
 /// // SELECT upper("users"."name") FROM "users"
 /// ```
 public struct QueryFunction<QueryValue>: QueryExpression {
-    let name: QueryFragment
-    let arguments: [QueryFragment]
+  let name: QueryFragment
+  let arguments: [QueryFragment]
 
-    package init<each Argument: QueryExpression>(
-        _ name: QueryFragment,
-        _ arguments: repeat each Argument
-    ) {
-        self.name = name
-        self.arguments = Array(repeat each arguments)
-    }
+  package init<each Argument: QueryExpression>(
+    _ name: QueryFragment,
+    _ arguments: repeat each Argument
+  ) {
+    self.name = name
+    self.arguments = Array(repeat each arguments)
+  }
 
-    public var queryFragment: QueryFragment {
-        "\(name)(\(arguments.joined(separator: ", ")))"
-    }
+  public var queryFragment: QueryFragment {
+    "\(name)(\(arguments.joined(separator: ", ")))"
+  }
 }

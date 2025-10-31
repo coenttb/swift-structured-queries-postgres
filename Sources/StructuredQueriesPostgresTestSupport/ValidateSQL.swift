@@ -1,111 +1,110 @@
 import Foundation
 import InlineSnapshotTesting
-#if StructuredQueriesPostgresSQLValidation
-import Logging
-import NIOCore
-import NIOPosix
-import PostgresNIO
-#endif
-
-
 import StructuredQueriesCore
 import Testing
 
+#if StructuredQueriesPostgresSQLValidation
+  import Logging
+  import NIOCore
+  import NIOPosix
+  import PostgresNIO
+#endif
+
 // MARK: - Shared Client
 #if StructuredQueriesPostgresSQLValidation
-/// Global EventLoopGroup for all validation clients
-private let validationEventLoopGroup = MultiThreadedEventLoopGroup.singleton
+  /// Global EventLoopGroup for all validation clients
+  private let validationEventLoopGroup = MultiThreadedEventLoopGroup.singleton
 
-/// Shared PostgresClient for ALL SQL validations
-/// This prevents "too many connections" by reusing a single connection pool
-private actor SharedValidationClient {
+  /// Shared PostgresClient for ALL SQL validations
+  /// This prevents "too many connections" by reusing a single connection pool
+  private actor SharedValidationClient {
     private var client: PostgresClient?
     private var runTask: Task<Void, Never>?
     private var connectionFailed = false
 
     func getOrCreateClient() async throws -> PostgresClient {
-        // If we previously failed to connect, don't retry
-        if connectionFailed {
-            throw ValidationError.connectionUnavailable
+      // If we previously failed to connect, don't retry
+      if connectionFailed {
+        throw ValidationError.connectionUnavailable
+      }
+
+      if let existing = client {
+        return existing
+      }
+
+      let config = try postgresConfiguration()
+
+      // Use a quieter logger that doesn't log connection errors
+      var logger = Logger(label: "sql-validation")
+      logger.logLevel = .error  // Only log actual errors, not connection attempts
+
+      let newClient = PostgresClient(
+        configuration: config,
+        eventLoopGroup: validationEventLoopGroup,
+        backgroundLogger: logger
+      )
+      self.client = newClient
+
+      // Start client.run() once for the shared client
+      let task = Task {
+        await newClient.run()
+      }
+      self.runTask = task
+
+      // Register shutdown handler on first client creation
+      if !shutdownHandlerRegistered {
+        shutdownHandlerRegistered = true
+        atexit {
+          let semaphore = DispatchSemaphore(value: 0)
+          Task {
+            await sharedValidationClient.shutdown()
+            semaphore.signal()
+          }
+          _ = semaphore.wait(timeout: .now() + .seconds(5))
         }
+      }
 
-        if let existing = client {
-            return existing
+      // Test connection with a quick query
+      do {
+        try await newClient.withConnection { connection in
+          _ = try await connection.query(
+            PostgresQuery(unsafeSQL: "SELECT 1"),
+            logger: logger
+          )
         }
-
-        let config = try postgresConfiguration()
-
-        // Use a quieter logger that doesn't log connection errors
-        var logger = Logger(label: "sql-validation")
-        logger.logLevel = .error  // Only log actual errors, not connection attempts
-
-        let newClient = PostgresClient(
-            configuration: config,
-            eventLoopGroup: validationEventLoopGroup,
-            backgroundLogger: logger
-        )
-        self.client = newClient
-
-        // Start client.run() once for the shared client
-        let task = Task {
-            await newClient.run()
-        }
-        self.runTask = task
-
-        // Register shutdown handler on first client creation
-        if !shutdownHandlerRegistered {
-            shutdownHandlerRegistered = true
-            atexit {
-                let semaphore = DispatchSemaphore(value: 0)
-                Task {
-                    await sharedValidationClient.shutdown()
-                    semaphore.signal()
-                }
-                _ = semaphore.wait(timeout: .now() + .seconds(5))
-            }
-        }
-
-        // Test connection with a quick query
-        do {
-            try await newClient.withConnection { connection in
-                _ = try await connection.query(
-                    PostgresQuery(unsafeSQL: "SELECT 1"),
-                    logger: logger
-                )
-            }
-        } catch {
-            // Connection failed - mark it and clean up
-            connectionFailed = true
-            runTask?.cancel()
-            client = nil
-            runTask = nil
-            throw ValidationError.connectionUnavailable
-        }
-
-        return newClient
-    }
-    
-    func shutdown() async {
-        // Cancel run task
+      } catch {
+        // Connection failed - mark it and clean up
+        connectionFailed = true
         runTask?.cancel()
-        
-        // Wait for cancellation
-        if let task = runTask {
-            await task.value
-        }
-        
-        // Shutdown EventLoopGroup
-        try? await validationEventLoopGroup.shutdownGracefully()
-        
         client = nil
         runTask = nil
+        throw ValidationError.connectionUnavailable
+      }
+
+      return newClient
     }
-}
 
-private let sharedValidationClient = SharedValidationClient()
+    func shutdown() async {
+      // Cancel run task
+      runTask?.cancel()
 
-/// Register shutdown handler on first use
-private nonisolated(unsafe) var shutdownHandlerRegistered = false
+      // Wait for cancellation
+      if let task = runTask {
+        await task.value
+      }
+
+      // Shutdown EventLoopGroup
+      try? await validationEventLoopGroup.shutdownGracefully()
+
+      client = nil
+      runTask = nil
+    }
+  }
+
+  private let sharedValidationClient = SharedValidationClient()
+
+  /// Register shutdown handler on first use
+  private nonisolated(unsafe) var shutdownHandlerRegistered = false
 #endif
 
 // MARK: - SQL Validation
@@ -169,323 +168,322 @@ private nonisolated(unsafe) var shutdownHandlerRegistered = false
 ///   - line: The source line (auto-populated)
 ///   - column: The source column (auto-populated)
 public func assertSQL<T>(
-    of statement: some Statement<T>,
-    matches: (() -> String)? = nil,
-    fileID: StaticString = #fileID,
-    filePath: StaticString = #filePath,
-    function: StaticString = #function,
-    line: UInt = #line,
-    column: UInt = #column
+  of statement: some Statement<T>,
+  matches: (() -> String)? = nil,
+  fileID: StaticString = #fileID,
+  filePath: StaticString = #filePath,
+  function: StaticString = #function,
+  line: UInt = #line,
+  column: UInt = #column
 ) async {
-    // First, snapshot the SQL (synchronous)
-    assertInlineSnapshot(
-        of: statement,
-        as: .sql,
-        message: "SQL did not match snapshot",
-        matches: matches,
-        fileID: fileID,
-        file: filePath,
-        function: function,
-        line: line,
-        column: column
-    )
-    #if StructuredQueriesPostgresSQLValidation
+  // First, snapshot the SQL (synchronous)
+  assertInlineSnapshot(
+    of: statement,
+    as: .sql,
+    message: "SQL did not match snapshot",
+    matches: matches,
+    fileID: fileID,
+    file: filePath,
+    function: function,
+    line: line,
+    column: column
+  )
+  #if StructuredQueriesPostgresSQLValidation
     // Then validate syntax against PostgreSQL (asynchronous)
     await validatePostgreSQLSyntax(
-        statement,
-        fileID: fileID,
-        filePath: filePath,
-        function: function,
-        line: line,
-        column: column
+      statement,
+      fileID: fileID,
+      filePath: filePath,
+      function: function,
+      line: line,
+      column: column
     )
-    #endif
+  #endif
 }
 
-
 #if StructuredQueriesPostgresSQLValidation
-/// Validates SQL syntax against PostgreSQL without snapshotting.
-///
-/// Use this when you only want syntax validation without snapshot testing.
-///
-/// ```swift
-/// await validatePostgreSQLSyntax(myQuery)
-/// ```
-public func validatePostgreSQLSyntax<T>(
+  /// Validates SQL syntax against PostgreSQL without snapshotting.
+  ///
+  /// Use this when you only want syntax validation without snapshot testing.
+  ///
+  /// ```swift
+  /// await validatePostgreSQLSyntax(myQuery)
+  /// ```
+  public func validatePostgreSQLSyntax<T>(
     _ statement: some Statement<T>,
     fileID: StaticString = #fileID,
     filePath: StaticString = #filePath,
     function: StaticString = #function,
     line: UInt = #line,
     column: UInt = #column
-) async {
+  ) async {
     let sql = statement.query.debugDescription
-    
+
     // Normalize whitespace to handle newlines and multiple spaces
     let normalizedSQL = sql.replacingOccurrences(
-        of: "\\s+", with: " ", options: .regularExpression
+      of: "\\s+", with: " ", options: .regularExpression
     )
-        .trimmingCharacters(in: .whitespaces)
-        .uppercased()
-    
+    .trimmingCharacters(in: .whitespaces)
+    .uppercased()
+
     // Validate CREATE FUNCTION and CREATE TRIGGER using transaction rollback
     let ddlValidatablePrefixes = [
-        "CREATE FUNCTION", "CREATE OR REPLACE FUNCTION", "CREATE TRIGGER",
+      "CREATE FUNCTION", "CREATE OR REPLACE FUNCTION", "CREATE TRIGGER",
     ]
     if ddlValidatablePrefixes.contains(where: { normalizedSQL.hasPrefix($0) }) {
-        await validateDDLWithTransaction(
-            sql,
-            fileID: fileID,
-            filePath: filePath,
-            function: function,
-            line: line,
-            column: column
-        )
-        return
+      await validateDDLWithTransaction(
+        sql,
+        fileID: fileID,
+        filePath: filePath,
+        function: function,
+        line: line,
+        column: column
+      )
+      return
     }
-    
+
     // Skip validation for other DDL that can't be validated
     let ddlSkippedPrefixes = [
-        "CREATE VIEW", "CREATE TEMP VIEW", "CREATE TEMPORARY VIEW",
-        "CREATE OR REPLACE VIEW", "CREATE OR REPLACE TEMP VIEW",
-        "DROP VIEW", "CREATE TABLE", "DROP TABLE",
-        "ALTER TABLE", "CREATE INDEX", "DROP INDEX",
-        "DROP TRIGGER", "DROP FUNCTION",
+      "CREATE VIEW", "CREATE TEMP VIEW", "CREATE TEMPORARY VIEW",
+      "CREATE OR REPLACE VIEW", "CREATE OR REPLACE TEMP VIEW",
+      "DROP VIEW", "CREATE TABLE", "DROP TABLE",
+      "ALTER TABLE", "CREATE INDEX", "DROP INDEX",
+      "DROP TRIGGER", "DROP FUNCTION",
     ]
-    
+
     if ddlSkippedPrefixes.contains(where: { normalizedSQL.hasPrefix($0) }) {
-        // These DDL statements are assumed syntactically correct from query builder
-        return
+      // These DDL statements are assumed syntactically correct from query builder
+      return
     }
-    
+
     do {
-        // Get or create shared client
-        let client = try await sharedValidationClient.getOrCreateClient()
+      // Get or create shared client
+      let client = try await sharedValidationClient.getOrCreateClient()
 
-        // Validate SQL using EXPLAIN
-        do {
-            var logger = Logger(label: "sql-validation")
-            logger.logLevel = .error  // Only log errors, not info
+      // Validate SQL using EXPLAIN
+      do {
+        var logger = Logger(label: "sql-validation")
+        logger.logLevel = .error  // Only log errors, not info
 
-            try await client.withConnection { connection in
-                let validationQuery = "EXPLAIN (FORMAT TEXT) \(sql)"
-                _ = try await connection.query(
-                    PostgresQuery(unsafeSQL: validationQuery),
-                    logger: logger
-                )
-                // If we reach here, SQL is valid ✅
-            }
-        } catch {
-            // Check if this is a syntax error or just a missing table/column
-            let errorString = String(reflecting: error)
-
-            // PostgreSQL error codes:
-            // 42601 = syntax_error
-            // 42P01 = undefined_table (OK - syntax is valid, table just doesn't exist)
-            // 42703 = undefined_column (OK - syntax is valid, column just doesn't exist)
-            // 42883 = undefined_function (OK - syntax is valid, function just doesn't exist)
-
-            let isSyntaxError = errorString.contains("sqlState: 42601")  // syntax_error
-            let isSchemaError =
-            errorString.contains("sqlState: 42P01")  // undefined_table
-            || errorString.contains("sqlState: 42703")  // undefined_column
-            || errorString.contains("sqlState: 42883")  // undefined_function
-
-            // Only fail the test for actual syntax errors
-            if isSyntaxError {
-                Issue.record(
-                        """
-                        Invalid PostgreSQL SQL syntax:
-
-                        \(sql)
-
-                        Error: \(errorString)
-                        """,
-                        sourceLocation: SourceLocation(
-                            fileID: fileID.description,
-                            filePath: filePath.description,
-                            line: Int(line),
-                            column: Int(column)
-                        )
-                )
-            } else if !isSchemaError {
-                // Unknown error type - report it but note it might be OK
-                Issue.record(
-                        """
-                        PostgreSQL validation error (might be OK if not a syntax error):
-
-                        \(sql)
-
-                        Error: \(errorString)
-                        """,
-                        sourceLocation: SourceLocation(
-                            fileID: fileID.description,
-                            filePath: filePath.description,
-                            line: Int(line),
-                            column: Int(column)
-                        )
-                )
-            }
-            // If isSchemaError, do nothing - syntax is valid, schema just doesn't exist
+        try await client.withConnection { connection in
+          let validationQuery = "EXPLAIN (FORMAT TEXT) \(sql)"
+          _ = try await connection.query(
+            PostgresQuery(unsafeSQL: validationQuery),
+            logger: logger
+          )
+          // If we reach here, SQL is valid ✅
         }
-    } catch let error as ValidationError where error == .connectionUnavailable {
-        // Silently skip validation when PostgreSQL is not available
-        // This is expected in CI environments without PostgreSQL installed
-        return
-    } catch {
-        // Only log connection failure once (first test that hits it)
-        // Don't spam the logs with hundreds of connection failures
-        return
-    }
-}
+      } catch {
+        // Check if this is a syntax error or just a missing table/column
+        let errorString = String(reflecting: error)
 
-/// Validates DDL statements (CREATE FUNCTION, CREATE TRIGGER) using transaction rollback.
-///
-/// PostgreSQL doesn't support EXPLAIN with DDL statements, so we execute them in a
-/// transaction and roll back to validate syntax without side effects.
-private func validateDDLWithTransaction(
+        // PostgreSQL error codes:
+        // 42601 = syntax_error
+        // 42P01 = undefined_table (OK - syntax is valid, table just doesn't exist)
+        // 42703 = undefined_column (OK - syntax is valid, column just doesn't exist)
+        // 42883 = undefined_function (OK - syntax is valid, function just doesn't exist)
+
+        let isSyntaxError = errorString.contains("sqlState: 42601")  // syntax_error
+        let isSchemaError =
+          errorString.contains("sqlState: 42P01")  // undefined_table
+          || errorString.contains("sqlState: 42703")  // undefined_column
+          || errorString.contains("sqlState: 42883")  // undefined_function
+
+        // Only fail the test for actual syntax errors
+        if isSyntaxError {
+          Issue.record(
+            """
+            Invalid PostgreSQL SQL syntax:
+
+            \(sql)
+
+            Error: \(errorString)
+            """,
+            sourceLocation: SourceLocation(
+              fileID: fileID.description,
+              filePath: filePath.description,
+              line: Int(line),
+              column: Int(column)
+            )
+          )
+        } else if !isSchemaError {
+          // Unknown error type - report it but note it might be OK
+          Issue.record(
+            """
+            PostgreSQL validation error (might be OK if not a syntax error):
+
+            \(sql)
+
+            Error: \(errorString)
+            """,
+            sourceLocation: SourceLocation(
+              fileID: fileID.description,
+              filePath: filePath.description,
+              line: Int(line),
+              column: Int(column)
+            )
+          )
+        }
+        // If isSchemaError, do nothing - syntax is valid, schema just doesn't exist
+      }
+    } catch let error as ValidationError where error == .connectionUnavailable {
+      // Silently skip validation when PostgreSQL is not available
+      // This is expected in CI environments without PostgreSQL installed
+      return
+    } catch {
+      // Only log connection failure once (first test that hits it)
+      // Don't spam the logs with hundreds of connection failures
+      return
+    }
+  }
+
+  /// Validates DDL statements (CREATE FUNCTION, CREATE TRIGGER) using transaction rollback.
+  ///
+  /// PostgreSQL doesn't support EXPLAIN with DDL statements, so we execute them in a
+  /// transaction and roll back to validate syntax without side effects.
+  private func validateDDLWithTransaction(
     _ sql: String,
     fileID: StaticString,
     filePath: StaticString,
     function: StaticString,
     line: UInt,
     column: UInt
-) async {
+  ) async {
     do {
-        let client = try await sharedValidationClient.getOrCreateClient()
+      let client = try await sharedValidationClient.getOrCreateClient()
 
-        var logger = Logger(label: "sql-validation")
-        logger.logLevel = .error  // Only log errors, not info
+      var logger = Logger(label: "sql-validation")
+      logger.logLevel = .error  // Only log errors, not info
 
-        try await client.withConnection { connection in
-            // Start transaction
-            _ = try await connection.query(
-                PostgresQuery(unsafeSQL: "BEGIN"),
-                logger: logger
+      try await client.withConnection { connection in
+        // Start transaction
+        _ = try await connection.query(
+          PostgresQuery(unsafeSQL: "BEGIN"),
+          logger: logger
+        )
+
+        do {
+          // Execute DDL statement - if syntax is invalid, this will throw
+          _ = try await connection.query(
+            PostgresQuery(unsafeSQL: sql),
+            logger: logger
+          )
+
+          // Rollback to remove the DDL from the database
+          _ = try await connection.query(
+            PostgresQuery(unsafeSQL: "ROLLBACK"),
+            logger: logger
+          )
+
+          // If we reach here, SQL syntax is valid ✅
+        } catch {
+          // Rollback on error
+          _ = try? await connection.query(
+            PostgresQuery(unsafeSQL: "ROLLBACK"),
+            logger: logger
+          )
+
+          let errorString = String(reflecting: error)
+
+          // Check for syntax errors
+          let isSyntaxError = errorString.contains("sqlState: 42601")  // syntax_error
+
+          // Check for schema errors (OK - syntax is valid, objects just don't exist)
+          let isSchemaError =
+            errorString.contains("sqlState: 42P01")  // undefined_table
+            || errorString.contains("sqlState: 42703")  // undefined_column
+            || errorString.contains("sqlState: 42883")  // undefined_function
+
+          if isSyntaxError {
+            Issue.record(
+              """
+              Invalid PostgreSQL DDL syntax:
+
+              \(sql)
+
+              Error: \(errorString)
+              """,
+              sourceLocation: SourceLocation(
+                fileID: fileID.description,
+                filePath: filePath.description,
+                line: Int(line),
+                column: Int(column)
+              )
             )
+          } else if !isSchemaError {
+            // Unknown error type - report it
+            Issue.record(
+              """
+              PostgreSQL DDL validation error:
 
-            do {
-                // Execute DDL statement - if syntax is invalid, this will throw
-                _ = try await connection.query(
-                    PostgresQuery(unsafeSQL: sql),
-                    logger: logger
-                )
+              \(sql)
 
-                // Rollback to remove the DDL from the database
-                _ = try await connection.query(
-                    PostgresQuery(unsafeSQL: "ROLLBACK"),
-                    logger: logger
-                )
-
-                // If we reach here, SQL syntax is valid ✅
-            } catch {
-                // Rollback on error
-                _ = try? await connection.query(
-                    PostgresQuery(unsafeSQL: "ROLLBACK"),
-                    logger: logger
-                )
-
-                let errorString = String(reflecting: error)
-
-                // Check for syntax errors
-                let isSyntaxError = errorString.contains("sqlState: 42601")  // syntax_error
-
-                // Check for schema errors (OK - syntax is valid, objects just don't exist)
-                let isSchemaError =
-                errorString.contains("sqlState: 42P01")  // undefined_table
-                || errorString.contains("sqlState: 42703")  // undefined_column
-                || errorString.contains("sqlState: 42883")  // undefined_function
-
-                if isSyntaxError {
-                    Issue.record(
-                            """
-                            Invalid PostgreSQL DDL syntax:
-
-                            \(sql)
-
-                            Error: \(errorString)
-                            """,
-                            sourceLocation: SourceLocation(
-                                fileID: fileID.description,
-                                filePath: filePath.description,
-                                line: Int(line),
-                                column: Int(column)
-                            )
-                    )
-                } else if !isSchemaError {
-                    // Unknown error type - report it
-                    Issue.record(
-                            """
-                            PostgreSQL DDL validation error:
-
-                            \(sql)
-
-                            Error: \(errorString)
-                            """,
-                            sourceLocation: SourceLocation(
-                                fileID: fileID.description,
-                                filePath: filePath.description,
-                                line: Int(line),
-                                column: Int(column)
-                            )
-                    )
-                }
-                // If isSchemaError, do nothing - syntax is valid, schema just doesn't exist
-            }
+              Error: \(errorString)
+              """,
+              sourceLocation: SourceLocation(
+                fileID: fileID.description,
+                filePath: filePath.description,
+                line: Int(line),
+                column: Int(column)
+              )
+            )
+          }
+          // If isSchemaError, do nothing - syntax is valid, schema just doesn't exist
         }
+      }
     } catch let error as ValidationError where error == .connectionUnavailable {
-        // Silently skip validation when PostgreSQL is not available
-        return
+      // Silently skip validation when PostgreSQL is not available
+      return
     } catch {
-        // Silently skip other connection errors
-        return
+      // Silently skip other connection errors
+      return
     }
-}
+  }
 
-// MARK: - Configuration
+  // MARK: - Configuration
 
-private func postgresConfiguration() throws -> PostgresClient.Configuration {
+  private func postgresConfiguration() throws -> PostgresClient.Configuration {
     // Try POSTGRES_URL first (standard connection string)
     if let urlString = ProcessInfo.processInfo.environment["POSTGRES_URL"] {
-        guard let url = URL(string: urlString),
-              let host = url.host(),
-              let user = url.user
-        else {
-            throw ValidationError.invalidURL(urlString)
-        }
-        
-        let database = url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        
-        return PostgresClient.Configuration(
-            host: host,
-            port: url.port ?? 5432,
-            username: user,
-            password: url.password,
-            database: database.isEmpty ? nil : database,
-            tls: .disable
-        )
+      guard let url = URL(string: urlString),
+        let host = url.host(),
+        let user = url.user
+      else {
+        throw ValidationError.invalidURL(urlString)
+      }
+
+      let database = url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+
+      return PostgresClient.Configuration(
+        host: host,
+        port: url.port ?? 5432,
+        username: user,
+        password: url.password,
+        database: database.isEmpty ? nil : database,
+        tls: .disable
+      )
     }
-    
+
     // Try individual environment variables (compatible with swift-records pattern)
     let host = ProcessInfo.processInfo.environment["POSTGRES_HOST"] ?? "localhost"
     let port = ProcessInfo.processInfo.environment["POSTGRES_PORT"].flatMap(Int.init) ?? 5432
     let username = ProcessInfo.processInfo.environment["POSTGRES_USER"] ?? "coenttb"
     let password = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"]
     let database = ProcessInfo.processInfo.environment["POSTGRES_DB"] ?? "test"
-    
-    return PostgresClient.Configuration(
-        host: host,
-        port: port,
-        username: username,
-        password: password?.isEmpty == true ? nil : password,
-        database: database,
-        tls: .disable
-    )
-}
 
-private enum ValidationError: Swift.Error, Equatable {
+    return PostgresClient.Configuration(
+      host: host,
+      port: port,
+      username: username,
+      password: password?.isEmpty == true ? nil : password,
+      database: database,
+      tls: .disable
+    )
+  }
+
+  private enum ValidationError: Swift.Error, Equatable {
     case invalidURL(String)
     case connectionUnavailable
-}
+  }
 
 #endif

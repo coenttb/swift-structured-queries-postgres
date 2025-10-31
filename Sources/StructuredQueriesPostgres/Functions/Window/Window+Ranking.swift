@@ -17,7 +17,7 @@ import StructuredQueriesCore
 ///
 /// - Returns: An integer expression with the row number
 public func rowNumber() -> Window.Function<Int> {
-    Window.Function(functionName: "ROW_NUMBER", arguments: [])
+  Window.Function(functionName: "ROW_NUMBER", arguments: [])
 }
 
 /// PostgreSQL `RANK()` window function
@@ -36,7 +36,7 @@ public func rowNumber() -> Window.Function<Int> {
 ///
 /// - Returns: A rank expression (bigint)
 public func rank() -> Window.Function<Int> {
-    Window.Function(functionName: "RANK", arguments: [])
+  Window.Function(functionName: "RANK", arguments: [])
 }
 
 /// PostgreSQL `DENSE_RANK()` window function
@@ -55,7 +55,7 @@ public func rank() -> Window.Function<Int> {
 ///
 /// - Returns: A dense rank expression (bigint)
 public func denseRank() -> Window.Function<Int> {
-    Window.Function(functionName: "DENSE_RANK", arguments: [])
+  Window.Function(functionName: "DENSE_RANK", arguments: [])
 }
 
 /// PostgreSQL `PERCENT_RANK()` window function
@@ -73,7 +73,7 @@ public func denseRank() -> Window.Function<Int> {
 ///
 /// - Returns: A double precision expression
 public func percentRank() -> Window.Function<Double> {
-    Window.Function(functionName: "PERCENT_RANK", arguments: [])
+  Window.Function(functionName: "PERCENT_RANK", arguments: [])
 }
 
 /// PostgreSQL `CUME_DIST()` window function
@@ -90,7 +90,7 @@ public func percentRank() -> Window.Function<Double> {
 ///
 /// - Returns: A double precision expression
 public func cumeDist() -> Window.Function<Double> {
-    Window.Function(functionName: "CUME_DIST", arguments: [])
+  Window.Function(functionName: "CUME_DIST", arguments: [])
 }
 
 /// PostgreSQL `NTILE(n)` window function
@@ -110,74 +110,74 @@ public func cumeDist() -> Window.Function<Double> {
 /// - Parameter buckets: Number of buckets (must be positive)
 /// - Returns: An integer expression (1 to n)
 public func ntile(_ buckets: Int) -> Window.Function<Int> {
-    precondition(buckets > 0, "ntile buckets must be positive")
-    return Window.Function(
-        functionName: "NTILE",
-        arguments: [QueryFragment(stringLiteral: "\(buckets)")]
-    )
+  precondition(buckets > 0, "ntile buckets must be positive")
+  return Window.Function(
+    functionName: "NTILE",
+    arguments: [QueryFragment(stringLiteral: "\(buckets)")]
+  )
 }
 
 // MARK: - Namespace Convenience
 
 extension Window {
-    /// PostgreSQL `ROW_NUMBER()` window function
-    ///
-    /// Assigns a unique sequential number to each row within the window partition.
-    ///
-    /// - Returns: An integer expression with the row number
-    /// - SeeAlso: `rowNumber()` global function
-    public static func rowNumber() -> Function<Int> {
-        StructuredQueriesPostgres.rowNumber()
-    }
+  /// PostgreSQL `ROW_NUMBER()` window function
+  ///
+  /// Assigns a unique sequential number to each row within the window partition.
+  ///
+  /// - Returns: An integer expression with the row number
+  /// - SeeAlso: `rowNumber()` global function
+  public static func rowNumber() -> Function<Int> {
+    StructuredQueriesPostgres.rowNumber()
+  }
 
-    /// PostgreSQL `RANK()` window function
-    ///
-    /// Assigns a rank to each row within the partition, with gaps for tied values.
-    ///
-    /// - Returns: A rank expression (bigint)
-    /// - SeeAlso: `rank()` global function
-    public static func rank() -> Function<Int> {
-        StructuredQueriesPostgres.rank()
-    }
+  /// PostgreSQL `RANK()` window function
+  ///
+  /// Assigns a rank to each row within the partition, with gaps for tied values.
+  ///
+  /// - Returns: A rank expression (bigint)
+  /// - SeeAlso: `rank()` global function
+  public static func rank() -> Function<Int> {
+    StructuredQueriesPostgres.rank()
+  }
 
-    /// PostgreSQL `DENSE_RANK()` window function
-    ///
-    /// Assigns a rank to each row within the partition, without gaps for tied values.
-    ///
-    /// - Returns: A dense rank expression (bigint)
-    /// - SeeAlso: `denseRank()` global function
-    public static func denseRank() -> Function<Int> {
-        StructuredQueriesPostgres.denseRank()
-    }
+  /// PostgreSQL `DENSE_RANK()` window function
+  ///
+  /// Assigns a rank to each row within the partition, without gaps for tied values.
+  ///
+  /// - Returns: A dense rank expression (bigint)
+  /// - SeeAlso: `denseRank()` global function
+  public static func denseRank() -> Function<Int> {
+    StructuredQueriesPostgres.denseRank()
+  }
 
-    /// PostgreSQL `PERCENT_RANK()` window function
-    ///
-    /// Calculates the relative rank of the current row: `(rank - 1) / (total rows - 1)`.
-    ///
-    /// - Returns: A double precision expression
-    /// - SeeAlso: `percentRank()` global function
-    public static func percentRank() -> Function<Double> {
-        StructuredQueriesPostgres.percentRank()
-    }
+  /// PostgreSQL `PERCENT_RANK()` window function
+  ///
+  /// Calculates the relative rank of the current row: `(rank - 1) / (total rows - 1)`.
+  ///
+  /// - Returns: A double precision expression
+  /// - SeeAlso: `percentRank()` global function
+  public static func percentRank() -> Function<Double> {
+    StructuredQueriesPostgres.percentRank()
+  }
 
-    /// PostgreSQL `CUME_DIST()` window function
-    ///
-    /// Calculates the cumulative distribution.
-    ///
-    /// - Returns: A double precision expression
-    /// - SeeAlso: `cumeDist()` global function
-    public static func cumeDist() -> Function<Double> {
-        StructuredQueriesPostgres.cumeDist()
-    }
+  /// PostgreSQL `CUME_DIST()` window function
+  ///
+  /// Calculates the cumulative distribution.
+  ///
+  /// - Returns: A double precision expression
+  /// - SeeAlso: `cumeDist()` global function
+  public static func cumeDist() -> Function<Double> {
+    StructuredQueriesPostgres.cumeDist()
+  }
 
-    /// PostgreSQL `NTILE(n)` window function
-    ///
-    /// Divides the partition into `n` buckets.
-    ///
-    /// - Parameter buckets: Number of buckets (must be positive)
-    /// - Returns: An integer expression (1 to n)
-    /// - SeeAlso: `ntile(_:)` global function
-    public static func ntile(_ buckets: Int) -> Function<Int> {
-        StructuredQueriesPostgres.ntile(buckets)
-    }
+  /// PostgreSQL `NTILE(n)` window function
+  ///
+  /// Divides the partition into `n` buckets.
+  ///
+  /// - Parameter buckets: Number of buckets (must be positive)
+  /// - Returns: An integer expression (1 to n)
+  /// - SeeAlso: `ntile(_:)` global function
+  public static func ntile(_ buckets: Int) -> Function<Int> {
+    StructuredQueriesPostgres.ntile(buckets)
+  }
 }

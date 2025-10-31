@@ -3,13 +3,13 @@ import Testing
 
 @MainActor
 @Suite(
-//    .serialized,
-    .snapshots(record: .never)
+  //    .serialized,
+  .snapshots(record: .never)
 )
 struct SnapshotTests {}
 
 // MARK: - Test Namespaces
 
 extension SnapshotTests {
-    struct PostgresMath {}
+  struct PostgresMath {}
 }

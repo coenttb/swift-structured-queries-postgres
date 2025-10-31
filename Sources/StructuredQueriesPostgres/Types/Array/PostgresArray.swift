@@ -59,44 +59,44 @@ import StructuredQueriesCore
 // Due to Swift's conformance rules, that more-specific conformance takes precedence.
 // This extension provides native array support for all other QueryBindable element types.
 extension Array: QueryBindable, QueryExpression where Element: QueryBindable {
-    public typealias QueryValue = [Element]
+  public typealias QueryValue = [Element]
 
-    public var queryBinding: QueryBinding {
-        // Special case: [UInt8] is handled by the more-specific conformance in Core
-        // for bytea (binary data) support
-        if Element.self == UInt8.self {
-            return .blob(self as! [UInt8])
-        }
-
-        // Map primitive types to their specific PostgreSQL array binding cases
-        // These are optimized for the most common types
-        switch Element.self {
-        case is Bool.Type:
-            return .boolArray(self as! [Bool])
-        case is String.Type:
-            return .stringArray(self as! [String])
-        case is Int.Type:
-            return .intArray(self as! [Int])
-        case is Int16.Type:
-            return .int16Array(self as! [Int16])
-        case is Int32.Type:
-            return .int32Array(self as! [Int32])
-        case is Int64.Type:
-            return .int64Array(self as! [Int64])
-        case is Float.Type:
-            return .floatArray(self as! [Float])
-        case is Double.Type:
-            return .doubleArray(self as! [Double])
-        case is UUID.Type:
-            return .uuidArray(self as! [UUID])
-        case is Date.Type:
-            return .dateArray(self as! [Date])
-        default:
-            // Fallback: Use genericArray for any other QueryBindable element type
-            // This supports custom types like enums with RawRepresentable conformance
-            return .genericArray(self.map { $0.queryBinding })
-        }
+  public var queryBinding: QueryBinding {
+    // Special case: [UInt8] is handled by the more-specific conformance in Core
+    // for bytea (binary data) support
+    if Element.self == UInt8.self {
+      return .blob(self as! [UInt8])
     }
+
+    // Map primitive types to their specific PostgreSQL array binding cases
+    // These are optimized for the most common types
+    switch Element.self {
+    case is Bool.Type:
+      return .boolArray(self as! [Bool])
+    case is String.Type:
+      return .stringArray(self as! [String])
+    case is Int.Type:
+      return .intArray(self as! [Int])
+    case is Int16.Type:
+      return .int16Array(self as! [Int16])
+    case is Int32.Type:
+      return .int32Array(self as! [Int32])
+    case is Int64.Type:
+      return .int64Array(self as! [Int64])
+    case is Float.Type:
+      return .floatArray(self as! [Float])
+    case is Double.Type:
+      return .doubleArray(self as! [Double])
+    case is UUID.Type:
+      return .uuidArray(self as! [UUID])
+    case is Date.Type:
+      return .dateArray(self as! [Date])
+    default:
+      // Fallback: Use genericArray for any other QueryBindable element type
+      // This supports custom types like enums with RawRepresentable conformance
+      return .genericArray(self.map { $0.queryBinding })
+    }
+  }
 }
 
 // MARK: - Array _OptionalPromotable Conformance
@@ -106,19 +106,19 @@ extension Array: _OptionalPromotable where Element: QueryDecodable {}
 // MARK: - Array QueryDecodable Conformance
 
 extension Array: QueryDecodable where Element: QueryDecodable {
-    public init(decoder: inout some QueryDecoder) throws {
-        // Special case: [UInt8] is for bytea (binary data)
-        if Element.self == UInt8.self {
-            guard let result = try decoder.decode([UInt8].self)
-            else { throw QueryDecodingError.missingRequiredColumn }
-            self = result as! [Element]
-            return
-        }
-
-        // Other array types: Decoding is handled by swift-records package
-        // via postgres-nio integration. This package only handles SQL generation.
-        throw ArrayDecodingNotImplementedError()
+  public init(decoder: inout some QueryDecoder) throws {
+    // Special case: [UInt8] is for bytea (binary data)
+    if Element.self == UInt8.self {
+      guard let result = try decoder.decode([UInt8].self)
+      else { throw QueryDecodingError.missingRequiredColumn }
+      self = result as! [Element]
+      return
     }
+
+    // Other array types: Decoding is handled by swift-records package
+    // via postgres-nio integration. This package only handles SQL generation.
+    throw ArrayDecodingNotImplementedError()
+  }
 }
 
 private struct ArrayDecodingNotImplementedError: Swift.Error {}
@@ -126,13 +126,13 @@ private struct ArrayDecodingNotImplementedError: Swift.Error {}
 // MARK: - Array QueryRepresentable Conformance
 
 extension Array: QueryRepresentable where Element: QueryDecodable {
-    public init(queryOutput: [Element]) {
-        self = queryOutput
-    }
+  public init(queryOutput: [Element]) {
+    self = queryOutput
+  }
 
-    public var queryOutput: [Element] {
-        self
-    }
+  public var queryOutput: [Element] {
+    self
+  }
 }
 
 // MARK: - Documentation

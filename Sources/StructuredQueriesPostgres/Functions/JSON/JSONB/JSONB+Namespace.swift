@@ -24,10 +24,10 @@ public enum JSONB {}
 
 /// Shared JSON encoder for JSONB operations
 internal let jsonbEncoder: JSONEncoder = {
-    var encoder = JSONEncoder()
-    encoder.dateEncodingStrategy = .iso8601
-    #if DEBUG
-        encoder.outputFormatting = [.sortedKeys]
-    #endif
-    return encoder
+  var encoder = JSONEncoder()
+  encoder.dateEncodingStrategy = .iso8601
+  #if DEBUG
+    encoder.outputFormatting = [.sortedKeys]
+  #endif
+  return encoder
 }()

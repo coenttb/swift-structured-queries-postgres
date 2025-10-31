@@ -3,37 +3,37 @@ import StructuredQueriesPostgres
 // NB: This is a compile-time test for a 'select' overload.
 @Selection
 private struct ReminderRow {
-    let reminder: Reminder
-    let isPastDue: Bool
-    @Column(as: [String].JSONB.self)
-    let tags: [String]
+  let reminder: Reminder
+  let isPastDue: Bool
+  @Column(as: [String].JSONB.self)
+  let tags: [String]
 }
 private var remindersQuery: some Statement<ReminderRow> {
-    Reminder
-        .limit(1)
-        .select {
-            ReminderRow.Columns(
-                reminder: $0,
-                isPastDue: true,
-                tags: #sql("[]")
-            )
-        }
+  Reminder
+    .limit(1)
+    .select {
+      ReminderRow.Columns(
+        reminder: $0,
+        isPastDue: true,
+        tags: #sql("[]")
+      )
+    }
 }
 
 @Table
 private struct Foo {
-    var id: Int
-    var barId: Int?
+  var id: Int
+  var barId: Int?
 }
 @Table
 private struct Bar {
-    var id: Int
-    var baz: String?
+  var id: Int
+  var baz: String?
 }
 func dynamicMemberLookup() {
-    _ = Foo.all
-        .leftJoin(Bar.all) { $0.barId.eq($1.id) }
-        .where { _, b in
-            b.baz.is(nil)
-        }
+  _ = Foo.all
+    .leftJoin(Bar.all) { $0.barId.eq($1.id) }
+    .where { _, b in
+      b.baz.is(nil)
+    }
 }

@@ -37,8 +37,8 @@ import StructuredQueriesCore
 // All styles compile to identical SQL. Choose based on context and readability.
 
 extension PostgreSQL {
-    /// Namespace for PostgreSQL UUID functions
-    ///
-    /// This enum cannot be instantiated - it serves purely as a namespace.
-    public enum UUID {}
+  /// Namespace for PostgreSQL UUID functions
+  ///
+  /// This enum cannot be instantiated - it serves purely as a namespace.
+  public enum UUID {}
 }

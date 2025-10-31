@@ -27,10 +27,10 @@ import StructuredQueriesCore
 ///
 /// > Note: This is a set-returning function, typically used in FROM clauses.
 public func generateSeries(_ start: Int, _ stop: Int) -> SQLQueryExpression<Int> {
-    SQLQueryExpression(
-        "generate_series(\(start), \(stop))",
-        as: Int.self
-    )
+  SQLQueryExpression(
+    "generate_series(\(start), \(stop))",
+    as: Int.self
+  )
 }
 
 /// Generates a series of integer values from start to stop with a step
@@ -49,10 +49,10 @@ public func generateSeries(_ start: Int, _ stop: Int) -> SQLQueryExpression<Int>
 ///   - step: Step value (can be negative for descending series)
 /// - Returns: A set of integer values
 public func generateSeries(_ start: Int, _ stop: Int, step: Int) -> SQLQueryExpression<Int> {
-    SQLQueryExpression(
-        "generate_series(\(start), \(stop), \(step))",
-        as: Int.self
-    )
+  SQLQueryExpression(
+    "generate_series(\(start), \(stop), \(step))",
+    as: Int.self
+  )
 }
 
 /// Generates a series of timestamp values from start to stop with a step interval
@@ -83,12 +83,12 @@ public func generateSeries(_ start: Int, _ stop: Int, step: Int) -> SQLQueryExpr
 /// - `"1 month"` - One month
 /// - `"1 year"` - One year
 public func generateSeriesTimestamp(_ start: Date, _ stop: Date, interval: String)
-    -> SQLQueryExpression<Date>
+  -> SQLQueryExpression<Date>
 {
-    SQLQueryExpression(
-        "generate_series(\(bind: start), \(bind: stop), '\(raw: interval)'::interval)",
-        as: Date.self
-    )
+  SQLQueryExpression(
+    "generate_series(\(bind: start), \(bind: stop), '\(raw: interval)'::interval)",
+    as: Date.self
+  )
 }
 
 // MARK: - GENERATE_SUBSCRIPTS
@@ -110,13 +110,13 @@ public func generateSeriesTimestamp(_ start: Date, _ stop: Date, interval: Strin
 ///
 /// > Note: Useful for iterating over array elements in queries
 public func generateSubscripts<Element>(
-    _ array: some QueryExpression<[Element]>,
-    dimension: Int = 1
+  _ array: some QueryExpression<[Element]>,
+  dimension: Int = 1
 ) -> SQLQueryExpression<Int> where Element: QueryBindable {
-    SQLQueryExpression(
-        "generate_subscripts(\(array.queryFragment), \(dimension))",
-        as: Int.self
-    )
+  SQLQueryExpression(
+    "generate_subscripts(\(array.queryFragment), \(dimension))",
+    as: Int.self
+  )
 }
 
 /// Generates a series of subscripts for an array dimension in reverse order
@@ -128,14 +128,14 @@ public func generateSubscripts<Element>(
 /// // SELECT generate_subscripts("posts"."tags", 1, true) FROM "posts"
 /// ```
 public func generateSubscripts<Element>(
-    _ array: some QueryExpression<[Element]>,
-    dimension: Int = 1,
-    reverse: Bool
+  _ array: some QueryExpression<[Element]>,
+  dimension: Int = 1,
+  reverse: Bool
 ) -> SQLQueryExpression<Int> where Element: QueryBindable {
-    SQLQueryExpression(
-        "generate_subscripts(\(array.queryFragment), \(dimension), \(reverse))",
-        as: Int.self
-    )
+  SQLQueryExpression(
+    "generate_subscripts(\(array.queryFragment), \(dimension), \(reverse))",
+    as: Int.self
+  )
 }
 
 // MARK: - JSON Set Returning Functions
@@ -155,10 +155,10 @@ public func generateSubscripts<Element>(
 ///
 /// > Note: This is a set-returning function for use in FROM clauses
 public func jsonArrayElements(_ json: some QueryExpression<Data>) -> SQLQueryExpression<Data> {
-    SQLQueryExpression(
-        "json_array_elements(\(json.queryFragment))",
-        as: Data.self
-    )
+  SQLQueryExpression(
+    "json_array_elements(\(json.queryFragment))",
+    as: Data.self
+  )
 }
 
 /// Expands a JSON array into a set of text values
@@ -174,10 +174,10 @@ public func jsonArrayElements(_ json: some QueryExpression<Data>) -> SQLQueryExp
 /// - Returns: A set of text values
 public func jsonArrayElementsText(_ json: some QueryExpression<Data>) -> SQLQueryExpression<String>
 {
-    SQLQueryExpression(
-        "json_array_elements_text(\(json.queryFragment))",
-        as: String.self
-    )
+  SQLQueryExpression(
+    "json_array_elements_text(\(json.queryFragment))",
+    as: String.self
+  )
 }
 
 /// Expands a JSONB array into a set of JSONB values
@@ -189,10 +189,10 @@ public func jsonArrayElementsText(_ json: some QueryExpression<Data>) -> SQLQuer
 /// // SELECT jsonb_array_elements("data"."jsonbData") FROM "data"
 /// ```
 public func jsonbArrayElements(_ jsonb: some QueryExpression<Data>) -> SQLQueryExpression<Data> {
-    SQLQueryExpression(
-        "jsonb_array_elements(\(jsonb.queryFragment))",
-        as: Data.self
-    )
+  SQLQueryExpression(
+    "jsonb_array_elements(\(jsonb.queryFragment))",
+    as: Data.self
+  )
 }
 
 /// Expands a JSONB array into a set of text values
@@ -204,79 +204,79 @@ public func jsonbArrayElements(_ jsonb: some QueryExpression<Data>) -> SQLQueryE
 /// // SELECT jsonb_array_elements_text("data"."jsonbArray") FROM "data"
 /// ```
 public func jsonbArrayElementsText(_ jsonb: some QueryExpression<Data>) -> SQLQueryExpression<
-    String
+  String
 > {
-    SQLQueryExpression(
-        "jsonb_array_elements_text(\(jsonb.queryFragment))",
-        as: String.self
-    )
+  SQLQueryExpression(
+    "jsonb_array_elements_text(\(jsonb.queryFragment))",
+    as: String.self
+  )
 }
 
 // MARK: - REGEXP_MATCHES (Set Returning)
 
 extension QueryExpression where QueryValue == String {
-    /// Returns all captured substrings from a regular expression match
-    ///
-    /// PostgreSQL's `regexp_matches(text, pattern, flags)` set-returning function.
-    ///
-    /// ```swift
-    /// Text.select { $0.content.regexpMatches("[0-9]+", flags: "g") }
-    /// // SELECT regexp_matches("texts"."content", '[0-9]+', 'g') FROM "texts"
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - pattern: Regular expression pattern
-    ///   - flags: Optional flags ('g' for global, 'i' for case-insensitive, etc.)
-    /// - Returns: A set of text arrays containing captured groups
-    ///
-    /// Common flags:
-    /// - `"g"` - Global (return all matches, not just first)
-    /// - `"i"` - Case-insensitive
-    /// - `"m"` - Multi-line mode
-    /// - `"n"` - Newline-sensitive
-    ///
-    /// > Note: Returns a set of rows, each containing an array of captured groups
-    public func regexpMatches(_ pattern: String, flags: String = "g") -> some QueryExpression<
-        [String]
-    > {
-        SQLQueryExpression(
-            "regexp_matches(\(self.queryFragment), \(bind: pattern), \(bind: flags))",
-            as: [String].self
-        )
-    }
+  /// Returns all captured substrings from a regular expression match
+  ///
+  /// PostgreSQL's `regexp_matches(text, pattern, flags)` set-returning function.
+  ///
+  /// ```swift
+  /// Text.select { $0.content.regexpMatches("[0-9]+", flags: "g") }
+  /// // SELECT regexp_matches("texts"."content", '[0-9]+', 'g') FROM "texts"
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - pattern: Regular expression pattern
+  ///   - flags: Optional flags ('g' for global, 'i' for case-insensitive, etc.)
+  /// - Returns: A set of text arrays containing captured groups
+  ///
+  /// Common flags:
+  /// - `"g"` - Global (return all matches, not just first)
+  /// - `"i"` - Case-insensitive
+  /// - `"m"` - Multi-line mode
+  /// - `"n"` - Newline-sensitive
+  ///
+  /// > Note: Returns a set of rows, each containing an array of captured groups
+  public func regexpMatches(_ pattern: String, flags: String = "g") -> some QueryExpression<
+    [String]
+  > {
+    SQLQueryExpression(
+      "regexp_matches(\(self.queryFragment), \(bind: pattern), \(bind: flags))",
+      as: [String].self
+    )
+  }
 }
 
 // MARK: - REGEXP_SPLIT_TO_TABLE
 
 extension QueryExpression where QueryValue == String {
-    /// Splits a string using a regular expression pattern and returns rows
-    ///
-    /// PostgreSQL's `regexp_split_to_table(text, pattern)` function.
-    ///
-    /// ```swift
-    /// Text.select { $0.csv.regexpSplitToTable(",\\s*") }
-    /// // SELECT regexp_split_to_table("texts"."csv", ',\s*') FROM "texts"
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - pattern: Regular expression pattern to split on
-    ///   - flags: Optional flags ('i' for case-insensitive, etc.)
-    /// - Returns: A set of text values
-    ///
-    /// > Note: This is a set-returning function that returns one row per split element
-    public func regexpSplitToTable(_ pattern: String, flags: String? = nil) -> some QueryExpression<
-        String
-    > {
-        if let flags {
-            return SQLQueryExpression(
-                "regexp_split_to_table(\(self.queryFragment), \(bind: pattern), \(bind: flags))",
-                as: String.self
-            )
-        } else {
-            return SQLQueryExpression(
-                "regexp_split_to_table(\(self.queryFragment), \(bind: pattern))",
-                as: String.self
-            )
-        }
+  /// Splits a string using a regular expression pattern and returns rows
+  ///
+  /// PostgreSQL's `regexp_split_to_table(text, pattern)` function.
+  ///
+  /// ```swift
+  /// Text.select { $0.csv.regexpSplitToTable(",\\s*") }
+  /// // SELECT regexp_split_to_table("texts"."csv", ',\s*') FROM "texts"
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - pattern: Regular expression pattern to split on
+  ///   - flags: Optional flags ('i' for case-insensitive, etc.)
+  /// - Returns: A set of text values
+  ///
+  /// > Note: This is a set-returning function that returns one row per split element
+  public func regexpSplitToTable(_ pattern: String, flags: String? = nil) -> some QueryExpression<
+    String
+  > {
+    if let flags {
+      return SQLQueryExpression(
+        "regexp_split_to_table(\(self.queryFragment), \(bind: pattern), \(bind: flags))",
+        as: String.self
+      )
+    } else {
+      return SQLQueryExpression(
+        "regexp_split_to_table(\(self.queryFragment), \(bind: pattern))",
+        as: String.self
+      )
     }
+  }
 }
