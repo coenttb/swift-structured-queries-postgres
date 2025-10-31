@@ -569,6 +569,19 @@ To learn about the core concepts behind structured query building in Swift, chec
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Related Packages
+
+### Third-Party Dependencies
+
+- [pointfreeco/swift-case-paths](https://github.com/pointfreeco/swift-case-paths): Case paths bring the benefits of key paths to enums.
+- [pointfreeco/swift-custom-dump](https://github.com/pointfreeco/swift-custom-dump): A collection of tools for debugging, diffing, and testing data structures.
+- [pointfreeco/swift-dependencies](https://github.com/pointfreeco/swift-dependencies): A dependency management library for controlling dependencies in Swift.
+- [pointfreeco/swift-macro-testing](https://github.com/pointfreeco/swift-macro-testing): Magical testing tools for Swift macros.
+- [pointfreeco/swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing): Delightful snapshot testing for Swift.
+- [pointfreeco/swift-tagged](https://github.com/pointfreeco/swift-tagged): A wrapper type for safer, expressive code.
+- [pointfreeco/xctest-dynamic-overlay](https://github.com/pointfreeco/xctest-dynamic-overlay): Define XCTest assertion helpers directly in production code.
+- [vapor/postgres-nio](https://github.com/vapor/postgres-nio): Non-blocking, event-driven Swift client for PostgreSQL.
+
 ## Related Projects
 
 - [**swift-records**](https://github.com/coenttb/swift-records) - High-level database operations layer (connection pooling, transactions, migrations)
