@@ -27,6 +27,7 @@ disabled_rules:
   - colon                                 # swift-format handles colon spacing
   - comma                                 # swift-format handles comma spacing
   - trailing_newline                      # swift-format handles newlines
+  - redundant_discardable_let  # Preserve 'let _ =' in result builder contexts (required for Swift 6.0+)
 
 # Opt-in Rules
 opt_in_rules:
