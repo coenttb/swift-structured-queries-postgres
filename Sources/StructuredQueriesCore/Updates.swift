@@ -31,7 +31,7 @@ public struct Updates<Base: Table>: Sendable {
   }
 
   @_disfavoredOverload
-  public subscript<Value>(
+  public subscript<Value: QueryBindable>(
     dynamicMember keyPath: KeyPath<Base.TableColumns, TableColumn<Base, Value>>
   ) -> SQLQueryExpression<Value> {
     get { SQLQueryExpression(Base.columns[keyPath: keyPath]) }
@@ -39,7 +39,7 @@ public struct Updates<Base: Table>: Sendable {
   }
 
   @_disfavoredOverload
-  public subscript<Value: QueryExpression>(
+  public subscript<Value: QueryExpression & QueryOutputAssignable>(
     dynamicMember keyPath: KeyPath<
       Base.TableColumns,
       some WritableTableColumnExpression<Base, Value>

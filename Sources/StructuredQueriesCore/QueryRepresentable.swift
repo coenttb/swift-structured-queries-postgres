@@ -25,6 +25,9 @@ public protocol QueryRepresentable<QueryOutput>: QueryDecodable {
   var queryOutput: QueryOutput { get }
 }
 
+/// Marker protocol for representations that can be assigned from their QueryOutput in updates.
+public protocol QueryOutputAssignable: QueryRepresentable {}
+
 extension QueryRepresentable where Self: QueryDecodable, Self == QueryOutput {
   @inlinable
   @inline(__always)

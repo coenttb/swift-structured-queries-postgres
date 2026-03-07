@@ -13,7 +13,7 @@ extension Data: QueryBindable {
   }
 }
 
-extension URL: QueryBindable {
+extension URL: QueryBindable, QueryOutputAssignable {
   public var queryBinding: QueryBinding {
     .text(absoluteString)
   }

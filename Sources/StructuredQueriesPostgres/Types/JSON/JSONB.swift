@@ -60,7 +60,7 @@ extension Optional where Wrapped: Codable {
 
 // MARK: - QueryBindable
 
-extension _JSONBRepresentation: QueryBindable {
+extension _JSONBRepresentation: QueryBindable, QueryOutputAssignable {
   public var queryBinding: QueryBinding {
     do {
       let jsonData = try jsonEncoder.encode(queryOutput)

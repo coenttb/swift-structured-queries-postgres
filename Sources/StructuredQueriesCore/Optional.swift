@@ -60,6 +60,8 @@ extension Optional: QueryExpression where Wrapped: QueryExpression {
   }
 }
 
+extension Optional: QueryOutputAssignable where Wrapped: QueryOutputAssignable {}
+
 extension Optional: QueryRepresentable where Wrapped: QueryRepresentable {
   public typealias QueryOutput = Wrapped.QueryOutput?
 
