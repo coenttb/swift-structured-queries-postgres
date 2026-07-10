@@ -60,7 +60,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.7.2"),
         .package(url: "https://github.com/pointfreeco/swift-custom-dump.git", from: "1.3.3"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.8.1"),
+        .package(url: "https://github.com/swift-foundations/swift-dependencies.git", branch: "main"),
         .package(url: "https://github.com/pointfreeco/swift-macro-testing.git", from: "0.6.3"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.4"),
         .package(url: "https://github.com/pointfreeco/swift-tagged.git", from: "0.10.0"),
@@ -110,7 +110,7 @@ let package = Package(
                 "StructuredQueriesCore",
                 .product(name: "CustomDump", package: "swift-custom-dump"),
                 .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
-                .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+                .product(name: "Dependencies Test Support", package: "swift-dependencies"),
                 .product(
                     name: "PostgresNIO",
                     package: "postgres-nio",
