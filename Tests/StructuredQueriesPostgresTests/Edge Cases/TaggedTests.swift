@@ -121,7 +121,7 @@ extension SnapshotTests {
 
         @Table
         fileprivate struct Reminder {
-            typealias ID = Tagged<Self, Int>
+            typealias ID = Tagged.Tagged<Self, Int>
 
             let id: ID
             let remindersListID: Int
@@ -129,7 +129,7 @@ extension SnapshotTests {
 
         @Table
         fileprivate struct User {
-            typealias ID = Tagged<Self, UUID>
+            typealias ID = Tagged.Tagged<Self, UUID>
 
             let id: ID
             let name: String

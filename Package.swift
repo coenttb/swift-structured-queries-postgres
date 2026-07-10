@@ -1,4 +1,4 @@
-// swift-tools-version: 6.1
+// swift-tools-version: 6.3.1
 
 import CompilerPluginSupport
 import PackageDescription
@@ -12,10 +12,10 @@ import PackageDescription
 let package = Package(
     name: "swift-structured-queries-postgres",
     platforms: [
-        .iOS(.v16),
-        .macOS(.v13)
-        //        .tvOS(.v13),
-        //        .watchOS(.v6)
+        .iOS(.v26),
+        .macOS(.v26)
+        //        .tvOS(.v26),
+        //        .watchOS(.v26)
     ],
     products: [
         .library(

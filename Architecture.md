@@ -1832,3 +1832,57 @@ Working on SQ and SQ-postgres is a joy because no other project I work on has su
 advanced mechanics, especially parameter packs. I learn something new every day.
 
 Thanks for building such a solid foundation!
+
+---
+
+## 2026-07-10: Update-clause compound-assignment operators — verification (no port needed)
+
+**Trigger**: `UpdateTests.swift` (`multipleMutations`, `aliasName`) uses `$0.title += "!"` inside
+`.update { }`. Reported symptom: "getter for subscript(dynamicMember:) is unavailable"
+(`Sources/StructuredQueriesCore/Updates.swift:49`, the `Value.QueryOutput` disfavored-overload
+subscript with `@available(*, unavailable) get`).
+
+**Investigation**: Compared upstream `Sources/StructuredQueriesCore/Operators.swift` (the
+`SQLQueryExpression`-scoped compound-assignment family, upstream lines ~439–822) against this
+package's ported operators, verbatim, line by line:
+
+| Upstream extension | Members | Ported to |
+|---|---|---|
+| `SQLQueryExpression where QueryValue: Numeric` | `+=`, `-=`, `*=`, `/=`, `negate()` | `Sources/StructuredQueriesPostgres/Operators/Mathematical.swift:91-132` |
+| `SQLQueryExpression where QueryValue: BinaryInteger` | `&=`, `\|=`, `<<=`, `>>=` | `Mathematical.swift:219-235` |
+| `SQLQueryExpression<Bool>` | `toggle()` | `Sources/StructuredQueriesPostgres/Operators/Logical.swift:82-86` |
+| `SQLQueryExpression<String>` | `+=`, `append(_:)`, `append(contentsOf:)` | `Sources/StructuredQueriesPostgres/Operators/StringOperators.swift:104-141` |
+
+**Finding**: All four extensions are already present and match upstream's declarations exactly
+(only whitespace/4-space-vs-2-space formatting differs, consistent with the rest of this port).
+Upstream has **no** additional top-level (`any QueryExpression<QueryValue>`-typed) workaround for
+any of these compound-assignment operators — unlike `==`/`!=`/prefix `-`/`+`/`!`/`~`, which do get
+such workarounds (all present and verbatim in `Comparison.swift` and `Logical.swift`). Upstream's
+own `UpdateTests.swift` contains the identical `$0.title += "!"` / `$0.title += "?"` /
+`$0.title += " 2"` calls (its `multipleMutations` test), so the pattern is expected to resolve via
+the disfavored `SQLQueryExpression<Value>` subscript overload (`Updates.swift:33-39`) once a
+matching operator exists on `SQLQueryExpression<QueryValue>` — which it does here.
+
+**Sweep of `UpdateTests.swift`'s other compound ops** (Tests/StructuredQueriesPostgresTests/Commands/Update/UpdateTests.swift):
+`.toggle()` (Bool, lines 13/43/57/69/113/189), prefix `!` (line 57), `$0.title += …` (lines 81/82/131).
+All three operator shapes are covered by the table above — no additional family (e.g. Bool `&&=`/`||=`,
+which upstream does not define either) is exercised by this file.
+
+**Conclusion**: No operators were missing to port for this specific family — `Mathematical.swift`,
+`Logical.swift`, and `StringOperators.swift` already carry the exact upstream `SQLQueryExpression`
+compound-assignment surface. `Updates.swift`, the staged `Select+GroupBy.swift` edit, `TaggedTests.swift`,
+and `Package.swift` were left untouched per instruction. Since builds/tests were out of scope for this
+pass (edits-only), this is a **static verification**, not a green-build confirmation — re-run
+`swift test --filter UpdateTests` to confirm the reported failure is resolved (or was already stale)
+before treating this arc as closed.
+
+**Separate, out-of-scope observation**: `Mathematical.swift:75-89,211-217` diverges from upstream —
+the prefix `-`/`+`/`~` "overload resolution bug" workarounds were rewritten from upstream's
+`any QueryExpression<QueryValue>` parameter + inner `open(_:)` helper to a direct
+`some QueryExpression<QueryValue>` parameter (comment: "Testing if overload resolution bug is fixed -
+changed 'any' to 'some'"). This is a real deviation from "copy exactly," unrelated to the `+=`/String
+family above, and not touched here per scope. Flagging for an explicit decision: revert to upstream's
+`any`-based form, or confirm the "some" rewrite is safe on this workspace's target toolchain
+(Swift 6.3.2 release) — the divergence was reportedly introduced/tested on a different toolchain
+(Xcode + toolchain 26.1 per an unrelated note appended earlier in this file), which this workspace's
+CLAUDE.md explicitly warns against generalizing from.

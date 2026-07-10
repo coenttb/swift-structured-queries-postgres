@@ -52,6 +52,7 @@ extension Select {
         _group(by: grouping)
     }
 
+    @_disfavoredOverload
     private func _group<
         each C: QueryExpression,
         each J: Table
