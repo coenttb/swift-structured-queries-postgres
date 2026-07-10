@@ -58,17 +58,17 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-case-paths", from: "1.7.2"),
-        .package(url: "https://github.com/pointfreeco/swift-custom-dump", from: "1.3.3"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.8.1"),
-        .package(url: "https://github.com/pointfreeco/swift-macro-testing", from: "0.6.3"),
-        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.18.4"),
-        .package(url: "https://github.com/pointfreeco/swift-tagged", from: "0.10.0"),
-        .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", exact: "1.6.1"),
-        .package(url: "https://github.com/swiftlang/swift-syntax", "600.0.0"..<"603.0.0"),
+        .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.7.2"),
+        .package(url: "https://github.com/pointfreeco/swift-custom-dump.git", from: "1.3.3"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.8.1"),
+        .package(url: "https://github.com/pointfreeco/swift-macro-testing.git", from: "0.6.3"),
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.4"),
+        .package(url: "https://github.com/pointfreeco/swift-tagged.git", from: "0.10.0"),
+        .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay.git", exact: "1.6.1"),
+        .package(url: "https://github.com/swiftlang/swift-syntax.git", "600.0.0"..<"603.0.0"),
         // new snapshot contains fix for swift build and swift test linker issue.
-//        .package(url: "https://github.com/swiftlang/swift-syntax", branch: "swift-6.2-DEVELOPMENT-SNAPSHOT-2025-10-09-a"),
-        .package(url: "https://github.com/vapor/postgres-nio", from: "1.22.0"),
+//        .package(url: "https://github.com/swiftlang/swift-syntax.git", branch: "swift-6.2-DEVELOPMENT-SNAPSHOT-2025-10-09-a"),
+        .package(url: "https://github.com/vapor/postgres-nio.git", from: "1.22.0"),
     ],
     targets: [
         .target(
