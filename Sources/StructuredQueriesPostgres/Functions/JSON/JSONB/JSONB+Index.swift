@@ -62,6 +62,40 @@ extension JSONB.Index {
     }
 }
 
+// MARK: - JSONB.Index Path Literal Escaping
+
+extension JSONB.Index {
+    /// Renders a JSON path as a properly escaped PostgreSQL array-literal SQL string.
+    ///
+    /// `CREATE INDEX` expressions are DDL and cannot bind parameters the way `SELECT`/
+    /// `UPDATE` statements can, so the path has to be embedded directly in the SQL
+    /// text. Each element that contains a comma, brace, double quote, backslash,
+    /// whitespace, is empty, or is the literal token `NULL` is double-quoted per
+    /// PostgreSQL's array literal syntax (with `\` and `"` backslash-escaped inside the
+    /// quoted element). The resulting `{...}` array literal is then escaped for safe
+    /// embedding inside a single-quoted SQL string literal, so a path element cannot
+    /// break out of the literal and inject additional SQL.
+    ///
+    /// - Parameter path: The JSON path elements to render.
+    /// - Returns: A single-quoted SQL string literal, e.g. `'{address,city}'`.
+    fileprivate static func pathLiteral(_ path: [String]) -> String {
+        let elements = path.map { element -> String in
+            let needsQuoting =
+                element.isEmpty
+                || element.uppercased() == "NULL"
+                || element.contains(where: { ",{}\"\\".contains($0) || $0.isWhitespace })
+            guard needsQuoting else { return element }
+            let escaped =
+                element
+                .replacingOccurrences(of: "\\", with: "\\\\")
+                .replacingOccurrences(of: "\"", with: "\\\"")
+            return "\"\(escaped)\""
+        }
+        let arrayLiteral = "{" + elements.joined(separator: ",") + "}"
+        return "'\(arrayLiteral.escapedForPostgreSQL())'"
+    }
+}
+
 // MARK: - Table Extensions for JSONB Indexes
 
 extension Table {
@@ -153,7 +187,7 @@ extension Table {
     ) -> QueryFragment {
         let col = columns[keyPath: column]
         let indexName = name ?? "idx_\(tableName)_\(col.name)_\(path.joined(separator: "_"))_gin"
-        let pathExpr = "'{" + path.joined(separator: ",") + "}'"
+        let pathExpr = JSONB.Index.pathLiteral(path)
         let opClass = operatorClass == .jsonb_ops ? "" : " \(operatorClass.rawValue)"
 
         var fragment: QueryFragment = "CREATE INDEX \(quote: indexName) ON "
@@ -295,7 +329,7 @@ extension Table {
     ) -> QueryFragment {
         let col = columns[keyPath: column]
         let indexName = name ?? "idx_\(tableName)_\(col.name)_\(path.joined(separator: "_"))_gin"
-        let pathExpr = "'{" + path.joined(separator: ",") + "}'"
+        let pathExpr = JSONB.Index.pathLiteral(path)
         let opClass = operatorClass == .jsonb_ops ? "" : " \(operatorClass.rawValue)"
 
         var fragment: QueryFragment = "CREATE INDEX \(quote: indexName) ON "

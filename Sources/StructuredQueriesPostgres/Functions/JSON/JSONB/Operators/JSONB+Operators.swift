@@ -103,10 +103,14 @@ extension JSONB.Operators {
     ///
     /// **PostgreSQL Documentation**: Table 9.47
     ///
+    /// The path is bound as a `text[]` parameter rather than interpolated into the SQL
+    /// text, so path elements containing quotes, commas, or braces cannot break out of
+    /// the intended array literal.
+    ///
     /// Example:
     /// ```swift
     /// User.select { $0.profile.value(at: ["address", "city"]) }
-    /// // SELECT profile #> '{address,city}' FROM users
+    /// // SELECT profile #> ARRAY['address', 'city']::text[] FROM users
     /// ```
     public struct Path<LHS: QueryExpression>: QueryExpression {
         public typealias QueryValue = Data
@@ -115,8 +119,7 @@ extension JSONB.Operators {
         let path: [String]
 
         public var queryFragment: QueryFragment {
-            let pathArray = "'{" + path.joined(separator: ",") + "}'"
-            return "(\(jsonb.queryFragment) #> \(raw: pathArray))"
+            "(\(jsonb.queryFragment) #> \(bind: path)::text[])"
         }
     }
 
@@ -124,10 +127,14 @@ extension JSONB.Operators {
     ///
     /// **PostgreSQL Documentation**: Table 9.47
     ///
+    /// The path is bound as a `text[]` parameter rather than interpolated into the SQL
+    /// text, so path elements containing quotes, commas, or braces cannot break out of
+    /// the intended array literal.
+    ///
     /// Example:
     /// ```swift
     /// User.select { $0.profile.valueAsText(at: ["address", "city"]) }
-    /// // SELECT profile #>> '{address,city}' FROM users
+    /// // SELECT profile #>> ARRAY['address', 'city']::text[] FROM users
     /// ```
     public struct PathText<LHS: QueryExpression>: QueryExpression {
         public typealias QueryValue = String?
@@ -136,8 +143,7 @@ extension JSONB.Operators {
         let path: [String]
 
         public var queryFragment: QueryFragment {
-            let pathArray = "'{" + path.joined(separator: ",") + "}'"
-            return "(\(jsonb.queryFragment) #>> \(raw: pathArray))"
+            "(\(jsonb.queryFragment) #>> \(bind: path)::text[])"
         }
     }
 }

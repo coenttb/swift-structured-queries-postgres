@@ -27,10 +27,9 @@ extension JSONB.Processing {
         }
 
         public var queryFragment: QueryFragment {
-            let pathArray = "'{" + path.joined(separator: ",") + "}'"
             let jsonString = String(data: value, encoding: .utf8) ?? "{}"
             return
-                "jsonb_set(\(jsonb.queryFragment), \(raw: pathArray), \(bind: jsonString)::jsonb, \(createIfMissing))"
+                "jsonb_set(\(jsonb.queryFragment), \(bind: path)::text[], \(bind: jsonString)::jsonb, \(createIfMissing))"
         }
     }
 
@@ -57,10 +56,9 @@ extension JSONB.Processing {
         }
 
         public var queryFragment: QueryFragment {
-            let pathArray = "'{" + path.joined(separator: ",") + "}'"
             let jsonString = String(data: value, encoding: .utf8) ?? "{}"
             return
-                "jsonb_insert(\(jsonb.queryFragment), \(raw: pathArray), \(bind: jsonString)::jsonb, \(after))"
+                "jsonb_insert(\(jsonb.queryFragment), \(bind: path)::text[], \(bind: jsonString)::jsonb, \(after))"
         }
     }
 
@@ -106,10 +104,9 @@ extension JSONB.Processing {
         }
 
         public var queryFragment: QueryFragment {
-            let pathArray = "'{" + path.joined(separator: ",") + "}'"
             let jsonString = String(data: value, encoding: .utf8) ?? "{}"
             return
-                "jsonb_set(\(jsonb.queryFragment), \(raw: pathArray), \(bind: jsonString)::jsonb, \(createIfMissing))"
+                "jsonb_set(\(jsonb.queryFragment), \(bind: path)::text[], \(bind: jsonString)::jsonb, \(createIfMissing))"
         }
     }
 
@@ -138,10 +135,9 @@ extension JSONB.Processing {
         }
 
         public var queryFragment: QueryFragment {
-            let pathArray = "'{" + path.joined(separator: ",") + "}'"
             let jsonString = String(data: value, encoding: .utf8) ?? "{}"
             return
-                "jsonb_insert(\(jsonb.queryFragment), \(raw: pathArray), \(bind: jsonString)::jsonb, \(after))"
+                "jsonb_insert(\(jsonb.queryFragment), \(bind: path)::text[], \(bind: jsonString)::jsonb, \(after))"
         }
     }
 
@@ -171,7 +167,7 @@ extension QueryExpression where QueryValue == Data {
     /// User.update {
     ///     $0.settings = $0.settings.setting(["preferences", "theme"], to: "dark")
     /// }
-    /// // UPDATE users SET settings = jsonb_set(settings, '{preferences,theme}', '"dark"'::jsonb, true)
+    /// // UPDATE users SET settings = jsonb_set(settings, ARRAY['preferences', 'theme']::text[], '"dark"'::jsonb, true)
     /// ```
     public func setting<T: Encodable>(
         _ path: [String],
@@ -189,7 +185,7 @@ extension QueryExpression where QueryValue == Data {
     /// User.update {
     ///     $0.settings = $0.settings.inserting(["id": 123], at: ["items", "0"])
     /// }
-    /// // UPDATE users SET settings = jsonb_insert(settings, '{items,0}', '{"id": 123}'::jsonb, false)
+    /// // UPDATE users SET settings = jsonb_insert(settings, ARRAY['items', '0']::text[], '{"id": 123}'::jsonb, false)
     /// ```
     public func inserting<T: Encodable>(
         _ value: T,
