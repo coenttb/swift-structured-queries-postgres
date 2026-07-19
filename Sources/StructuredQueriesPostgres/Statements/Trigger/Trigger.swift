@@ -598,8 +598,12 @@ public struct Trigger<On: Table>: Sendable, Statement {
         // (or have no WHEN clause) per PostgreSQL's trigger syntax
         let whenClauses = events.compactMap(\.whenClause)
         if let firstWhen = whenClauses.first {
+            // CREATE TRIGGER is DDL and cannot accept bind parameters in its WHEN
+            // clause, so any bind segment the condition closure produced (e.g. from
+            // comparing against a Swift value via `==`/`>`/etc.) is literalized to
+            // safely-escaped SQL text before being embedded.
             // Use the first WHEN clause - validation should ensure they're all identical
-            query.append("\(.newline)WHEN (\(firstWhen))")
+            query.append("\(.newline)WHEN (\(firstWhen.literalizedForDDL()))")
         }
 
         // EXECUTE FUNCTION

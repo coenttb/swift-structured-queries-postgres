@@ -54,7 +54,12 @@ extension Trigger {
             }
             query.append(" FUNCTION \(quote: name)()")
             query.append("\(.newline)RETURNS TRIGGER AS $$")
-            query.append("\(.newline)\(generateBody())")
+            // Dollar-quoted PL/pgSQL bodies are DDL and cannot accept bind parameters:
+            // PostgreSQL either rejects an embedded placeholder outright or, worse,
+            // PL/pgSQL reinterprets it as a positional function argument reference. Every
+            // bind segment (e.g. from a helper that embedded a bound value's
+            // `queryFragment` into the body) is literalized here before it is embedded.
+            query.append("\(.newline)\(generateBody().literalizedForDDL())")
             query.append("\(.newline)$$ LANGUAGE plpgsql")
             return query
         }
