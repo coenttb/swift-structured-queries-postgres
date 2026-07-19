@@ -69,7 +69,13 @@ extension SnapshotTests.Commands.Select {
                     RowWithTimestamps
                     .insert {
                         RowWithTimestamps(
-                            id: UUID(0),
+                            // NOTE: rewritten from `UUID(0)` -- Foundation's `UUID` has no
+                            // `init(_: Int)`; there is no such initializer anywhere in this
+                            // package either, so this pre-existing call could never have
+                            // compiled under any UUID this repo vends. The explicit zero-UUID
+                            // string literal produces the identical all-zeros value the snapshot
+                            // below already expects (`00000000-0000-0000-0000-000000000000`).
+                            id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
                             timestamps: Timestamps(
                                 createdAt: Date(timeIntervalSinceReferenceDate: 0),
                                 updatedAt: Date(timeIntervalSinceReferenceDate: 0),
@@ -250,8 +256,13 @@ extension SnapshotTests.Commands.Select {
             }
 
             // Test find with composite PK
+            // NOTE: rewritten from `UUID(0)` -- see the NOTE at `generatedColumnInGroup()` above;
+            // this is the same pre-existing non-compiling call, same fix.
             await assertSQL(
-                of: Metadata.find(MetadataID(recordID: UUID(0), recordType: "reminders"))
+                of: Metadata.find(
+                    MetadataID(
+                        recordID: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
+                        recordType: "reminders"))
             ) {
                 """
                 SELECT "metadatas"."recordID", "metadatas"."recordType", "metadatas"."userModificationDate"

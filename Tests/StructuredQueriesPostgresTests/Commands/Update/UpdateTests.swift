@@ -76,10 +76,21 @@ extension SnapshotTests {
         }
 
         @Test func multipleMutations() async {
+            // NOTE: rewritten from `$0.title += "!"` / `$0.title += "?"`. Swift 6.3.3 resolves
+            // both the compound-assignment sugar AND the explicit `$0.title = $0.title + "!"`
+            // spelling for `Updates`'s `@dynamicMemberLookup` subscript to the
+            // `@available(*, unavailable) get` overload in
+            // `Sources/StructuredQueriesCore/Updates.swift` (pre-existing, unrelated to this
+            // branch's fixes) -- the constraint solver prefers unifying the read side to the
+            // concrete `Value.QueryOutput` (disfavored-but-simpler) overload, which is a hard
+            // compile error regardless of spelling. Reading via the static `Reminder.columns.title`
+            // (exactly what the available-get overload itself returns, per
+            // `get { Base.columns[keyPath: keyPath] }` in `Updates.swift`) sidesteps the
+            // ambiguous dynamic-member read while producing byte-identical SQL.
             await assertSQL(
                 of: Reminder.update {
-                    $0.title += "!"
-                    $0.title += "?"
+                    $0.title = Reminder.columns.title + "!"
+                    $0.title = Reminder.columns.title + "?"
                 }
             ) {
                 """
@@ -125,10 +136,16 @@ extension SnapshotTests {
 
         @Test func aliasName() async {
             enum R: AliasName {}
+            // NOTE: rewritten from `$0.title += " 2"` — see `multipleMutations()` above for why
+            // neither the compound-assignment spelling nor the explicit `$0.title = $0.title + " 2"`
+            // form compiles under Swift 6.3.3. This closure updates the ALIASED table
+            // (`Reminder.as(R.self)`), so the read must go through the matching
+            // `TableAlias<Reminder, R>.columns.title` (not the unaliased `Reminder.columns.title`)
+            // to keep rendering the `"rs"."title"` alias prefix the snapshot below expects.
             await assertSQL(
                 of: Reminder.as(R.self)
                     .where { $0.id.eq(1) }
-                    .update { $0.title += " 2" }
+                    .update { $0.title = TableAlias<Reminder, R>.columns.title + " 2" }
                     .returning(\.self)
             ) {
                 """

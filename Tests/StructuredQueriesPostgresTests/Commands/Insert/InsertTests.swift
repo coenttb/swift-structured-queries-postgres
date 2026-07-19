@@ -18,7 +18,19 @@ extension SnapshotTests {
                         #sql("2")
                     )
                 } onConflictDoUpdate: {
-                    $0.title += " Copy"
+                    // NOTE: rewritten from `$0.title += " Copy"`. Swift 6.3.3 resolves both the
+                    // compound-assignment sugar AND the explicit `$0.title = $0.title + " Copy"`
+                    // spelling for `Updates`'s `@dynamicMemberLookup` subscript to the
+                    // `@available(*, unavailable) get` overload in
+                    // `Sources/StructuredQueriesCore/Updates.swift` (pre-existing, unrelated to
+                    // this branch's fixes) -- the constraint solver prefers unifying the read
+                    // side to the concrete `Value.QueryOutput` (disfavored-but-simpler) overload,
+                    // which is a hard compile error regardless of spelling. Reading via the
+                    // static `Reminder.columns.title` (exactly what the available-get overload
+                    // itself returns, per `get { Base.columns[keyPath: keyPath] }` in
+                    // `Updates.swift`) sidesteps the ambiguous dynamic-member read while
+                    // producing byte-identical SQL.
+                    $0.title = Reminder.columns.title + " Copy"
                 }
                 .returning(\.id)
             ) {

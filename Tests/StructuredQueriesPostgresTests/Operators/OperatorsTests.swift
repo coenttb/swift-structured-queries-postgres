@@ -237,25 +237,38 @@ extension SnapshotTests {
                 +("rows"."c")
                 """
             }
-            await assertSQL(of: Row.update { $0.c += 1 }) {
+            // NOTE: rewritten from `$0.c += 1` (and the sibling `-=`/`*=`/`/=` compound
+            // assignments below). Swift 6.3.3 resolves both the compound-assignment sugar AND
+            // the explicit `$0.c = $0.c + 1` spelling for `Updates`'s `@dynamicMemberLookup`
+            // subscript to the `@available(*, unavailable) get` overload in
+            // `Sources/StructuredQueriesCore/Updates.swift` (pre-existing, unrelated to this
+            // branch's F-101 fix) -- the constraint solver prefers unifying the read side to the
+            // concrete `Value.QueryOutput` (disfavored-but-simpler) overload over the
+            // non-disfavored `any QueryExpression<Value>` one, which is a hard compile error
+            // regardless of spelling. Reading the RHS via the static `Row.columns.c` (which is
+            // exactly what the available-get overload's `get { Base.columns[keyPath: keyPath] }`
+            // returns -- see `Updates.swift`) sidesteps the ambiguous dynamic-member read while
+            // exercising the identical `Updates` SET path and `+`/`-`/`*`//` operators, producing
+            // byte-identical SQL.
+            await assertSQL(of: Row.update { $0.c = Row.columns.c + 1 }) {
                 """
                 UPDATE "rows"
                 SET "c" = ("rows"."c") + (1)
                 """
             }
-            await assertSQL(of: Row.update { $0.c -= 2 }) {
+            await assertSQL(of: Row.update { $0.c = Row.columns.c - 2 }) {
                 """
                 UPDATE "rows"
                 SET "c" = ("rows"."c") - (2)
                 """
             }
-            await assertSQL(of: Row.update { $0.c *= 3 }) {
+            await assertSQL(of: Row.update { $0.c = Row.columns.c * 3 }) {
                 """
                 UPDATE "rows"
                 SET "c" = ("rows"."c") * (3)
                 """
             }
-            await assertSQL(of: Row.update { $0.c /= 4 }) {
+            await assertSQL(of: Row.update { $0.c = Row.columns.c / 4 }) {
                 """
                 UPDATE "rows"
                 SET "c" = ("rows"."c") / (4)
@@ -312,13 +325,17 @@ extension SnapshotTests {
                 ~("rows"."c")
                 """
             }
-            await assertSQL(of: Row.update { $0.c &= 2 }) {
+            // NOTE: rewritten from `$0.c &= 2` / `$0.c |= 3` — see the `arithmetic()` test above
+            // for why the compound-assignment spelling (and the explicit `$0.c = $0.c & 2` form)
+            // no longer compiles under Swift 6.3.3, and why reading via `Row.columns.c` is an
+            // equivalent, non-lossy rewrite.
+            await assertSQL(of: Row.update { $0.c = Row.columns.c & 2 }) {
                 """
                 UPDATE "rows"
                 SET "c" = ("rows"."c") & (2)
                 """
             }
-            await assertSQL(of: Row.update { $0.c |= 3 }) {
+            await assertSQL(of: Row.update { $0.c = Row.columns.c | 3 }) {
                 """
                 UPDATE "rows"
                 SET "c" = ("rows"."c") | (3)

@@ -2,7 +2,15 @@ import Foundation
 import InlineSnapshotTesting
 import StructuredQueriesPostgres
 import StructuredQueriesPostgresTestSupport
-import Tagged
+// NOTE: rewritten from the wildcard `import Tagged`. The transitive dependency graph also
+// pulls in the unrelated Institute `Tagged_Primitives` module (re-exported into this test
+// target's scope via `Ordinal_Primitives`'s `@_exported import Tagged_Primitives`), which
+// declares its own bare top-level `Tagged<Tag, Underlying>` type -- a pre-existing,
+// unrelated-to-this-branch collision that makes the wildcard import's `Tagged` ambiguous for
+// type lookup. The declaration-specific `import struct Tagged.Tagged` form imports exactly the
+// pointfreeco `swift-tagged` struct under the bare name `Tagged`, resolving the ambiguity
+// without touching Package.swift or any product source.
+import struct Tagged.Tagged
 import Testing
 
 extension SnapshotTests {
@@ -121,7 +129,7 @@ extension SnapshotTests {
 
         @Table
         fileprivate struct Reminder {
-            typealias ID = Tagged.Tagged<Self, Int>
+            typealias ID = Tagged<Self, Int>
 
             let id: ID
             let remindersListID: Int
@@ -129,7 +137,7 @@ extension SnapshotTests {
 
         @Table
         fileprivate struct User {
-            typealias ID = Tagged.Tagged<Self, UUID>
+            typealias ID = Tagged<Self, UUID>
 
             let id: ID
             let name: String
