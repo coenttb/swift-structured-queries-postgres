@@ -171,6 +171,14 @@ extension SnapshotTests.JSONB {
 
         @Test func jsonPathOperator() async {
             // Test #> operator
+            //
+            // NOTE: Post-F-001, `JSONB.Operators.Path` binds the path as a genuine
+            // `text[]` parameter (`\(bind: path)::text[]`) instead of raw-interpolating
+            // a hand-built `'{...}'` literal, so the `.sql` snapshot now shows the
+            // debug-rendered `ARRAY[...]::text[]` bound-parameter form rather than the
+            // old unescaped literal. See
+            // `Tests/StructuredQueriesPostgresTests/Functions/JSONB/JSONBPathInjectionTests.swift`
+            // for the injection-payload regression coverage.
             let query = TestUser.select { user in
                 (user.id, user.metadata.value(at: ["address", "city"]))
             }
@@ -179,7 +187,7 @@ extension SnapshotTests.JSONB {
                 of: query
             ) {
                 """
-                SELECT "test_users"."id", ("test_users"."metadata" #> '{address,city}')
+                SELECT "test_users"."id", ("test_users"."metadata" #> ARRAY['address', 'city']::text[])
                 FROM "test_users"
                 """
             }
@@ -187,6 +195,14 @@ extension SnapshotTests.JSONB {
 
         @Test func jsonPathTextOperator() async {
             // Test #>> operator
+            //
+            // NOTE: Post-F-001, `JSONB.Operators.PathText` binds the path as a genuine
+            // `text[]` parameter (`\(bind: path)::text[]`) instead of raw-interpolating
+            // a hand-built `'{...}'` literal, so the `.sql` snapshot now shows the
+            // debug-rendered `ARRAY[...]::text[]` bound-parameter form rather than the
+            // old unescaped literal. See
+            // `Tests/StructuredQueriesPostgresTests/Functions/JSONB/JSONBPathInjectionTests.swift`
+            // for the injection-payload regression coverage.
             let query = TestUser.select { user in
                 (user.id, user.metadata.valueAsText(at: ["contact", "email"]))
             }
@@ -195,7 +211,7 @@ extension SnapshotTests.JSONB {
                 of: query
             ) {
                 """
-                SELECT "test_users"."id", ("test_users"."metadata" #>> '{contact,email}')
+                SELECT "test_users"."id", ("test_users"."metadata" #>> ARRAY['contact', 'email']::text[])
                 FROM "test_users"
                 """
             }
