@@ -195,6 +195,12 @@ extension SnapshotTests.JSONB {
 
         // MARK: - json_object Tests
 
+        // NOTE: Post-F-101, `JSONB.Creation.object(keys:values:)` binds both arrays as
+        // genuine `text[]` parameters (`\(bind: keys)::text[]`) instead of raw-interpolating
+        // a hand-built `'{...}'` literal, so the `.sql` snapshot now shows the debug-rendered
+        // `ARRAY[...]::text[]` bound-parameter form rather than the old unescaped literal.
+        // See `Tests/StructuredQueriesPostgresTests/Functions/JSONB/JSONBCreationInjectionTests.swift`
+        // for the injection-payload regression coverage.
         @Test func jsonObjectSimple() {
             let query = TestUserForConversion.select { _ in
                 JSONB.Creation.object(
@@ -203,7 +209,7 @@ extension SnapshotTests.JSONB {
 
             assertInlineSnapshot(of: query, as: .sql) {
                 """
-                SELECT json_object('{name,email}', '{Alice,alice@example.com}')
+                SELECT json_object(ARRAY['name', 'email']::text[], ARRAY['Alice', 'alice@example.com']::text[])
                 FROM "test_users"
                 """
             }
@@ -216,7 +222,7 @@ extension SnapshotTests.JSONB {
 
             assertInlineSnapshot(of: query, as: .sql) {
                 """
-                SELECT json_object('{status}', '{active}')
+                SELECT json_object(ARRAY['status']::text[], ARRAY['active']::text[])
                 FROM "test_users"
                 """
             }
@@ -232,7 +238,7 @@ extension SnapshotTests.JSONB {
 
             assertInlineSnapshot(of: query, as: .sql) {
                 """
-                SELECT json_object('{name,email,role,status}', '{Bob,bob@example.com,admin,active}')
+                SELECT json_object(ARRAY['name', 'email', 'role', 'status']::text[], ARRAY['Bob', 'bob@example.com', 'admin', 'active']::text[])
                 FROM "test_users"
                 """
             }

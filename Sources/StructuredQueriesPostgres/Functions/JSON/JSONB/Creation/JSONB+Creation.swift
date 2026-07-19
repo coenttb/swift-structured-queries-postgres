@@ -83,6 +83,10 @@ extension JSONB.Creation {
     /// PostgreSQL's `json_object()` function creates a JSON object from two text arrays:
     /// one containing keys and another containing values.
     ///
+    /// Both arrays are bound as `text[]` parameters rather than interpolated into the SQL
+    /// text, so key/value elements containing quotes, commas, or braces cannot break out
+    /// of the intended array literal.
+    ///
     /// **PostgreSQL Documentation**: Table 9.49
     ///
     /// ```swift
@@ -90,7 +94,7 @@ extension JSONB.Creation {
     ///     keys: ["name", "email", "age"],
     ///     values: ["Alice", "alice@example.com", "25"]
     /// )
-    /// // json_object('{name,email,age}', '{Alice,alice@example.com,25}')
+    /// // json_object(ARRAY['name', 'email', 'age']::text[], ARRAY['Alice', 'alice@example.com', '25']::text[])
     /// ```
     ///
     /// **Example output:**
@@ -197,9 +201,7 @@ extension JSONB.Creation {
         let values: [String]
 
         var queryFragment: QueryFragment {
-            let keysArray = "'{" + keys.joined(separator: ",") + "}'"
-            let valuesArray = "'{" + values.joined(separator: ",") + "}'"
-            return "json_object(\(raw: keysArray), \(raw: valuesArray))"
+            "json_object(\(bind: keys)::text[], \(bind: values)::text[])"
         }
     }
 }
