@@ -1,0 +1,13 @@
+# .github/metadata.yaml
+description: "A fork of pointfreeco/swift-structured-queries for PostgreSQL."
+homepage: "https://swift-institute.org"
+topics:
+  - database
+  - postgres
+  - postgresql
+  - query-builder
+  - sql
+  - structured-queries
+  - swift
+readme:
+  family: E
