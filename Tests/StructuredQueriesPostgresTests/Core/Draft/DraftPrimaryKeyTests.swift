@@ -47,6 +47,7 @@ extension SnapshotTests {
             let insertStatement = SimpleRecord.insert {
                 draft
             } onConflict: { columns in
+                // swiftlint:disable:next comma
                 (columns.name,)
             } doUpdate: { row, excluded in
                 row.value = excluded.value

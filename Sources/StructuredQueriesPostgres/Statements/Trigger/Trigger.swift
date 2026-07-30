@@ -3,331 +3,331 @@ import StructuredQueriesCore
 
 // MARK: - PostgreSQL Triggers
 
-/// # Type-Safe PostgreSQL Triggers
-///
-/// A comprehensive, type-safe API for creating and managing PostgreSQL triggers and trigger functions.
-///
-/// ## Overview
-///
-/// PostgreSQL triggers automatically execute functions in response to database events like INSERT, UPDATE,
-/// or DELETE. This package provides a Swift-native API that brings compile-time safety and clarity to
-/// trigger creation, eliminating common errors and making triggers as approachable as any other Swift code.
-///
-/// ### Quick Start
-///
-/// ```swift
-/// // Automatically update a timestamp on every modification
-/// let trigger = User.createTrigger(
-///     timing: .before,
-///     event: .update,
-///     function: .updateTimestamp(column: \.updatedAt)
-/// )
-/// try await trigger.execute(db)
-///
-/// // SQL Generated:
-/// // CREATE TRIGGER "users_before_update_update_updatedAt"
-/// // BEFORE UPDATE ON "users"
-/// // FOR EACH ROW
-/// // EXECUTE FUNCTION "update_updatedAt_users"()
-/// ```
-///
-/// ## Two-Tier Architecture
-///
-/// PostgreSQL uses a two-tier trigger system that separates **what to execute** from **when to execute it**:
-///
-/// ### Tier 1: Trigger Functions
-///
-/// Reusable PL/pgSQL functions that contain the logic to execute:
-///
-/// ```swift
-/// let auditFunc = Trigger.Function<User>.audit(to: AuditLog.self)
-/// // CREATE OR REPLACE FUNCTION "audit_users_to_audit_log"()...
-/// ```
-///
-/// ### Tier 2: Triggers
-///
-/// Event definitions that invoke functions at specific times:
-///
-/// ```swift
-/// User.createTrigger(timing: .after, event: .insert, function: auditFunc)
-/// User.createTrigger(timing: .after, event: .update, function: auditFunc)
-/// User.createTrigger(timing: .after, event: .delete, function: auditFunc)
-/// ```
-///
-/// **Key Advantage**: One function can be reused across multiple triggers, reducing code duplication
-/// and ensuring consistency.
-///
-/// ## Key Features
-///
-/// ### 1. Type-Safe WHEN Clauses
-///
-/// Each event type provides only the pseudo-records valid for that event, preventing invalid SQL at compile time:
-///
-/// ```swift
-/// // ✅ INSERT provides only NEW
-/// .insert(when: { new in new.price > 0 })
-///
-/// // ✅ UPDATE provides only NEW
-/// .update(when: { new in new.status == "active" })
-///
-/// // ✅ DELETE provides only OLD
-/// .delete(when: { old in old.isArchived == true })
-///
-/// // ❌ This won't compile:
-/// .insert(when: { new, old in ... })  // Compile error!
-/// ```
-///
-/// ### 2. Pre-Built Helper Functions
-///
-/// Common patterns codified as convenient, semantic APIs:
-///
-/// ```swift
-/// // Timestamps
-/// .updateTimestamp(column: \.updatedAt)
-/// .createdAt(column: \.createdAt)
-///
-/// // Audit logging
-/// .audit(to: AuditLog.self)
-///
-/// // Soft deletion
-/// .softDelete(deletedAtColumn: \.deletedAt, identifiedBy: \.id)
-///
-/// // Version management
-/// .incrementVersion(column: \.version)
-///
-/// // Data validation
-/// .validate("IF NEW.email !~ '^[A-Z0-9._%+-]+@...' THEN ...")
-/// ```
-///
-/// See ``Trigger/Function`` for the complete list of helpers.
-///
-/// ### 3. Auto-Generated Stable Names
-///
-/// Trigger names are automatically generated following a stable, predictable pattern:
-///
-/// ```
-/// {table}_{timing}_{event}_{function_descriptor}
-/// ```
-///
-/// Examples:
-/// - `users_before_update_update_updatedAt`
-/// - `posts_after_insert_audit_to_audit_log`
-/// - `documents_before_delete_soft_delete`
-///
-/// **Benefits**:
-/// - Stable (no hashes or line numbers) - safe for migrations
-/// - Descriptive - self-documenting in PostgreSQL catalog
-/// - Predictable - easy to find in database tools
-///
-/// ### 4. PostgreSQL-Native NEW/OLD
-///
-/// Correctly handles PostgreSQL's unquoted NEW and OLD keywords:
-///
-/// ```swift
-/// // Generates: WHEN (NEW."price" > 100)
-/// .update(when: { new in new.price > 100 })
-///
-/// // Generates: WHEN (OLD."status" = 'archived')
-/// .delete(when: { old in old.status == "archived" })
-/// ```
-///
-/// Unlike SQLite's quoted `"new"` and `"old"`, PostgreSQL requires unquoted `NEW` and `OLD`.
-/// This is handled automatically through a technical implementation using `AliasName.shouldQuote = false`.
-///
-/// ## Common Patterns
-///
-/// ### Timestamps
-///
-/// Automatically track when records are created and modified:
-///
-/// ```swift
-/// // Set creation timestamp
-/// User.createTrigger(
-///     timing: .before,
-///     event: .insert,
-///     function: .createdAt(column: \.createdAt)
-/// )
-///
-/// // Update modification timestamp
-/// User.createTrigger(
-///     timing: .before,
-///     event: .update,
-///     function: .updateTimestamp(column: \.updatedAt)
-/// )
-/// ```
-///
-/// ### Audit Logging
-///
-/// Track all changes to a table in an audit log:
-///
-/// ```swift
-/// let auditFunc = Trigger.Function<User>.audit(to: UserAudit.self)
-///
-/// User.createTrigger(timing: .after, event: .insert, function: auditFunc)
-/// User.createTrigger(timing: .after, event: .update, function: auditFunc)
-/// User.createTrigger(timing: .after, event: .delete, function: auditFunc)
-/// ```
-///
-/// ### Soft Deletes
-///
-/// Mark records as deleted instead of removing them:
-///
-/// ```swift
-/// User.createTrigger(
-///     timing: .before,
-///     event: .delete,
-///     function: .softDelete(
-///         deletedAtColumn: \.deletedAt,
-///         identifiedBy: \.id
-///     )
-/// )
-/// ```
-///
-/// ### Data Validation
-///
-/// Enforce business rules at the database level:
-///
-/// ```swift
-/// User.createTrigger(
-///     timing: .before,
-///     event: .insert,
-///     function: .validate("""
-///         IF NEW.email !~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$' THEN
-///             RAISE EXCEPTION 'Invalid email format: %', NEW.email;
-///         END IF;
-///         """)
-/// )
-/// ```
-///
-/// ### Optimistic Locking
-///
-/// Detect concurrent modifications using version numbers:
-///
-/// ```swift
-/// Document.createTrigger(
-///     timing: .before,
-///     event: .update,
-///     function: .incrementVersion(column: \.version)
-/// )
-///
-/// // In application code:
-/// let doc = try await Document
-///     .where { $0.id == id && $0.version == expectedVersion }
-///     .update { $0.content = newContent }
-/// // Version automatically increments, preventing lost updates
-/// ```
-///
-/// ## When to Use Triggers
-///
-/// ### ✅ Use Triggers For:
-///
-/// - **Automatic timestamps** - Set createdAt/updatedAt automatically
-/// - **Audit trails** - Log all changes for compliance or debugging
-/// - **Data validation** - Enforce complex business rules at the database level
-/// - **Derived values** - Automatically calculate fields based on other columns
-/// - **Cross-table updates** - Maintain denormalized data or caches
-/// - **Notifications** - Alert external systems via `pg_notify`
-/// - **Row-level security** - Enforce access control at the database level
-///
-/// ### ❌ Avoid Triggers For:
-///
-/// - **Complex business logic** - Keep it in application code where it's testable and debuggable
-/// - **External API calls** - Use application code or message queues instead
-/// - **Long-running operations** - Triggers block the transaction
-/// - **Conditional logic based on user context** - Use application code for clarity
-///
-/// ### ⚠️ Use With Caution:
-///
-/// - **Trigger chains** - Triggers firing other triggers can be hard to debug
-/// - **Performance-critical paths** - Row-level triggers fire for every row
-/// - **Frequently changing logic** - Triggers require migrations to modify
-///
-/// ## Best Practices
-///
-/// ### Naming
-///
-/// Let the auto-generated names do the work, or use descriptive custom names:
-///
-/// ```swift
-/// // ✅ Auto-generated (recommended)
-/// User.createTrigger(timing: .before, event: .update, function: .updateTimestamp(column: \.updatedAt))
-/// // → "users_before_update_update_updatedAt"
-///
-/// // ✅ Custom name (when order matters)
-/// User.createTrigger(name: "0_validate_user", timing: .before, event: .insert, function: validateFunc)
-/// User.createTrigger(name: "1_set_defaults", timing: .before, event: .insert, function: defaultsFunc)
-/// ```
-///
-/// ### Function Reuse
-///
-/// Create functions once, use them across multiple triggers:
-///
-/// ```swift
-/// // ✅ Do this - One function, many triggers
-/// let auditFunc = Trigger.Function<User>.audit(to: AuditLog.self)
-/// User.createTrigger(timing: .after, event: .insert, function: auditFunc)
-/// User.createTrigger(timing: .after, event: .update, function: auditFunc)
-/// User.createTrigger(timing: .after, event: .delete, function: auditFunc)
-///
-/// // ❌ Not this - Duplicate functions
-/// User.createTrigger(timing: .after, event: .insert, function: .audit(to: AuditLog.self))
-/// User.createTrigger(timing: .after, event: .update, function: .audit(to: AuditLog.self))
-/// ```
-///
-/// ### Trigger Ordering
-///
-/// PostgreSQL fires triggers in **alphabetical order by name**. Use this to control execution:
-///
-/// ```swift
-/// // Fires first (validates)
-/// User.createTrigger(name: "0_validate", timing: .before, event: .update, function: validateFunc)
-///
-/// // Fires second (sets timestamp)
-/// User.createTrigger(name: "1_timestamp", timing: .before, event: .update, function: timestampFunc)
-/// ```
-///
-/// ### Performance
-///
-/// - **Use BEFORE triggers** for data validation and modification
-/// - **Use AFTER triggers** for logging and notifications
-/// - **Prefer statement-level** triggers for bulk operations when possible
-/// - **Add WHEN clauses** to reduce unnecessary trigger executions
-/// - **Keep functions simple** - complex logic slows down every operation
-///
-/// ## See Also
-///
-/// - ``Trigger`` - The trigger type for managing trigger definitions
-/// - ``Trigger/Function`` - Trigger function creation and helpers
-/// - ``TriggerEvent`` - Type-safe event definitions with WHEN clauses
-/// - ``AuditTable`` - Protocol for audit logging tables
-/// - ``NEW`` and ``OLD`` - Pseudo-record types for accessing row data
-///
-/// ## Topics
-///
-/// ### Creating Triggers
-///
-/// - ``Table/createTrigger(name:timing:event:ifNotExists:level:function:)``
-///
-/// ### Trigger Functions
-///
-/// - ``Trigger/Function``
-/// - ``Trigger/Function/updateTimestamp(column:to:)``
-/// - ``Trigger/Function/createdAt(column:to:)``
-/// - ``Trigger/Function/audit(to:)``
-/// - ``Trigger/Function/softDelete(deletedAtColumn:identifiedBy:to:)``
-/// - ``Trigger/Function/incrementVersion(column:)``
-///
-/// ### Events and Conditions
-///
-/// - ``TriggerEvent``
-/// - ``TriggerEvent/insert(when:)``
-/// - ``TriggerEvent/update(when:)``
-/// - ``TriggerEvent/delete(when:)``
-///
-/// ### Pseudo-Records
-///
-/// - ``NEW``
-/// - ``OLD``
+// # Type-Safe PostgreSQL Triggers
+//
+// A comprehensive, type-safe API for creating and managing PostgreSQL triggers and trigger functions.
+//
+// ## Overview
+//
+// PostgreSQL triggers automatically execute functions in response to database events like INSERT, UPDATE,
+// or DELETE. This package provides a Swift-native API that brings compile-time safety and clarity to
+// trigger creation, eliminating common errors and making triggers as approachable as any other Swift code.
+//
+// ### Quick Start
+//
+// ```swift
+// // Automatically update a timestamp on every modification
+// let trigger = User.createTrigger(
+//     timing: .before,
+//     event: .update,
+//     function: .updateTimestamp(column: \.updatedAt)
+// )
+// try await trigger.execute(db)
+//
+// // SQL Generated:
+// // CREATE TRIGGER "users_before_update_update_updatedAt"
+// // BEFORE UPDATE ON "users"
+// // FOR EACH ROW
+// // EXECUTE FUNCTION "update_updatedAt_users"()
+// ```
+//
+// ## Two-Tier Architecture
+//
+// PostgreSQL uses a two-tier trigger system that separates **what to execute** from **when to execute it**:
+//
+// ### Tier 1: Trigger Functions
+//
+// Reusable PL/pgSQL functions that contain the logic to execute:
+//
+// ```swift
+// let auditFunc = Trigger.Function<User>.audit(to: AuditLog.self)
+// // CREATE OR REPLACE FUNCTION "audit_users_to_audit_log"()...
+// ```
+//
+// ### Tier 2: Triggers
+//
+// Event definitions that invoke functions at specific times:
+//
+// ```swift
+// User.createTrigger(timing: .after, event: .insert, function: auditFunc)
+// User.createTrigger(timing: .after, event: .update, function: auditFunc)
+// User.createTrigger(timing: .after, event: .delete, function: auditFunc)
+// ```
+//
+// **Key Advantage**: One function can be reused across multiple triggers, reducing code duplication
+// and ensuring consistency.
+//
+// ## Key Features
+//
+// ### 1. Type-Safe WHEN Clauses
+//
+// Each event type provides only the pseudo-records valid for that event, preventing invalid SQL at compile time:
+//
+// ```swift
+// // ✅ INSERT provides only NEW
+// .insert(when: { new in new.price > 0 })
+//
+// // ✅ UPDATE provides only NEW
+// .update(when: { new in new.status == "active" })
+//
+// // ✅ DELETE provides only OLD
+// .delete(when: { old in old.isArchived == true })
+//
+// // ❌ This won't compile:
+// .insert(when: { new, old in ... })  // Compile error!
+// ```
+//
+// ### 2. Pre-Built Helper Functions
+//
+// Common patterns codified as convenient, semantic APIs:
+//
+// ```swift
+// // Timestamps
+// .updateTimestamp(column: \.updatedAt)
+// .createdAt(column: \.createdAt)
+//
+// // Audit logging
+// .audit(to: AuditLog.self)
+//
+// // Soft deletion
+// .softDelete(deletedAtColumn: \.deletedAt, identifiedBy: \.id)
+//
+// // Version management
+// .incrementVersion(column: \.version)
+//
+// // Data validation
+// .validate("IF NEW.email !~ '^[A-Z0-9._%+-]+@...' THEN ...")
+// ```
+//
+// See ``Trigger/Function`` for the complete list of helpers.
+//
+// ### 3. Auto-Generated Stable Names
+//
+// Trigger names are automatically generated following a stable, predictable pattern:
+//
+// ```
+// {table}_{timing}_{event}_{function_descriptor}
+// ```
+//
+// Examples:
+// - `users_before_update_update_updatedAt`
+// - `posts_after_insert_audit_to_audit_log`
+// - `documents_before_delete_soft_delete`
+//
+// **Benefits**:
+// - Stable (no hashes or line numbers) - safe for migrations
+// - Descriptive - self-documenting in PostgreSQL catalog
+// - Predictable - easy to find in database tools
+//
+// ### 4. PostgreSQL-Native NEW/OLD
+//
+// Correctly handles PostgreSQL's unquoted NEW and OLD keywords:
+//
+// ```swift
+// // Generates: WHEN (NEW."price" > 100)
+// .update(when: { new in new.price > 100 })
+//
+// // Generates: WHEN (OLD."status" = 'archived')
+// .delete(when: { old in old.status == "archived" })
+// ```
+//
+// Unlike SQLite's quoted `"new"` and `"old"`, PostgreSQL requires unquoted `NEW` and `OLD`.
+// This is handled automatically through a technical implementation using `AliasName.shouldQuote = false`.
+//
+// ## Common Patterns
+//
+// ### Timestamps
+//
+// Automatically track when records are created and modified:
+//
+// ```swift
+// // Set creation timestamp
+// User.createTrigger(
+//     timing: .before,
+//     event: .insert,
+//     function: .createdAt(column: \.createdAt)
+// )
+//
+// // Update modification timestamp
+// User.createTrigger(
+//     timing: .before,
+//     event: .update,
+//     function: .updateTimestamp(column: \.updatedAt)
+// )
+// ```
+//
+// ### Audit Logging
+//
+// Track all changes to a table in an audit log:
+//
+// ```swift
+// let auditFunc = Trigger.Function<User>.audit(to: UserAudit.self)
+//
+// User.createTrigger(timing: .after, event: .insert, function: auditFunc)
+// User.createTrigger(timing: .after, event: .update, function: auditFunc)
+// User.createTrigger(timing: .after, event: .delete, function: auditFunc)
+// ```
+//
+// ### Soft Deletes
+//
+// Mark records as deleted instead of removing them:
+//
+// ```swift
+// User.createTrigger(
+//     timing: .before,
+//     event: .delete,
+//     function: .softDelete(
+//         deletedAtColumn: \.deletedAt,
+//         identifiedBy: \.id
+//     )
+// )
+// ```
+//
+// ### Data Validation
+//
+// Enforce business rules at the database level:
+//
+// ```swift
+// User.createTrigger(
+//     timing: .before,
+//     event: .insert,
+//     function: .validate("""
+//         IF NEW.email !~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$' THEN
+//             RAISE EXCEPTION 'Invalid email format: %', NEW.email;
+//         END IF;
+//         """)
+// )
+// ```
+//
+// ### Optimistic Locking
+//
+// Detect concurrent modifications using version numbers:
+//
+// ```swift
+// Document.createTrigger(
+//     timing: .before,
+//     event: .update,
+//     function: .incrementVersion(column: \.version)
+// )
+//
+// // In application code:
+// let doc = try await Document
+//     .where { $0.id == id && $0.version == expectedVersion }
+//     .update { $0.content = newContent }
+// // Version automatically increments, preventing lost updates
+// ```
+//
+// ## When to Use Triggers
+//
+// ### ✅ Use Triggers For:
+//
+// - **Automatic timestamps** - Set createdAt/updatedAt automatically
+// - **Audit trails** - Log all changes for compliance or debugging
+// - **Data validation** - Enforce complex business rules at the database level
+// - **Derived values** - Automatically calculate fields based on other columns
+// - **Cross-table updates** - Maintain denormalized data or caches
+// - **Notifications** - Alert external systems via `pg_notify`
+// - **Row-level security** - Enforce access control at the database level
+//
+// ### ❌ Avoid Triggers For:
+//
+// - **Complex business logic** - Keep it in application code where it's testable and debuggable
+// - **External API calls** - Use application code or message queues instead
+// - **Long-running operations** - Triggers block the transaction
+// - **Conditional logic based on user context** - Use application code for clarity
+//
+// ### ⚠️ Use With Caution:
+//
+// - **Trigger chains** - Triggers firing other triggers can be hard to debug
+// - **Performance-critical paths** - Row-level triggers fire for every row
+// - **Frequently changing logic** - Triggers require migrations to modify
+//
+// ## Best Practices
+//
+// ### Naming
+//
+// Let the auto-generated names do the work, or use descriptive custom names:
+//
+// ```swift
+// // ✅ Auto-generated (recommended)
+// User.createTrigger(timing: .before, event: .update, function: .updateTimestamp(column: \.updatedAt))
+// // → "users_before_update_update_updatedAt"
+//
+// // ✅ Custom name (when order matters)
+// User.createTrigger(name: "0_validate_user", timing: .before, event: .insert, function: validateFunc)
+// User.createTrigger(name: "1_set_defaults", timing: .before, event: .insert, function: defaultsFunc)
+// ```
+//
+// ### Function Reuse
+//
+// Create functions once, use them across multiple triggers:
+//
+// ```swift
+// // ✅ Do this - One function, many triggers
+// let auditFunc = Trigger.Function<User>.audit(to: AuditLog.self)
+// User.createTrigger(timing: .after, event: .insert, function: auditFunc)
+// User.createTrigger(timing: .after, event: .update, function: auditFunc)
+// User.createTrigger(timing: .after, event: .delete, function: auditFunc)
+//
+// // ❌ Not this - Duplicate functions
+// User.createTrigger(timing: .after, event: .insert, function: .audit(to: AuditLog.self))
+// User.createTrigger(timing: .after, event: .update, function: .audit(to: AuditLog.self))
+// ```
+//
+// ### Trigger Ordering
+//
+// PostgreSQL fires triggers in **alphabetical order by name**. Use this to control execution:
+//
+// ```swift
+// // Fires first (validates)
+// User.createTrigger(name: "0_validate", timing: .before, event: .update, function: validateFunc)
+//
+// // Fires second (sets timestamp)
+// User.createTrigger(name: "1_timestamp", timing: .before, event: .update, function: timestampFunc)
+// ```
+//
+// ### Performance
+//
+// - **Use BEFORE triggers** for data validation and modification
+// - **Use AFTER triggers** for logging and notifications
+// - **Prefer statement-level** triggers for bulk operations when possible
+// - **Add WHEN clauses** to reduce unnecessary trigger executions
+// - **Keep functions simple** - complex logic slows down every operation
+//
+// ## See Also
+//
+// - ``Trigger`` - The trigger type for managing trigger definitions
+// - ``Trigger/Function`` - Trigger function creation and helpers
+// - ``TriggerEvent`` - Type-safe event definitions with WHEN clauses
+// - ``AuditTable`` - Protocol for audit logging tables
+// - ``NEW`` and ``OLD`` - Pseudo-record types for accessing row data
+//
+// ## Topics
+//
+// ### Creating Triggers
+//
+// - ``Table/createTrigger(name:timing:event:ifNotExists:level:function:)``
+//
+// ### Trigger Functions
+//
+// - ``Trigger/Function``
+// - ``Trigger/Function/updateTimestamp(column:to:)``
+// - ``Trigger/Function/createdAt(column:to:)``
+// - ``Trigger/Function/audit(to:)``
+// - ``Trigger/Function/softDelete(deletedAtColumn:identifiedBy:to:)``
+// - ``Trigger/Function/incrementVersion(column:)``
+//
+// ### Events and Conditions
+//
+// - ``TriggerEvent``
+// - ``TriggerEvent/insert(when:)``
+// - ``TriggerEvent/update(when:)``
+// - ``TriggerEvent/delete(when:)``
+//
+// ### Pseudo-Records
+//
+// - ``NEW``
+// - ``OLD``
 
 // MARK: - Trigger Pseudo-Records
 

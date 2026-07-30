@@ -2,6 +2,8 @@ import Foundation
 import InlineSnapshotTesting
 import StructuredQueriesPostgres
 import StructuredQueriesPostgresTestSupport
+import Testing
+
 // NOTE: rewritten from the wildcard `import Tagged`. The transitive dependency graph also
 // pulls in the unrelated Institute `Tagged_Primitives` module (re-exported into this test
 // target's scope via `Ordinal_Primitives`'s `@_exported import Tagged_Primitives`), which
@@ -11,7 +13,6 @@ import StructuredQueriesPostgresTestSupport
 // pointfreeco `swift-tagged` struct under the bare name `Tagged`, resolving the ambiguity
 // without touching Package.swift or any product source.
 import struct Tagged.Tagged
-import Testing
 
 extension SnapshotTests {
     @Suite struct TaggedTests {

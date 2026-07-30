@@ -3,55 +3,55 @@ import StructuredQueriesCore
 
 // MARK: - Native PostgreSQL Array Support
 
-/// Makes Swift arrays work as native PostgreSQL arrays in queries.
-///
-/// This enables natural syntax like `[String].self` for native array columns,
-/// while keeping `[String].JSONB.self` for JSONB storage.
-///
-/// ```swift
-/// @Table
-/// struct Post {
-///     let id: Int
-///
-///     // Native PostgreSQL array (text[])
-///     @Column(as: [String].self)
-///     var tags: [String]
-///
-///     // JSONB array (for complex types)
-///     @Column(as: [Comment].JSONB.self)
-///     var comments: [Comment]
-/// }
-///
-/// // Use array operators
-/// Post.where { $0.tags.contains(["swift"]) }
-/// // SQL: WHERE tags @> ARRAY['swift']
-/// ```
-///
-/// ## Native Arrays vs JSONB Arrays
-///
-/// **Use Native Arrays (`[T].self`) when**:
-/// - Storing primitive types (String, Int, UUID, etc.)
-/// - Need array-specific operators (`@>`, `<@`, `&&`)
-/// - Performance matters
-/// - Want proper PostgreSQL array indexes (GIN/GiST)
-///
-/// **Use JSONB Arrays (`[T].JSONB.self`) when**:
-/// - Storing complex Codable types
-/// - Need JSON path queries
-/// - Schema flexibility is important
-///
-/// ## Supported Element Types
-///
-/// - `Bool` → `boolean[]`
-/// - `String` → `text[]`
-/// - `Int` → `bigint[]` (64-bit) or `integer[]` (32-bit)
-/// - `Int16` → `smallint[]`
-/// - `Int32` → `integer[]`
-/// - `Int64` → `bigint[]`
-/// - `Float` → `real[]`
-/// - `Double` → `double precision[]`
-/// - `UUID` → `uuid[]`
-/// - `Date` → `timestamptz[]`
+// Makes Swift arrays work as native PostgreSQL arrays in queries.
+//
+// This enables natural syntax like `[String].self` for native array columns,
+// while keeping `[String].JSONB.self` for JSONB storage.
+//
+// ```swift
+// @Table
+// struct Post {
+//     let id: Int
+//
+//     // Native PostgreSQL array (text[])
+//     @Column(as: [String].self)
+//     var tags: [String]
+//
+//     // JSONB array (for complex types)
+//     @Column(as: [Comment].JSONB.self)
+//     var comments: [Comment]
+// }
+//
+// // Use array operators
+// Post.where { $0.tags.contains(["swift"]) }
+// // SQL: WHERE tags @> ARRAY['swift']
+// ```
+//
+// ## Native Arrays vs JSONB Arrays
+//
+// **Use Native Arrays (`[T].self`) when**:
+// - Storing primitive types (String, Int, UUID, etc.)
+// - Need array-specific operators (`@>`, `<@`, `&&`)
+// - Performance matters
+// - Want proper PostgreSQL array indexes (GIN/GiST)
+//
+// **Use JSONB Arrays (`[T].JSONB.self`) when**:
+// - Storing complex Codable types
+// - Need JSON path queries
+// - Schema flexibility is important
+//
+// ## Supported Element Types
+//
+// - `Bool` → `boolean[]`
+// - `String` → `text[]`
+// - `Int` → `bigint[]` (64-bit) or `integer[]` (32-bit)
+// - `Int16` → `smallint[]`
+// - `Int32` → `integer[]`
+// - `Int64` → `bigint[]`
+// - `Float` → `real[]`
+// - `Double` → `double precision[]`
+// - `UUID` → `uuid[]`
+// - `Date` → `timestamptz[]`
 
 // MARK: - Array QueryBindable Conformance
 

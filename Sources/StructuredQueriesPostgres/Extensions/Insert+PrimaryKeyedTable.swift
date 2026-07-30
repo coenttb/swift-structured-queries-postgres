@@ -373,7 +373,7 @@ extension PrimaryKeyedTable where TableColumns.PrimaryColumn: TableColumnExpress
         var hasAnyExplicitPrimaryKey = false
         var hasAnyNullPrimaryKey = false
 
-        for (_, rowValues) in allValues.enumerated() {
+        for rowValues in allValues {
             for (column, value) in zip(Draft.TableColumns.writableColumns, rowValues) {
                 let columnNames = Set(column._names)
                 let isPrimaryKeyColumn = !columnNames.isDisjoint(with: primaryKeyNames)

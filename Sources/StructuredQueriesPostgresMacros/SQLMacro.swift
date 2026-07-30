@@ -8,7 +8,9 @@ public enum SQLMacro: ExpressionMacro {
         of node: N,
         in context: C
     ) -> ExprSyntax {
-        guard let argument = node.arguments.first?.expression else { fatalError() }
+        guard let argument = node.arguments.first?.expression else {
+            fatalError("#sql requires at least one argument")
+        }
         let binds = [
             UInt8(ascii: "?"), UInt8(ascii: ":"), UInt8(ascii: "@"), UInt8(ascii: "$"),
         ]

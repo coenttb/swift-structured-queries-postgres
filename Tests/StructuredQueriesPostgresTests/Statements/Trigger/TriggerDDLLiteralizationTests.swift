@@ -54,8 +54,9 @@ extension Tests.Unit {
     }
 
     @Test
-    func `preventDeletionWhen literalizes the comparison value in the function body instead of leaving a stray bind parameter`(
-    ) {
+    func
+        `preventDeletionWhen literalizes the comparison value in the function body instead of leaving a stray bind parameter`()
+    {
         let maliciousValue = "admin'; DROP TABLE ddl_literalization_users; --"
         let trigger = User.createTrigger(
             timing: .before,

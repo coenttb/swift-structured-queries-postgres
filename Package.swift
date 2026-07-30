@@ -13,7 +13,7 @@ let package = Package(
     name: "swift-structured-queries-postgres",
     platforms: [
         .iOS(.v26),
-        .macOS(.v26)
+        .macOS(.v26),
         //        .tvOS(.v26),
         //        .watchOS(.v26)
     ],
@@ -53,21 +53,22 @@ let package = Package(
             enabledTraits: [
                 "StructuredQueriesPostgresCasePaths",
                 "StructuredQueriesPostgresTagged",
-//                "StructuredQueriesPostgresSQLValidation",
+                //                "StructuredQueriesPostgresSQLValidation",
             ]
         ),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.7.2"),
         .package(url: "https://github.com/pointfreeco/swift-custom-dump.git", from: "1.3.3"),
-        .package(url: "https://github.com/swift-foundations/swift-dependencies.git", branch: "main"),
+        .package(
+            url: "https://github.com/swift-foundations/swift-dependencies.git", branch: "main"),
         .package(url: "https://github.com/pointfreeco/swift-macro-testing.git", from: "0.6.3"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.4"),
         .package(url: "https://github.com/pointfreeco/swift-tagged.git", from: "0.10.0"),
         .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay.git", exact: "1.6.1"),
         .package(url: "https://github.com/swiftlang/swift-syntax.git", "600.0.0"..<"603.0.0"),
         // new snapshot contains fix for swift build and swift test linker issue.
-//        .package(url: "https://github.com/swiftlang/swift-syntax.git", branch: "swift-6.2-DEVELOPMENT-SNAPSHOT-2025-10-09-a"),
+        //        .package(url: "https://github.com/swiftlang/swift-syntax.git", branch: "swift-6.2-DEVELOPMENT-SNAPSHOT-2025-10-09-a"),
         .package(url: "https://github.com/vapor/postgres-nio.git", from: "1.22.0"),
     ],
     targets: [

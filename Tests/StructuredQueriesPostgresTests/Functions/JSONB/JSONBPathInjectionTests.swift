@@ -20,7 +20,8 @@ extension JSONB {
 
 extension JSONB.Tests.Unit {
     @Test
-    func `sharp greater than path binds a malicious element instead of splicing it into SQL text`() {
+    func `sharp greater than path binds a malicious element instead of splicing it into SQL text`()
+    {
         let maliciousPath = ["a', (SELECT pg_sleep(0)) --", "city"]
         let expression = TestUser.columns.metadata.value(at: maliciousPath)
 
@@ -32,7 +33,9 @@ extension JSONB.Tests.Unit {
     }
 
     @Test
-    func `sharp greater than greater than path binds a malicious element instead of splicing it into SQL text`() {
+    func
+        `sharp greater than greater than path binds a malicious element instead of splicing it into SQL text`()
+    {
         let maliciousPath = ["a\", b} DROP TABLE test_users; --", "email"]
         let expression = TestUser.columns.metadata.valueAsText(at: maliciousPath)
 
@@ -44,7 +47,8 @@ extension JSONB.Tests.Unit {
     }
 
     @Test
-    func `sharp hyphen delete path binds a malicious element instead of splicing it into SQL text`() {
+    func `sharp hyphen delete path binds a malicious element instead of splicing it into SQL text`()
+    {
         let maliciousPath = ["a'; DROP TABLE test_users; --"]
         let expression = TestUser.columns.metadata.removing(path: maliciousPath)
 
@@ -80,7 +84,9 @@ extension JSONB.Tests.Unit {
     }
 
     @Test
-    func `create GIN index path escapes a malicious path element instead of splicing it into DDL text`() {
+    func
+        `create GIN index path escapes a malicious path element instead of splicing it into DDL text`()
+    {
         let maliciousPath = ["theme'; DROP TABLE test_users; --"]
         let fragment = TestUser.createGINIndexPath(on: \.metadata, path: maliciousPath)
 

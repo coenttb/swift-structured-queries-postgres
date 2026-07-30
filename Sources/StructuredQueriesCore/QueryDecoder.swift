@@ -6,8 +6,9 @@ public protocol QueryDecoder {
     ///
     /// - Parameter columnType: The type to decode as.
     /// - Returns: A value of the requested type, or `nil` if the column is `NULL`.
-    // swiftlint:disable:next discouraged_optional_collection
-    mutating func decode(_ columnType: [UInt8].Type) throws -> [UInt8]?
+    mutating func decode(
+        _ columnType: [UInt8].Type
+    ) throws -> [UInt8]?  // swiftlint:disable:this discouraged_optional_collection
 
     /// Decodes a single value of the given type from the current column.
     ///

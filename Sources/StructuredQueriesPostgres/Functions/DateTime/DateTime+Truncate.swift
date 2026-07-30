@@ -10,12 +10,12 @@ import StructuredQueriesCore
 
 /// Precision levels for date/time truncation using `DATE_TRUNC`
 public enum DateTruncPrecision: String {
-    case year = "year"
-    case month = "month"
-    case day = "day"
-    case hour = "hour"
-    case minute = "minute"
-    case second = "second"
+    case year
+    case month
+    case day
+    case hour
+    case minute
+    case second
 }
 
 extension QueryExpression where QueryValue == Date {

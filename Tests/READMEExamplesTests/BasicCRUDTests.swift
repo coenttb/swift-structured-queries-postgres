@@ -82,7 +82,7 @@ struct BasicCRUDTests {
             of:
                 User
                 .join(Post.all) { $0.id == $1.userId }
-                .where { user, post in user.isActive }
+                .where { user, _ in user.isActive }
                 .select { user, post in (user.name, post.title) }
         ) {
             """

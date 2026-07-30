@@ -55,8 +55,9 @@ extension JSONB.Creation.Tests.Unit {
     }
 
     @Test
-    func `json object binds malicious keys and values simultaneously instead of splicing them into SQL text`(
-    ) {
+    func
+        `json object binds malicious keys and values simultaneously instead of splicing them into SQL text`()
+    {
         let maliciousKeys = ["theme'; DROP TABLE test_users; --"]
         let maliciousValues = ["a\" } , (SELECT pg_sleep(0)) --"]
         let expression = JSONB.Creation.object(keys: maliciousKeys, values: maliciousValues)
@@ -72,7 +73,8 @@ extension JSONB.Creation.Tests.Unit {
     }
 
     @Test
-    func `json object binds a key containing a double quote instead of splicing it into SQL text`() {
+    func `json object binds a key containing a double quote instead of splicing it into SQL text`()
+    {
         let maliciousKeys = ["a\"b"]
         let values = ["c"]
         let expression = JSONB.Creation.object(keys: maliciousKeys, values: values)

@@ -259,23 +259,21 @@ extension SnapshotTests.JSONB {
 
         // MARK: - Disabled Tests (Type Inference Issues with UPDATE)
 
-        /*
-             Expected functionality that should be supported for UPDATE operations:
-        
-             1. Concatenation (|| operator):
-             UPDATE "test_users" SET "settings" = ("test_users"."settings" || '{"newField":"value"}'::jsonb)
-        
-             2. Delete key (- operator):
-             UPDATE "test_users" SET "settings" = ("test_users"."settings" - 'obsolete')
-        
-             3. Delete multiple keys (- operator with array):
-             UPDATE "test_users" SET "settings" = ("test_users"."settings" - ARRAY['field1', 'field2', 'field3'])
-        
-             4. Delete element by index (- operator):
-             UPDATE "test_users" SET "tags" = ("test_users"."tags" - 2)
-        
-             5. Delete at path (#- operator):
-             UPDATE "test_users" SET "metadata" = ("test_users"."metadata" #- '{address,street2}')
-             */
+        // Expected functionality that should be supported for UPDATE operations:
+        //
+        // 1. Concatenation (|| operator):
+        // UPDATE "test_users" SET "settings" = ("test_users"."settings" || '{"newField":"value"}'::jsonb)
+        //
+        // 2. Delete key (- operator):
+        // UPDATE "test_users" SET "settings" = ("test_users"."settings" - 'obsolete')
+        //
+        // 3. Delete multiple keys (- operator with array):
+        // UPDATE "test_users" SET "settings" = ("test_users"."settings" - ARRAY['field1', 'field2', 'field3'])
+        //
+        // 4. Delete element by index (- operator):
+        // UPDATE "test_users" SET "tags" = ("test_users"."tags" - 2)
+        //
+        // 5. Delete at path (#- operator):
+        // UPDATE "test_users" SET "metadata" = ("test_users"."metadata" #- '{address,street2}')
     }
 }

@@ -68,7 +68,6 @@ extension QueryExpression where QueryValue == Bool {
 }
 
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
-// swiftlint:disable:next prefer_some_over_any
 @_documentation(visibility: private)
 public prefix func ! (
     expression: any QueryExpression<Bool>

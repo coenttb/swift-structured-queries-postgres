@@ -252,7 +252,6 @@ extension QueryExpression where QueryValue: QueryRepresentable & _OptionalProtoc
 }
 
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
-// swiftlint:disable:next prefer_some_over_any
 @_disfavoredOverload
 @_documentation(visibility: private)
 public func == <QueryValue>(
@@ -263,7 +262,6 @@ public func == <QueryValue>(
 }
 
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
-// swiftlint:disable:next prefer_some_over_any
 @_disfavoredOverload
 @_documentation(visibility: private)
 public func != <QueryValue>(
@@ -274,7 +272,6 @@ public func != <QueryValue>(
 }
 
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
-// swiftlint:disable:next prefer_some_over_any
 @_documentation(visibility: private)
 @_disfavoredOverload
 public func == <QueryValue: _OptionalProtocol>(
@@ -285,7 +282,6 @@ public func == <QueryValue: _OptionalProtocol>(
 }
 
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
-// swiftlint:disable:next prefer_some_over_any
 @_documentation(visibility: private)
 @_disfavoredOverload
 public func != <QueryValue: _OptionalProtocol>(
@@ -296,7 +292,6 @@ public func != <QueryValue: _OptionalProtocol>(
 }
 
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
-// swiftlint:disable:next prefer_some_over_any
 @_documentation(visibility: private)
 public func == <QueryValue: _OptionalProtocol>(
     lhs: any QueryExpression<QueryValue>,
@@ -306,7 +301,6 @@ public func == <QueryValue: _OptionalProtocol>(
 }
 
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
-// swiftlint:disable:next prefer_some_over_any
 @_documentation(visibility: private)
 public func != <QueryValue: _OptionalProtocol>(
     lhs: any QueryExpression<QueryValue>,
@@ -316,7 +310,6 @@ public func != <QueryValue: _OptionalProtocol>(
 }
 
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
-// swiftlint:disable:next prefer_some_over_any
 @_documentation(visibility: private)
 public func == <QueryValue: QueryBindable>(
     lhs: any QueryExpression<QueryValue>,
@@ -326,7 +319,6 @@ public func == <QueryValue: QueryBindable>(
 }
 
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
-// swiftlint:disable:next prefer_some_over_any
 @_documentation(visibility: private)
 public func != <QueryValue: QueryBindable>(
     lhs: any QueryExpression<QueryValue>,
@@ -337,7 +329,6 @@ public func != <QueryValue: QueryBindable>(
 
 // Symmetric overloads for when nil is on the LEFT side
 // NB: This overload is required due to an overload resolution bug of 'Updates[dynamicMember:]'.
-// swiftlint:disable:next prefer_some_over_any
 @_documentation(visibility: private)
 public func == <QueryValue: QueryBindable>(
     lhs: _Null<QueryValue>,
@@ -346,7 +337,6 @@ public func == <QueryValue: QueryBindable>(
     SQLQueryExpression(rhs).is(lhs)
 }
 
-// swiftlint:disable:next prefer_some_over_any
 @_documentation(visibility: private)
 public func != <QueryValue: QueryBindable>(
     lhs: _Null<QueryValue>,

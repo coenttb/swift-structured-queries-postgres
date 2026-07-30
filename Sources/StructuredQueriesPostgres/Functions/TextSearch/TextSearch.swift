@@ -140,7 +140,7 @@ extension TextSearch {
             WordRange(min: 15, max: max)
         }
 
-        /// Common word range presets
+        // Common word range presets
         // swiftlint:disable:next force_unwrapping
         public static let short = WordRange(min: 3, max: 10)!  // Concise snippets
         // swiftlint:disable:next force_unwrapping

@@ -46,7 +46,11 @@ public struct Updates<Base: Table>: Sendable {
         >
     ) -> Value.QueryOutput {
         @available(*, unavailable)
-        get { fatalError() }
+        get {
+            fatalError(
+                "This property is get-only via keyPath dynamic member lookup; writes go through the setter."
+            )
+        }
         set {
             updates.append(
                 (Base.columns[keyPath: keyPath].name, Value(queryOutput: newValue).queryFragment)
@@ -66,7 +70,11 @@ public struct Updates<Base: Table>: Sendable {
         dynamicMember keyPath: KeyPath<Base.TableColumns, ColumnGroup<Base, Value>>
     ) -> Value.QueryOutput {
         @available(*, unavailable)
-        get { fatalError() }
+        get {
+            fatalError(
+                "This property is get-only via keyPath dynamic member lookup; writes go through the setter."
+            )
+        }
         set {
             func open<Root, V>(
                 _ column: some WritableTableColumnExpression<Root, V>
