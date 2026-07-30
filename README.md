@@ -44,7 +44,7 @@ let users = try await statement.fetchAll(db)
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/coenttb/swift-structured-queries-postgres", from: "0.23.0")
+    .package(url: "https://github.com/coenttb/swift-structured-queries-postgres", from: "0.2.1")
 ]
 ```
 
