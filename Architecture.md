@@ -924,7 +924,7 @@ Every PostgreSQL-specific difference must be documented:
 **Recommended**: Every 3 months, sync with upstream
 
 ```bash
-cd /Users/coen/Developer/coenttb/swift-structured-queries-postgres
+# from the checkout root:
 git fetch upstream
 git diff upstream/main
 ```
