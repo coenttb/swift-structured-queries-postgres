@@ -71,6 +71,8 @@ extension QueryExpression where QueryValue == Bool {
 @_documentation(visibility: private)
 public prefix func ! (
     expression: any QueryExpression<Bool>
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 ) -> some QueryExpression<Bool> {
     func open(_ expression: some QueryExpression<Bool>) -> SQLQueryExpression<Bool> {
         SQLQueryExpression(expression.not())

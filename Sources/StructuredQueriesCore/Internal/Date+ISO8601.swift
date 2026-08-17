@@ -37,6 +37,8 @@ extension DateFormatter {
 extension Date {
     @usableFromInline
     package init(iso8601String: String) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
             do {
                 try self.init(

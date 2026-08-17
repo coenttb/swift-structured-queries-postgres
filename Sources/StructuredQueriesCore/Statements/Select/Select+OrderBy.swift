@@ -23,6 +23,9 @@ extension Select {
         return select
     }
 
+}
+
+extension Select {
     /// Creates a new select statement from this one by appending columns to its `ORDER BY` clause.
     ///
     /// - Parameter ordering: A result builder closure that returns columns to order by.

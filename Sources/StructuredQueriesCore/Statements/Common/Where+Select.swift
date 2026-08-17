@@ -21,21 +21,6 @@ extension Where {
         asSelect().select(selection)
     }
 
-    /// A select statement for columns of the filtered table.
-    ///
-    /// - Parameter selection: A closure that selects result columns from the filtered table.
-    /// - Returns: A select statement that selects the given columns.
-    public func select<C1: QueryExpression, C2: QueryExpression, each C3: QueryExpression>(
-        _ selection: (From.TableColumns) -> (C1, C2, repeat each C3)
-    ) -> Select<(C1.QueryValue, C2.QueryValue, repeat (each C3).QueryValue), From, ()>
-    where
-        C1.QueryValue: QueryRepresentable,
-        C2.QueryValue: QueryRepresentable,
-        repeat (each C3).QueryValue: QueryRepresentable
-    {
-        asSelect().select(selection)
-    }
-
     /// A distinct select statement for the filtered table.
     ///
     /// - Parameter isDistinct: Whether or not to `SELECT DISTINCT`.
@@ -56,5 +41,22 @@ extension Where {
         on expressions: (From.TableColumns) -> [QueryFragment]
     ) -> SelectOf<From> {
         asSelect().distinct(on: expressions)
+    }
+}
+
+extension Where {
+    /// A select statement for columns of the filtered table.
+    ///
+    /// - Parameter selection: A closure that selects result columns from the filtered table.
+    /// - Returns: A select statement that selects the given columns.
+    public func select<C1: QueryExpression, C2: QueryExpression, each C3: QueryExpression>(
+        _ selection: (From.TableColumns) -> (C1, C2, repeat each C3)
+    ) -> Select<(C1.QueryValue, C2.QueryValue, repeat (each C3).QueryValue), From, ()>
+    where
+        C1.QueryValue: QueryRepresentable,
+        C2.QueryValue: QueryRepresentable,
+        repeat (each C3).QueryValue: QueryRepresentable
+    {
+        asSelect().select(selection)
     }
 }

@@ -163,112 +163,6 @@ extension Select {
         _select(selection)
     }
 
-    /// Creates a new select statement from this one by selecting the given result column.
-    ///
-    /// - Parameter selection: A closure that selects a result column from this select's tables.
-    /// - Returns: A new select statement that selects the given column.
-    @_disfavoredOverload
-    public func select<C: QueryExpression, each J: Table>(
-        _ selection: (From.TableColumns, repeat (each J).TableColumns) -> C
-    ) -> Select<C.QueryValue, From, (repeat each J)>
-    where Columns == (), C.QueryValue: QueryRepresentable, Joins == (repeat each J) {
-        _select(selection)
-    }
-
-    /// Creates a new select statement from this one by appending the given result column to its
-    /// selection.
-    ///
-    /// - Parameter selection: A closure that selects a result column from this select's table.
-    /// - Returns: A new select statement that selects the given column.
-    public func select<each C1: QueryRepresentable, C2: QueryExpression>(
-        _ selection: (From.TableColumns) -> C2
-    ) -> Select<(repeat each C1, C2.QueryValue), From, ()>
-    where Columns == (repeat each C1), C2.QueryValue: QueryRepresentable, Joins == () {
-        _select(selection)
-    }
-
-    /// Creates a new select statement from this one by appending the given result column to its
-    /// selection.
-    ///
-    /// - Parameter selection: A closure that selects a result column from this select's tables.
-    /// - Returns: A new select statement that selects the given column.
-    public func select<each C1: QueryRepresentable, C2: QueryExpression, each J: Table>(
-        _ selection: ((From.TableColumns, repeat (each J).TableColumns)) -> C2
-    ) -> Select<(repeat each C1, C2.QueryValue), From, (repeat each J)>
-    where Columns == (repeat each C1), C2.QueryValue: QueryRepresentable, Joins == (repeat each J) {
-        _select(selection)
-    }
-
-    /// Creates a new select statement from this one by appending the given result column to its
-    /// selection.
-    ///
-    /// - Parameter selection: A closure that selects a result column from this select's tables.
-    /// - Returns: A new select statement that selects the given column.
-    @_disfavoredOverload
-    public func select<each C1: QueryRepresentable, C2: QueryExpression, each J: Table>(
-        _ selection: (From.TableColumns, repeat (each J).TableColumns) -> C2
-    ) -> Select<(repeat each C1, C2.QueryValue), From, (repeat each J)>
-    where Columns == (repeat each C1), C2.QueryValue: QueryRepresentable, Joins == (repeat each J) {
-        _select(selection)
-    }
-
-    /// Creates a new select statement from this one by appending the given result columns to its
-    /// selection.
-    ///
-    /// - Parameter selection: A closure that selects columns from this select's tables.
-    /// - Returns: A new select statement that selects the given columns.
-    public func select<
-        each C1: QueryRepresentable,
-        C2: QueryExpression,
-        C3: QueryExpression,
-        each C4: QueryExpression,
-        each J: Table
-    >(
-        _ selection: ((From.TableColumns, repeat (each J).TableColumns)) -> (C2, C3, repeat each C4)
-    ) -> Select<
-        (repeat each C1, C2.QueryValue, C3.QueryValue, repeat (each C4).QueryValue),
-        From,
-        (repeat each J)
-    >
-    where
-        Columns == (repeat each C1),
-        C2.QueryValue: QueryRepresentable,
-        C3.QueryValue: QueryRepresentable,
-        repeat (each C4).QueryValue: QueryRepresentable,
-        Joins == (repeat each J)
-    {
-        _select(selection)
-    }
-
-    /// Creates a new select statement from this one by appending the given result columns to its
-    /// selection.
-    ///
-    /// - Parameter selection: A closure that selects columns from this select's tables.
-    /// - Returns: A new select statement that selects the given columns.
-    @_disfavoredOverload
-    public func select<
-        each C1: QueryRepresentable,
-        C2: QueryExpression,
-        C3: QueryExpression,
-        each C4: QueryExpression,
-        each J: Table
-    >(
-        _ selection: (From.TableColumns, repeat (each J).TableColumns) -> (C2, C3, repeat each C4)
-    ) -> Select<
-        (repeat each C1, C2.QueryValue, C3.QueryValue, repeat (each C4).QueryValue),
-        From,
-        (repeat each J)
-    >
-    where
-        Columns == (repeat each C1),
-        C2.QueryValue: QueryRepresentable,
-        C3.QueryValue: QueryRepresentable,
-        repeat (each C4).QueryValue: QueryRepresentable,
-        Joins == (repeat each J)
-    {
-        _select(selection)
-    }
-
     private func _select<
         each C1: QueryRepresentable,
         each C2: QueryExpression,
@@ -426,6 +320,8 @@ public struct _JoinClause: QueryExpression, Sendable {
     init(
         operator: Operator?,
         table: any Table.Type,
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         constraint: some QueryExpression<Bool>
     ) {
         self.constraint = constraint.queryFragment
@@ -498,3 +394,121 @@ extension CopyOnWrite: Sendable where Value: Sendable {}
 extension CopyOnWrite.Storage: @unchecked Sendable where Value: Sendable {}
 
 @TaskLocal public var _isSelecting = false
+
+extension Select {
+    /// Creates a new select statement from this one by selecting the given result column.
+    ///
+    /// - Parameter selection: A closure that selects a result column from this select's tables.
+    /// - Returns: A new select statement that selects the given column.
+    @_disfavoredOverload
+    public func select<C: QueryExpression, each J: Table>(
+        _ selection: (From.TableColumns, repeat (each J).TableColumns) -> C
+    ) -> Select<C.QueryValue, From, (repeat each J)>
+    where Columns == (), C.QueryValue: QueryRepresentable, Joins == (repeat each J) {
+        _select(selection)
+    }
+}
+
+extension Select {
+    /// Creates a new select statement from this one by appending the given result column to its
+    /// selection.
+    ///
+    /// - Parameter selection: A closure that selects a result column from this select's table.
+    /// - Returns: A new select statement that selects the given column.
+    public func select<each C1: QueryRepresentable, C2: QueryExpression>(
+        _ selection: (From.TableColumns) -> C2
+    ) -> Select<(repeat each C1, C2.QueryValue), From, ()>
+    where Columns == (repeat each C1), C2.QueryValue: QueryRepresentable, Joins == () {
+        _select(selection)
+    }
+}
+
+extension Select {
+    /// Creates a new select statement from this one by appending the given result column to its
+    /// selection.
+    ///
+    /// - Parameter selection: A closure that selects a result column from this select's tables.
+    /// - Returns: A new select statement that selects the given column.
+    public func select<each C1: QueryRepresentable, C2: QueryExpression, each J: Table>(
+        _ selection: ((From.TableColumns, repeat (each J).TableColumns)) -> C2
+    ) -> Select<(repeat each C1, C2.QueryValue), From, (repeat each J)>
+    where Columns == (repeat each C1), C2.QueryValue: QueryRepresentable, Joins == (repeat each J) {
+        _select(selection)
+    }
+}
+
+extension Select {
+    /// Creates a new select statement from this one by appending the given result column to its
+    /// selection.
+    ///
+    /// - Parameter selection: A closure that selects a result column from this select's tables.
+    /// - Returns: A new select statement that selects the given column.
+    @_disfavoredOverload
+    public func select<each C1: QueryRepresentable, C2: QueryExpression, each J: Table>(
+        _ selection: (From.TableColumns, repeat (each J).TableColumns) -> C2
+    ) -> Select<(repeat each C1, C2.QueryValue), From, (repeat each J)>
+    where Columns == (repeat each C1), C2.QueryValue: QueryRepresentable, Joins == (repeat each J) {
+        _select(selection)
+    }
+}
+
+extension Select {
+    /// Creates a new select statement from this one by appending the given result columns to its
+    /// selection.
+    ///
+    /// - Parameter selection: A closure that selects columns from this select's tables.
+    /// - Returns: A new select statement that selects the given columns.
+    public func select<
+        each C1: QueryRepresentable,
+        C2: QueryExpression,
+        C3: QueryExpression,
+        each C4: QueryExpression,
+        each J: Table
+    >(
+        _ selection: ((From.TableColumns, repeat (each J).TableColumns)) -> (C2, C3, repeat each C4)
+    ) -> Select<
+        (repeat each C1, C2.QueryValue, C3.QueryValue, repeat (each C4).QueryValue),
+        From,
+        (repeat each J)
+    >
+    where
+        Columns == (repeat each C1),
+        C2.QueryValue: QueryRepresentable,
+        C3.QueryValue: QueryRepresentable,
+        repeat (each C4).QueryValue: QueryRepresentable,
+        Joins == (repeat each J)
+    {
+        _select(selection)
+    }
+}
+
+extension Select {
+    /// Creates a new select statement from this one by appending the given result columns to its
+    /// selection.
+    ///
+    /// - Parameter selection: A closure that selects columns from this select's tables.
+    /// - Returns: A new select statement that selects the given columns.
+    @_disfavoredOverload
+    public func select<
+        each C1: QueryRepresentable,
+        C2: QueryExpression,
+        C3: QueryExpression,
+        each C4: QueryExpression,
+        each J: Table
+    >(
+        _ selection: (From.TableColumns, repeat (each J).TableColumns) -> (C2, C3, repeat each C4)
+    ) -> Select<
+        (repeat each C1, C2.QueryValue, C3.QueryValue, repeat (each C4).QueryValue),
+        From,
+        (repeat each J)
+    >
+    where
+        Columns == (repeat each C1),
+        C2.QueryValue: QueryRepresentable,
+        C3.QueryValue: QueryRepresentable,
+        repeat (each C4).QueryValue: QueryRepresentable,
+        Joins == (repeat each J)
+    {
+        _select(selection)
+    }
+}

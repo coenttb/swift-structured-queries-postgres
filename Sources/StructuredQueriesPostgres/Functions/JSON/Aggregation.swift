@@ -33,17 +33,23 @@ extension QueryExpression {
 
 // MARK: - JSON Build Object
 
+// swiftlint:disable no_any_protocol_existential
+// reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 /// PostgreSQL's json_build_object function
 /// Creates a JSON object from a variadic list of key-value pairs
-public func jsonBuildObject(_ pairs: (String, any QueryExpression)...) -> some QueryExpression<Data>
-{
+public func jsonBuildObject(
+    _ pairs: (String, any QueryExpression)...
+) -> some QueryExpression<Data> {
     JSONBuildObject(pairs: pairs)
 }
+// swiftlint:enable no_any_protocol_existential
 
 /// PostgreSQL's jsonb_build_object function
 /// Creates a JSONB object from a variadic list of key-value pairs
 public func jsonbBuildObject(
     _ pairs: (String, any QueryExpression)...
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 ) -> some QueryExpression<
     Data
 > {
@@ -89,6 +95,8 @@ private struct JSONBuildObject: QueryExpression {
     typealias QueryValue = Data
 
     let pairs: [(String, any QueryExpression)]
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     let format: JSONFormat
 
     enum JSONFormat {
@@ -104,6 +112,8 @@ private struct JSONBuildObject: QueryExpression {
     }
 
     init(pairs: [(String, any QueryExpression)], format: JSONFormat = .json) {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         self.pairs = pairs
         self.format = format
     }

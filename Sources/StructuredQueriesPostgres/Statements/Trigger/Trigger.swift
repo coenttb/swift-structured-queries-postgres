@@ -476,6 +476,8 @@ public struct Trigger<On: Table>: Sendable, Statement {
         /// - Returns: An INSERT trigger event.
         public static func insert(
             when condition: ((_ new: New) -> any QueryExpression<Bool>)? = nil
+                // swiftlint:disable:previous no_any_protocol_existential
+                // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         ) -> TriggerEvent {
             TriggerEvent(
                 event: Event(
@@ -494,6 +496,8 @@ public struct Trigger<On: Table>: Sendable, Statement {
         /// - Returns: An UPDATE trigger event.
         public static func update(
             when condition: ((_ new: New) -> any QueryExpression<Bool>)? = nil
+                // swiftlint:disable:previous no_any_protocol_existential
+                // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         ) -> TriggerEvent {
             TriggerEvent(
                 event: Event(
@@ -515,6 +519,8 @@ public struct Trigger<On: Table>: Sendable, Statement {
         public static func update<each Column: _TableColumnExpression>(
             of columns: (On.TableColumns) -> (repeat each Column),
             when condition: ((_ new: New) -> any QueryExpression<Bool>)? = nil
+                // swiftlint:disable:previous no_any_protocol_existential
+                // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         ) -> TriggerEvent {
             var columnNames: [String] = []
             for column in repeat each columns(On.columns) {
@@ -538,6 +544,8 @@ public struct Trigger<On: Table>: Sendable, Statement {
         /// - Returns: A DELETE trigger event.
         public static func delete(
             when condition: ((_ old: Old) -> any QueryExpression<Bool>)? = nil
+                // swiftlint:disable:previous no_any_protocol_existential
+                // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         ) -> TriggerEvent {
             TriggerEvent(
                 event: Event(
@@ -619,6 +627,8 @@ public struct Trigger<On: Table>: Sendable, Statement {
     ///   - cascade: Adds `CASCADE` to automatically drop dependent objects.
     /// - Returns: An array containing DROP TRIGGER and DROP FUNCTION statements.
     public func drop(ifExists: Bool = false, cascade: Bool = false) -> [any Statement<()>] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         [
             dropTrigger(ifExists: ifExists, cascade: cascade),
             function.drop(ifExists: ifExists, cascade: cascade),

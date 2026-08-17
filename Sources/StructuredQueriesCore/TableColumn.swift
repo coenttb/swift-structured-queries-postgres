@@ -23,6 +23,8 @@ where Value: QueryBindable {
     func _aliased<Name: AliasName>(
         _ alias: Name.Type
     ) -> any TableColumnExpression<TableAlias<Root, Name>, Value>
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 }
 
 extension TableColumnExpression {
@@ -34,12 +36,16 @@ public protocol WritableTableColumnExpression<Root, Value>: TableColumnExpressio
     func _aliased<Name: AliasName>(
         _ alias: Name.Type
     ) -> any WritableTableColumnExpression<TableAlias<Root, Name>, Value>
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 }
 
 extension WritableTableColumnExpression {
     public func _aliased<Name: AliasName>(
         _ alias: Name.Type
     ) -> any TableColumnExpression<TableAlias<Root, Name>, Value> {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         _aliased(alias)
     }
 }
@@ -80,6 +86,8 @@ public struct TableColumn<Root: Table, Value: QueryRepresentable & QueryBindable
     }
 
     public func decode(_ decoder: inout some QueryDecoder) throws -> Value.QueryOutput {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         try Value(decoder: &decoder).queryOutput
     }
 
@@ -90,6 +98,8 @@ public struct TableColumn<Root: Table, Value: QueryRepresentable & QueryBindable
     public func _aliased<Name>(
         _ alias: Name.Type
     ) -> any WritableTableColumnExpression<TableAlias<Root, Name>, Value> {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         TableColumn<TableAlias<Root, Name>, Value>(
             name,
             keyPath: \.[member: \Value.self, column: keyPath]
@@ -97,8 +107,12 @@ public struct TableColumn<Root: Table, Value: QueryRepresentable & QueryBindable
     }
 
     public var _allColumns: [any TableColumnExpression] { [self] }
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 
     public var _writableColumns: [any WritableTableColumnExpression] { [self] }
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 }
 
 public enum _TableColumn<Root: Table, Value: QueryRepresentable> {
@@ -178,6 +192,8 @@ public struct GeneratedColumn<Root: Table, Value: QueryRepresentable & QueryBind
     }
 
     public func decode(_ decoder: inout some QueryDecoder) throws -> Value.QueryOutput {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         try Value(decoder: &decoder).queryOutput
     }
 
@@ -188,6 +204,8 @@ public struct GeneratedColumn<Root: Table, Value: QueryRepresentable & QueryBind
     public func _aliased<Name>(
         _ alias: Name.Type
     ) -> any TableColumnExpression<TableAlias<Root, Name>, Value> {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         TableColumn<TableAlias<Root, Name>, Value>(
             name,
             keyPath: \.[member: \Value.self, column: keyPath]
@@ -195,4 +213,6 @@ public struct GeneratedColumn<Root: Table, Value: QueryRepresentable & QueryBind
     }
 
     public var _allColumns: [any TableColumnExpression] { [self] }
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 }

@@ -6,13 +6,6 @@ extension Where {
         asSelect().group(by: grouping)
     }
 
-    /// A select statement for the filtered table grouped by the given columns.
-    public func group<C1: QueryExpression, C2: QueryExpression, each C3: QueryExpression>(
-        by grouping: (From.TableColumns) -> (C1, C2, repeat each C3)
-    ) -> SelectOf<From> {
-        asSelect().group(by: grouping)
-    }
-
     /// A select statement for the filtered table with the given `HAVING` clause.
     public func having(
         _ predicate: (From.TableColumns) -> some QueryExpression<some _OptionalPromotable<Bool?>>
@@ -62,5 +55,14 @@ extension Where {
     /// - Returns: A select statement with a limit and optional offset.
     public func limit(_ maxLength: Int, offset: Int? = nil) -> SelectOf<From> {
         asSelect().limit(maxLength, offset: offset)
+    }
+}
+
+extension Where {
+    /// A select statement for the filtered table grouped by the given columns.
+    public func group<C1: QueryExpression, C2: QueryExpression, each C3: QueryExpression>(
+        by grouping: (From.TableColumns) -> (C1, C2, repeat each C3)
+    ) -> SelectOf<From> {
+        asSelect().group(by: grouping)
     }
 }

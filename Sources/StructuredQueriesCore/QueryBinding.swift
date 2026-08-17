@@ -52,6 +52,8 @@ public enum QueryBinding: Hashable, Sendable {
 
     @_disfavoredOverload
     public static func invalid(_ error: any Swift.Error) -> Self {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         .invalid(QueryBindingError(underlyingError: error))
     }
 }
@@ -59,7 +61,11 @@ public enum QueryBinding: Hashable, Sendable {
 /// A type that wraps errors encountered when trying to bind a value to a statement.
 public struct QueryBindingError: Swift.Error, Hashable {
     public let underlyingError: any Swift.Error
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     public init(underlyingError: any Swift.Error) {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         self.underlyingError = underlyingError
     }
     public static func == (lhs: Self, rhs: Self) -> Bool { true }

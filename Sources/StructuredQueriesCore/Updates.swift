@@ -26,6 +26,8 @@ public struct Updates<Base: Table>: Sendable {
     public subscript<Value>(
         dynamicMember keyPath: KeyPath<Base.TableColumns, TableColumn<Base, Value>>
     ) -> any QueryExpression<Value> {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         get { Base.columns[keyPath: keyPath] }
         set { updates.append((Base.columns[keyPath: keyPath].name, newValue.queryFragment)) }
     }
@@ -80,6 +82,8 @@ public struct Updates<Base: Table>: Sendable {
                 _ column: some WritableTableColumnExpression<Root, V>
             ) -> QueryFragment {
                 Value(queryOutput: newValue)[keyPath: column.keyPath as! KeyPath<Value, V>]
+                    // swiftlint:disable:previous force_cast
+                    // reason: generic-opener invariant: Root is Self by column construction
                     .queryFragment
             }
             updates.append(

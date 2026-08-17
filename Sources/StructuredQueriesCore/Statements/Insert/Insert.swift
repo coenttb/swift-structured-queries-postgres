@@ -63,58 +63,6 @@ public struct Insert<Into: Table, Returning>: Sendable {
         )
     }
 
-    // NB: This overload allows for single-column returns like 'returning(\.id)'.
-    /// Adds a returning clause to an insert statement.
-    ///
-    /// ```swift
-    /// Reminder.insert { draft }.returning(\.id)
-    /// // INSERT INTO "reminders" (...) VALUES (...) RETURNING "reminders"."id"
-    ///
-    /// Reminder.insert { draft }.returning { $0.id }
-    /// // INSERT INTO "reminders" (...) VALUES (...) RETURNING "reminders"."id"
-    /// ```
-    ///
-    /// - Parameter selection: A single column to return.
-    /// - Returns: A statement with a returning clause.
-    public func returning<QueryValue: QueryRepresentable>(
-        _ selection: (From.TableColumns) -> TableColumn<From, QueryValue>
-    ) -> Insert<Into, QueryValue> {
-        let column = selection(From.columns)
-        return Insert<Into, QueryValue>(
-            columnNames: columnNames,
-            conflictTargetColumnNames: conflictTargetColumnNames,
-            conflictTargetFilter: conflictTargetFilter,
-            values: values,
-            updates: updates,
-            updateFilter: updateFilter,
-            returning: [column.queryFragment]
-        )
-    }
-
-    // NB: This overload allows for 'returning(\.self)'.
-    /// Adds a returning clause to an insert statement.
-    ///
-    /// - Parameter selection: Columns to return.
-    /// - Returns: A statement with a returning clause.
-    @_documentation(visibility: private)
-    @_disfavoredOverload
-    public func returning(
-        _ selection: (Into.TableColumns) -> Into.TableColumns
-    ) -> Insert<Into, Into> {
-        var returning: [QueryFragment] = []
-        for resultColumn in From.TableColumns.allColumns {
-            returning.append("\(quote: resultColumn.name)")
-        }
-        return Insert<Into, Into>(
-            columnNames: columnNames,
-            conflictTargetColumnNames: conflictTargetColumnNames,
-            conflictTargetFilter: conflictTargetFilter,
-            values: values,
-            updates: updates,
-            updateFilter: updateFilter,
-            returning: returning
-        )
-    }
 }
 
 extension Insert: Statement {
@@ -203,3 +151,60 @@ extension Insert: Statement {
 
 /// A convenience type alias for a non-`RETURNING ``Insert``.
 public typealias InsertOf<Into: Table> = Insert<Into, ()>
+
+extension Insert {
+    // NB: This overload allows for single-column returns like 'returning(\.id)'.
+    /// Adds a returning clause to an insert statement.
+    ///
+    /// ```swift
+    /// Reminder.insert { draft }.returning(\.id)
+    /// // INSERT INTO "reminders" (...) VALUES (...) RETURNING "reminders"."id"
+    ///
+    /// Reminder.insert { draft }.returning { $0.id }
+    /// // INSERT INTO "reminders" (...) VALUES (...) RETURNING "reminders"."id"
+    /// ```
+    ///
+    /// - Parameter selection: A single column to return.
+    /// - Returns: A statement with a returning clause.
+    public func returning<QueryValue: QueryRepresentable>(
+        _ selection: (From.TableColumns) -> TableColumn<From, QueryValue>
+    ) -> Insert<Into, QueryValue> {
+        let column = selection(From.columns)
+        return Insert<Into, QueryValue>(
+            columnNames: columnNames,
+            conflictTargetColumnNames: conflictTargetColumnNames,
+            conflictTargetFilter: conflictTargetFilter,
+            values: values,
+            updates: updates,
+            updateFilter: updateFilter,
+            returning: [column.queryFragment]
+        )
+    }
+}
+
+extension Insert {
+    // NB: This overload allows for 'returning(\.self)'.
+    /// Adds a returning clause to an insert statement.
+    ///
+    /// - Parameter selection: Columns to return.
+    /// - Returns: A statement with a returning clause.
+    @_documentation(visibility: private)
+    @_disfavoredOverload
+    public func returning(
+        _ selection: (Into.TableColumns) -> Into.TableColumns
+    ) -> Insert<Into, Into> {
+        var returning: [QueryFragment] = []
+        for resultColumn in From.TableColumns.allColumns {
+            returning.append("\(quote: resultColumn.name)")
+        }
+        return Insert<Into, Into>(
+            columnNames: columnNames,
+            conflictTargetColumnNames: conflictTargetColumnNames,
+            conflictTargetFilter: conflictTargetFilter,
+            values: values,
+            updates: updates,
+            updateFilter: updateFilter,
+            returning: returning
+        )
+    }
+}

@@ -27,6 +27,8 @@ extension QueryExpression where QueryValue == String {
     public func stringAgg(
         _ separator: String = ",",
         order: (any QueryExpression)? = nil,
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         filter: (some QueryExpression<Bool>)? = Bool?.none
     ) -> some QueryExpression<String?> {
         AggregateFunction<String?>(
@@ -56,6 +58,8 @@ extension QueryExpression where QueryValue == String {
         distinct isDistinct: Bool,
         separator: String = ",",
         order: (any QueryExpression)? = nil,
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         filter: (some QueryExpression<Bool>)? = Bool?.none
     ) -> some QueryExpression<String?> {
         AggregateFunction<String?>(
@@ -86,6 +90,8 @@ extension QueryExpression {
     public func stringAgg(
         _ separator: String = ",",
         order: (any QueryExpression)? = nil,
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         filter: (some QueryExpression<Bool>)? = Bool?.none
     ) -> some QueryExpression<String?> {
         AggregateFunction<String?>(

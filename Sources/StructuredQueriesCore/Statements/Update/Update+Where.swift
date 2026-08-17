@@ -29,6 +29,9 @@ extension Update {
         return update
     }
 
+}
+
+extension Update {
     /// Adds a condition to an update statement.
     ///
     /// - Parameter predicate: A result builder closure that returns a Boolean expression to filter

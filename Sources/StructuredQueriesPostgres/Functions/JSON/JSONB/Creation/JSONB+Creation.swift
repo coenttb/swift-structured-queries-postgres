@@ -140,6 +140,8 @@ extension JSONB.Creation {
     /// - Parameter values: Variable number of query expressions to include in the array
     /// - Returns: JSONB array containing all values
     public static func buildArray(_ values: any QueryExpression...) -> some QueryExpression<Data> {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         JSONBuildArray(values: values, format: .jsonb)
     }
 
@@ -160,6 +162,8 @@ extension JSONB.Creation {
     /// - Returns: JSON array containing all values (text format)
     public static func buildJsonArray(
         _ values: any QueryExpression...
+            // swiftlint:disable:previous no_any_protocol_existential
+            // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     ) -> some QueryExpression<
         Data
     > {
@@ -174,6 +178,8 @@ extension JSONB.Creation {
         typealias QueryValue = Data
 
         let values: [any QueryExpression]
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         let format: JSONFormat
 
         enum JSONFormat: String {

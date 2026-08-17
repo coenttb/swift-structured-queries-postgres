@@ -20,6 +20,8 @@ extension JSONB.Processing {
             self.path = path
             self.createIfMissing = createIfMissing
             if let data = try? jsonbEncoder.encode(value) {
+                // swiftlint:disable:previous no_try_optional
+                // reason: untyped callee JSONEncoder.encode; empty payload is the fallback
                 self.value = data
             } else {
                 self.value = Data()
@@ -49,6 +51,8 @@ extension JSONB.Processing {
             self.path = path
             self.after = after
             if let data = try? jsonbEncoder.encode(value) {
+                // swiftlint:disable:previous no_try_optional
+                // reason: untyped callee JSONEncoder.encode; empty payload is the fallback
                 self.value = data
             } else {
                 self.value = Data()
@@ -97,6 +101,8 @@ extension JSONB.Processing {
             self.path = path
             self.createIfMissing = createIfMissing
             if let data = try? jsonbEncoder.encode(value) {
+                // swiftlint:disable:previous no_try_optional
+                // reason: untyped callee JSONEncoder.encode; empty payload is the fallback
                 self.value = data
             } else {
                 self.value = Data()
@@ -128,6 +134,8 @@ extension JSONB.Processing {
             self.path = path
             self.after = after
             if let data = try? jsonbEncoder.encode(value) {
+                // swiftlint:disable:previous no_try_optional
+                // reason: untyped callee JSONEncoder.encode; empty payload is the fallback
                 self.value = data
             } else {
                 self.value = Data()

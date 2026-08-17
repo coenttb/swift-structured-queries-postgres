@@ -25,6 +25,9 @@ extension Delete {
         )
     }
 
+}
+
+extension Delete {
     // NB: This overload allows for single-column returns like 'returning(\.id)'.
     /// Adds a returning clause to a delete statement.
     ///
@@ -48,7 +51,9 @@ extension Delete {
             returning: [column.queryFragment]
         )
     }
+}
 
+extension Delete {
     // NB: This overload allows for 'returning(\.self)'.
     /// Adds a returning clause to a delete statement.
     ///

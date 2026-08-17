@@ -161,6 +161,8 @@ extension Trigger.Function where On: Table {
     public static func updateTimestamp<D: _OptionalPromotable<Date?>>(
         column: KeyPath<On.TableColumns, TableColumn<On, D>>,
         to expression: any QueryExpression<D> = SQLQueryExpression("CURRENT_TIMESTAMP")
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     ) -> Self {
         let columnName = On.columns[keyPath: column]._names[0]
         let functionName = "update_\(columnName)_\(On.tableName)"
@@ -235,6 +237,8 @@ extension Trigger.Function where On: Table {
     public static func createdAt<D: _OptionalPromotable<Date?>>(
         column: KeyPath<On.TableColumns, TableColumn<On, D>>,
         to expression: any QueryExpression<D> = SQLQueryExpression("CURRENT_TIMESTAMP")
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     ) -> Self {
         let columnName = On.columns[keyPath: column]._names[0]
         let functionName = "set_\(columnName)_\(On.tableName)"
@@ -404,6 +408,8 @@ extension Trigger.Function where On: Table {
     public static func updateTimestamps<each D>(
         columns: repeat KeyPath<On.TableColumns, TableColumn<On, each D>>,
         to expression: any QueryExpression<Date?> = SQLQueryExpression("CURRENT_TIMESTAMP")
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     ) -> Self {
         var columnNames: [String] = []
         for column in repeat each columns {
@@ -1494,6 +1500,8 @@ extension Trigger.Function where On: Table {
         deletedAtColumn: KeyPath<On.TableColumns, TableColumn<On, D>>,
         identifiedBy identifierColumn: KeyPath<On.TableColumns, TableColumn<On, I>>,
         to expression: any QueryExpression<D> = SQLQueryExpression("CURRENT_TIMESTAMP")
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     ) -> Self {
         let columnName = On.columns[keyPath: deletedAtColumn]._names[0]
         let tableName = On.tableName.quoted()
@@ -1796,6 +1804,8 @@ extension Trigger.Function where On: Table {
     public static func enforceRowLevelSecurity<C: QueryBindable>(
         column: KeyPath<On.TableColumns, TableColumn<On, C>>,
         matches userContext: any QueryExpression<C>,
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         message: String = "Access denied: row does not belong to current user"
     ) -> Self {
         let columnName = On.columns[keyPath: column]._names[0].quoted()

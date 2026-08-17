@@ -38,6 +38,9 @@ extension Table {
         Where(predicates: [predicate(columns).queryFragment])
     }
 
+}
+
+extension Table {
     /// A where clause filtered by a predicate expression.
     ///
     /// See <doc:WhereClauses> for more.

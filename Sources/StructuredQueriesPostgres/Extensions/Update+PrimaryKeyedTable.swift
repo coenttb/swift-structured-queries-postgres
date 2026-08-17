@@ -32,6 +32,8 @@ extension PrimaryKeyedTable {
                     updates.set(
                         column,
                         Value(queryOutput: (row as! Root)[keyPath: column.keyPath]).queryFragment
+                            // swiftlint:disable:previous force_cast
+                            // reason: generic-opener invariant: Root is Self by column construction
                     )
                 }
                 open(column)

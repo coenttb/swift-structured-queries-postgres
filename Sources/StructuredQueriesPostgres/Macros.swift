@@ -101,6 +101,8 @@ public macro Selection(
 public macro Column(
     _ name: String = "",
     as representableType: (any QueryRepresentable.Type)? = nil,
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     generated: GeneratedColumnStorage? = nil,
     primaryKey: Bool = false
 ) =

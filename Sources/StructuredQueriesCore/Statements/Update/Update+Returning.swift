@@ -26,6 +26,9 @@ extension Update {
         )
     }
 
+}
+
+extension Update {
     // NB: This overload allows for single-column returns like 'returning(\.id)'.
     /// Adds a returning clause to an update statement.
     ///
@@ -50,7 +53,9 @@ extension Update {
             returning: [column.queryFragment]
         )
     }
+}
 
+extension Update {
     // NB: This overload allows for 'returning(\.self)'.
     /// Adds a returning clause to an update statement.
     ///

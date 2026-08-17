@@ -23,6 +23,9 @@ extension Select {
         return select { _ in expr.sum() }
     }
 
+}
+
+extension Select {
     /// Creates a new select statement from this one by appending a sum aggregate to its selection (with joins).
     ///
     /// - Parameter expression: A closure that takes table columns and returns an expression to sum.
@@ -41,7 +44,9 @@ extension Select {
         let expr = expression(From.columns, repeat (each J).columns)
         return select { _ in expr.sum() }
     }
+}
 
+extension Select {
     /// Creates a new select statement from this one by appending a sum aggregate to its selection (with existing columns).
     ///
     /// - Parameter expression: A closure that takes table columns and returns an expression to sum.
@@ -60,7 +65,9 @@ extension Select {
         let expr = expression(From.columns, repeat (each J).columns)
         return select { _ in expr.sum() }
     }
+}
 
+extension Select {
     /// Creates a new select statement from this one by appending a sum aggregate to its selection (with single join).
     ///
     /// - Parameter expression: A closure that takes table columns and returns an expression to sum.
@@ -77,7 +84,9 @@ extension Select {
         let expr = expression(From.columns, Joins.columns)
         return select { _, _ in expr.sum() }
     }
+}
 
+extension Select {
     /// Creates a new select statement from this one by appending a sum aggregate to its selection (with single join and existing columns).
     ///
     /// - Parameter expression: A closure that takes table columns and returns an expression to sum.

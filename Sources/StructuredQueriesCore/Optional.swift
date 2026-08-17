@@ -32,6 +32,8 @@ extension Optional: QueryBindable where Wrapped: QueryBindable {
 extension Optional: QueryDecodable where Wrapped: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         do {
             self = try Wrapped(decoder: &decoder)
         } catch QueryDecodingError.missingRequiredColumn {
@@ -52,9 +54,13 @@ extension Optional: QueryExpression where Wrapped: QueryExpression {
     }
 
     public var _allColumns: [any QueryExpression] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         self?._allColumns
             ?? Array(
                 repeating: SQLQueryExpression("NULL") as any QueryExpression,
+                // swiftlint:disable:previous no_any_protocol_existential
+                // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
                 count: Self._columnWidth
             )
     }
@@ -103,12 +109,18 @@ extension Optional: Table, PartialSelectStatement, Statement where Wrapped: Tabl
         public typealias QueryValue = Optional
 
         public static var allColumns: [any TableColumnExpression] {
+            // swiftlint:disable:previous no_any_protocol_existential
+            // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
             func open<Root, Value>(
                 _ column: some TableColumnExpression<Root, Value>
             ) -> any TableColumnExpression {
+                // swiftlint:disable:previous no_any_protocol_existential
+                // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
                 guard let column = column as? TableColumn<Wrapped, Value>
                 else {
                     let column = column as! GeneratedColumn<Wrapped, Value>
+                    // swiftlint:disable:previous force_cast
+                    // reason: generic-opener invariant: Root is Self by column construction
                     return GeneratedColumn<Optional, Value?>(
                         column.name,
                         keyPath: \.[member: \Value.self, column: column.keyPath],
@@ -125,10 +137,16 @@ extension Optional: Table, PartialSelectStatement, Statement where Wrapped: Tabl
         }
 
         public static var writableColumns: [any WritableTableColumnExpression] {
+            // swiftlint:disable:previous no_any_protocol_existential
+            // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
             func open<Root, Value>(
                 _ column: some WritableTableColumnExpression<Root, Value>
             ) -> any WritableTableColumnExpression {
+                // swiftlint:disable:previous no_any_protocol_existential
+                // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
                 let column = column as! TableColumn<Wrapped, Value>
+                // swiftlint:disable:previous force_cast
+                // reason: generic-opener invariant: Root is Self by column construction
                 return TableColumn<Optional, Value?>(
                     column.name,
                     keyPath: \.[member: \Value.self, column: column.keyPath],
@@ -234,6 +252,8 @@ where Wrapped.TableColumns.PrimaryColumn: TableColumnExpression {
     public func _aliased<Name: AliasName>(
         _ alias: Name.Type
     ) -> any TableColumnExpression<TableAlias<Optional, Name>, Wrapped.PrimaryKey?> {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         GeneratedColumn(name, keyPath: \.[member: \Value.self, column: keyPath])
     }
 }
@@ -243,12 +263,16 @@ where Wrapped.TableColumns.PrimaryColumn: WritableTableColumnExpression {
     public func _aliased<Name: AliasName>(
         _ alias: Name.Type
     ) -> any WritableTableColumnExpression<TableAlias<Optional, Name>, Wrapped.PrimaryKey?> {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         TableColumn(name, keyPath: \.[member: \Value.self, column: keyPath])
     }
 }
 
 extension Optional: TableExpression where Wrapped: TableExpression {
     public var allColumns: [any QueryExpression] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         self?.allColumns
             ?? Wrapped.QueryValue.TableColumns.allColumns.map {
                 SQLQueryExpression("NULL AS \(quote: $0.name)")

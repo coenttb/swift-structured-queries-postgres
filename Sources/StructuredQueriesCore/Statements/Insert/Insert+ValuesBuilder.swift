@@ -14,6 +14,8 @@ public enum InsertValuesBuilder<Value> {
                     _ column: some WritableTableColumnExpression<Root, Member>
                 ) -> QueryFragment {
                     Member(queryOutput: (value as! Root)[keyPath: column.keyPath]).queryFragment
+                    // swiftlint:disable:previous force_cast
+                    // reason: generic-opener invariant: Root is Self by column construction
                 }
                 valueFragment.append(open(column))
             }
@@ -33,6 +35,8 @@ public enum InsertValuesBuilder<Value> {
                     _ column: some WritableTableColumnExpression<Root, Member>
                 ) -> QueryFragment {
                     Member(queryOutput: (value as! Root)[keyPath: column.keyPath]).queryFragment
+                    // swiftlint:disable:previous force_cast
+                    // reason: generic-opener invariant: Root is Self by column construction
                 }
                 valueFragment.append(open(column))
             }

@@ -66,6 +66,8 @@ extension Array: QueryBindable, QueryExpression where Element: QueryBindable {
         // for bytea (binary data) support
         if Element.self == UInt8.self {
             return .blob(self as! [UInt8])
+            // swiftlint:disable:previous force_cast
+            // reason: guarded by the preceding element-type test
         }
 
         // Map primitive types to their specific PostgreSQL array binding cases
@@ -73,33 +75,53 @@ extension Array: QueryBindable, QueryExpression where Element: QueryBindable {
         switch Element.self {
         case is Bool.Type:
             return .boolArray(self as! [Bool])
+        // swiftlint:disable:previous force_cast
+        // reason: guarded by the preceding element-type test
 
         case is String.Type:
             return .stringArray(self as! [String])
+        // swiftlint:disable:previous force_cast
+        // reason: guarded by the preceding element-type test
 
         case is Int.Type:
             return .intArray(self as! [Int])
+        // swiftlint:disable:previous force_cast
+        // reason: guarded by the preceding element-type test
 
         case is Int16.Type:
             return .int16Array(self as! [Int16])
+        // swiftlint:disable:previous force_cast
+        // reason: guarded by the preceding element-type test
 
         case is Int32.Type:
             return .int32Array(self as! [Int32])
+        // swiftlint:disable:previous force_cast
+        // reason: guarded by the preceding element-type test
 
         case is Int64.Type:
             return .int64Array(self as! [Int64])
+        // swiftlint:disable:previous force_cast
+        // reason: guarded by the preceding element-type test
 
         case is Float.Type:
             return .floatArray(self as! [Float])
+        // swiftlint:disable:previous force_cast
+        // reason: guarded by the preceding element-type test
 
         case is Double.Type:
             return .doubleArray(self as! [Double])
+        // swiftlint:disable:previous force_cast
+        // reason: guarded by the preceding element-type test
 
         case is UUID.Type:
             return .uuidArray(self as! [UUID])
+        // swiftlint:disable:previous force_cast
+        // reason: guarded by the preceding element-type test
 
         case is Date.Type:
             return .dateArray(self as! [Date])
+        // swiftlint:disable:previous force_cast
+        // reason: guarded by the preceding element-type test
 
         default:
             // Fallback: Use genericArray for any other QueryBindable element type
@@ -117,11 +139,15 @@ extension Array: _OptionalPromotable where Element: QueryDecodable {}
 
 extension Array: QueryDecodable where Element: QueryDecodable {
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         // Special case: [UInt8] is for bytea (binary data)
         if Element.self == UInt8.self {
             guard let result = try decoder.decode([UInt8].self)
             else { throw QueryDecodingError.missingRequiredColumn }
             self = result as! [Element]
+            // swiftlint:disable:previous force_cast
+            // reason: guarded by the preceding element-type test
             return
         }
 

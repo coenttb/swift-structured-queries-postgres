@@ -142,6 +142,8 @@ extension Trigger.Function {
         _ name: String,
         orReplace: Bool = true,
         @QueryFragmentBuilder<any Statement> performs body: () -> [QueryFragment]
+            // swiftlint:disable:previous no_any_protocol_existential
+            // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     ) -> Self {
         let statements = body()
         var bodyFragment = statements.joined(separator: ";\(.newlineOrSpace)")
@@ -203,6 +205,8 @@ extension Trigger.Function {
         _ name: String,
         orReplace: Bool = true,
         @QueryFragmentBuilder<any Statement> _ body: () -> [QueryFragment]
+            // swiftlint:disable:previous no_any_protocol_existential
+            // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     ) -> Self {
         define(name, orReplace: orReplace, performs: body)
     }

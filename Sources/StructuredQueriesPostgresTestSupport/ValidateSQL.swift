@@ -23,6 +23,8 @@ import Testing
         private var connectionFailed = false
 
         func getOrCreateClient() async throws -> PostgresClient {
+            // swiftlint:disable:previous typed_throws_required
+            // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
             // If we previously failed to connect, don't retry
             if connectionFailed {
                 throw ValidationError.connectionUnavailable
@@ -95,6 +97,8 @@ import Testing
 
             // Shutdown EventLoopGroup
             try? await validationEventLoopGroup.shutdownGracefully()
+            // swiftlint:disable:previous no_try_optional
+            // reason: untyped async cleanup callee; failure is benign here
 
             client = nil
             runTask = nil
@@ -381,6 +385,8 @@ public func assertSQL<T>(
                 } catch {
                     // Rollback on error
                     _ = try? await connection.query(
+                        // swiftlint:disable:previous no_try_optional
+                        // reason: untyped async cleanup callee; failure is benign here
                         PostgresQuery(unsafeSQL: "ROLLBACK"),
                         logger: logger
                     )
@@ -445,6 +451,8 @@ public func assertSQL<T>(
     // MARK: - Configuration
 
     private func postgresConfiguration() throws -> PostgresClient.Configuration {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         // Try POSTGRES_URL first (standard connection string)
         if let urlString = ProcessInfo.processInfo.environment["POSTGRES_URL"] {
             guard let url = URL(string: urlString),

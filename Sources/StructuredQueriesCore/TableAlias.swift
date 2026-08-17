@@ -138,10 +138,14 @@ public struct TableAlias<
     @dynamicMemberLookup
     public struct TableColumns: Sendable, TableDefinition {
         public static var allColumns: [any TableColumnExpression] {
+            // swiftlint:disable:previous no_any_protocol_existential
+            // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
             #if compiler(>=6.3)
                 return Base.TableColumns.allColumns.map { $0._aliased(Name.self) }
             #else
                 func open(_ column: some TableColumnExpression) -> any TableColumnExpression {
+                    // swiftlint:disable:previous no_any_protocol_existential
+                    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
                     column._aliased(Name.self)
                 }
                 return Base.TableColumns.allColumns.map { open($0) }
@@ -149,12 +153,16 @@ public struct TableAlias<
         }
 
         public static var writableColumns: [any WritableTableColumnExpression] {
+            // swiftlint:disable:previous no_any_protocol_existential
+            // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
             #if compiler(>=6.3)
                 return Base.TableColumns.writableColumns.map { $0._aliased(Name.self) }
             #else
                 func open(
                     _ column: some WritableTableColumnExpression
                 ) -> any WritableTableColumnExpression {
+                    // swiftlint:disable:previous no_any_protocol_existential
+                    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
                     column._aliased(Name.self)
                 }
                 return Base.TableColumns.writableColumns.map { open($0) }
@@ -202,6 +210,8 @@ public struct TableAlias<
         }
 
         public var allColumns: [any QueryExpression] {
+            // swiftlint:disable:previous no_any_protocol_existential
+            // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
             base.allColumns
         }
     }
@@ -266,6 +276,8 @@ where Base.TableColumns.PrimaryColumn: TableColumnExpression {
     public func _aliased<N: AliasName>(
         _ alias: N.Type
     ) -> any TableColumnExpression<TableAlias<TableAlias, N>, Base.PrimaryKey> {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         GeneratedColumn(name, keyPath: \.[member: \Value.self, column: keyPath])
     }
 }
@@ -275,6 +287,8 @@ where Base.TableColumns.PrimaryColumn: WritableTableColumnExpression {
     public func _aliased<N: AliasName>(
         _ alias: N.Type
     ) -> any WritableTableColumnExpression<TableAlias<TableAlias, N>, Base.PrimaryKey> {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         TableColumn(name, keyPath: \.[member: \Value.self, column: keyPath])
     }
 }
@@ -291,6 +305,8 @@ extension TableAlias: QueryExpression where Base: QueryExpression {
     }
 
     public var _allColumns: [any QueryExpression] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         base._allColumns
     }
 }
@@ -303,6 +319,8 @@ extension TableAlias: QueryBindable where Base: QueryBindable {
 
 extension TableAlias: QueryDecodable where Base: QueryDecodable {
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         try self.init(base: Base(decoder: &decoder))
     }
 }

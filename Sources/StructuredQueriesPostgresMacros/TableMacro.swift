@@ -18,6 +18,8 @@ extension TableMacro: ExtensionMacro {
         conformingTo protocols: [TypeSyntax],
         in context: C
     ) throws -> [ExtensionDeclSyntax] {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         if node.attributeName.identifier == "Selection",
             let tableNode = declaration.macroApplication(for: "Table")
         {
@@ -950,6 +952,8 @@ extension TableMacro: MemberMacro {
         conformingTo protocols: [TypeSyntax],
         in context: C
     ) throws -> [DeclSyntax] {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         if node.attributeName.identifier == "Selection", declaration.hasMacroApplication("Table") {
             return []
         }
@@ -1578,6 +1582,8 @@ extension TableMacro: MemberAttributeMacro {
         providingAttributesFor member: T,
         in context: C
     ) throws -> [AttributeSyntax] {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         if node.attributeName.identifier == "Selection", declaration.hasMacroApplication("Table") {
             return []
         }

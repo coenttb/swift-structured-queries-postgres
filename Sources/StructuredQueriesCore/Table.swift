@@ -117,6 +117,8 @@ extension Table {
     public var query: QueryFragment {
         func open<Root, Value>(_ column: some TableColumnExpression<Root, Value>) -> QueryFragment {
             let value = Value(queryOutput: (self as! Root)[keyPath: column.keyPath])
+            // swiftlint:disable:previous force_cast
+            // reason: generic-opener invariant: Root is Self by column construction
             return "\(value) AS \(quote: column.name)"
         }
         return "SELECT \(TableColumns.allColumns.map { open($0) }.joined(separator: ", "))"
@@ -125,6 +127,8 @@ extension Table {
     public var queryFragment: QueryFragment {
         func open<Root, Value>(_ column: some TableColumnExpression<Root, Value>) -> QueryFragment {
             Value(queryOutput: (self as! Root)[keyPath: column.keyPath]).queryFragment
+            // swiftlint:disable:previous force_cast
+            // reason: generic-opener invariant: Root is Self by column construction
         }
         return TableColumns.allColumns.map { open($0) }.joined(separator: ", ")
     }

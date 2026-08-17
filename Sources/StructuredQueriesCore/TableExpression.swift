@@ -4,6 +4,8 @@
 /// generate a conformance.
 public protocol TableExpression<QueryValue>: QueryExpression where QueryValue: Table {
     var allColumns: [any QueryExpression] { get }
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 }
 
 extension TableExpression {
@@ -22,6 +24,8 @@ extension TableExpression {
     }
 
     public var _allColumns: [any QueryExpression] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         allColumns
     }
 }

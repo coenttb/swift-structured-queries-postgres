@@ -45,6 +45,8 @@ extension QueryExpression where Self == AggregateFunction<Int> {
     /// - Returns: A `count(*)` aggregate.
     public static func count(
         filter: (any QueryExpression<Bool>)? = nil
+            // swiftlint:disable:previous no_any_protocol_existential
+            // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     ) -> Self {
         AggregateFunction("count", ["*"], filter: filter?.queryFragment)
     }

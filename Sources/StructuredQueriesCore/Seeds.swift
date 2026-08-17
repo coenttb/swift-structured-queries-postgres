@@ -1,6 +1,8 @@
 /// A type that can prepare statements to seed a database's initial state.
 public struct Seeds: Sequence {
     let seeds: [any Table]
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 
     /// Prepares a number of batched insert statements to be executed.
     ///
@@ -68,6 +70,8 @@ public struct Seeds: Sequence {
     ///
     /// - Parameter build: A result builder closure that prepares statements to insert every built row.
     public init(@SeedsBuilder _ build: () -> [any Table]) {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         self.seeds = build()
     }
 
@@ -77,6 +81,8 @@ public struct Seeds: Sequence {
 
     public struct Iterator: IteratorProtocol {
         var seeds: [any Table]
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 
         public mutating func next() -> SQLQueryExpression<Void>? {
             guard let first = seeds.first else { return nil }
@@ -84,6 +90,8 @@ public struct Seeds: Sequence {
             let firstType = type(of: first)
 
             if let firstType = firstType as? any TableDraft.Type {
+                // swiftlint:disable:previous no_any_protocol_existential
+                // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
                 func insertBatch<T: TableDraft>(_: T.Type) -> SQLQueryExpression<Void> {
                     let batch = Array(seeds.lazy.prefix { $0 is T }.compactMap { $0 as? T })
                     defer { seeds.removeFirst(batch.count) }
@@ -107,44 +115,67 @@ public struct Seeds: Sequence {
 @resultBuilder
 public enum SeedsBuilder {
     public static func buildArray(_ components: [[any Table]]) -> [any Table] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         components.flatMap(\.self)
     }
 
     public static func buildBlock(_ components: [any Table]) -> [any Table] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         components
     }
 
     public static func buildEither(first component: [any Table]) -> [any Table] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         component
     }
 
     public static func buildEither(second component: [any Table]) -> [any Table] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         component
     }
 
     public static func buildExpression(_ expression: some Table) -> [any Table] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         [expression]
     }
 
     public static func buildExpression(_ expression: [any Table]) -> [any Table] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         expression
     }
 
     public static func buildLimitedAvailability(_ component: [any Table]) -> [any Table] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         component
     }
 
     // swiftlint:disable:next discouraged_optional_collection
     public static func buildOptional(_ component: [any Table]?) -> [any Table] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         component ?? []
     }
 
     public static func buildPartialBlock(first: [any Table]) -> [any Table] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         first
     }
 
-    public static func buildPartialBlock(accumulated: [any Table], next: [any Table]) -> [any Table]
-    {
+    // swiftlint:disable no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
+    public static func buildPartialBlock(
+        accumulated: [any Table],
+        next: [any Table]
+    ) -> [any Table] {
         accumulated + next
     }
+    // swiftlint:enable no_any_protocol_existential
 }

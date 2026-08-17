@@ -52,6 +52,8 @@ extension TextSearch.Vector: QueryBindable {
 extension TextSearch.Vector: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         guard let result = try decoder.decode(String.self)
         else { throw QueryDecodingError.missingRequiredColumn }
         self.init(value: result)
@@ -93,9 +95,15 @@ extension TextSearch {
     /// - `.C` - Medium importance (typically abstracts, summaries)
     /// - `.D` - Lowest importance (typically body text, default)
     public enum Weight: String, Sendable {
+        // The cases mirror PostgreSQL's own tsvector weight labels 'A'-'D';
+        // renaming them would break the spec correspondence.
+        // swift-format-ignore: AlwaysUseLowerCamelCase
         case A  // Highest importance
+        // swift-format-ignore: AlwaysUseLowerCamelCase
         case B  // High importance
+        // swift-format-ignore: AlwaysUseLowerCamelCase
         case C  // Medium importance
+        // swift-format-ignore: AlwaysUseLowerCamelCase
         case D  // Lowest importance (default)
     }
 }

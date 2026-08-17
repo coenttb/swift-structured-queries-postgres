@@ -9,6 +9,8 @@ public protocol QueryDecodable: _OptionalPromotable {
     ///
     /// - Parameter decoder: The decoder to read data from.
     init(decoder: inout some QueryDecoder) throws
+    // swiftlint:disable:previous typed_throws_required
+    // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
 }
 
 // Note: Array<Element: QueryDecodable> conformance (including [UInt8] for bytea)
@@ -17,6 +19,8 @@ public protocol QueryDecodable: _OptionalPromotable {
 extension Double: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         guard let result = try decoder.decode(Double.self)
         else { throw QueryDecodingError.missingRequiredColumn }
         self = result
@@ -26,6 +30,8 @@ extension Double: QueryDecodable {
 extension Int64: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         guard let result = try decoder.decode(Int64.self)
         else { throw QueryDecodingError.missingRequiredColumn }
         self = result
@@ -35,6 +41,8 @@ extension Int64: QueryDecodable {
 extension String: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         guard let result = try decoder.decode(String.self)
         else { throw QueryDecodingError.missingRequiredColumn }
         self = result
@@ -44,6 +52,8 @@ extension String: QueryDecodable {
 extension Bool: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         //    self = try Int(decoder: &decoder) != 0
         guard let result = try decoder.decode(Bool.self)
         else { throw QueryDecodingError.missingRequiredColumn }
@@ -54,6 +64,8 @@ extension Bool: QueryDecodable {
 extension Date: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         guard let result = try decoder.decode(Date.self)
         else { throw QueryDecodingError.missingRequiredColumn }
         self = result
@@ -63,6 +75,8 @@ extension Date: QueryDecodable {
 extension Float: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         try self.init(Double(decoder: &decoder))
     }
 }
@@ -70,6 +84,8 @@ extension Float: QueryDecodable {
 extension Int: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         let n = try Int64(decoder: &decoder)
         guard (Int64(Int.min)...Int64(Int.max)).contains(n) else { throw OverflowError() }
         self.init(n)
@@ -79,6 +95,8 @@ extension Int: QueryDecodable {
 extension Int8: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         let n = try Int64(decoder: &decoder)
         guard (Int64(Int8.min)...Int64(Int8.max)).contains(n) else { throw OverflowError() }
         self.init(n)
@@ -88,6 +106,8 @@ extension Int8: QueryDecodable {
 extension Int16: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         let n = try Int64(decoder: &decoder)
         guard (Int64(Int16.min)...Int64(Int16.max)).contains(n) else { throw OverflowError() }
         self.init(n)
@@ -97,6 +117,8 @@ extension Int16: QueryDecodable {
 extension Int32: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         let n = try Int64(decoder: &decoder)
         guard (Int64(Int32.min)...Int64(Int32.max)).contains(n) else { throw OverflowError() }
         self.init(n)
@@ -106,6 +128,8 @@ extension Int32: QueryDecodable {
 extension UInt: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         let n = try Int64(decoder: &decoder)
         guard n >= 0 else { throw OverflowError() }
         self.init(n)
@@ -115,6 +139,8 @@ extension UInt: QueryDecodable {
 extension UInt8: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         let n = try Int64(decoder: &decoder)
         guard (Int64(UInt8.min)...Int64(UInt8.max)).contains(n) else { throw OverflowError() }
         self.init(n)
@@ -124,6 +150,8 @@ extension UInt8: QueryDecodable {
 extension UInt16: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         let n = try Int64(decoder: &decoder)
         guard (Int64(UInt16.min)...Int64(UInt16.max)).contains(n) else { throw OverflowError() }
         self.init(n)
@@ -133,6 +161,8 @@ extension UInt16: QueryDecodable {
 extension UInt32: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         let n = try Int64(decoder: &decoder)
         guard (Int64(UInt32.min)...Int64(UInt32.max)).contains(n) else { throw OverflowError() }
         self.init(n)
@@ -142,6 +172,8 @@ extension UInt32: QueryDecodable {
 extension UInt64: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         try self.init(Int64(decoder: &decoder))
     }
 }
@@ -149,6 +181,8 @@ extension UInt64: QueryDecodable {
 extension UUID: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         guard let result = try decoder.decode(UUID.self)
         else { throw QueryDecodingError.missingRequiredColumn }
         self = result
@@ -158,6 +192,8 @@ extension UUID: QueryDecodable {
 extension Decimal: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         guard let result = try decoder.decode(Decimal.self)
         else { throw QueryDecodingError.missingRequiredColumn }
         self = result
@@ -167,6 +203,8 @@ extension Decimal: QueryDecodable {
 extension QueryDecodable where Self: LosslessStringConvertible {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         guard let losslessStringConvertible = try Self(String(decoder: &decoder))
         else {
             throw DataCorruptedError()
@@ -178,6 +216,8 @@ extension QueryDecodable where Self: LosslessStringConvertible {
 extension QueryDecodable where Self: RawRepresentable, RawValue: QueryDecodable {
     @inlinable
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         guard let rawRepresentable = try Self(rawValue: RawValue(decoder: &decoder))
         else {
             throw DataCorruptedError()

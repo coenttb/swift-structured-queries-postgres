@@ -256,6 +256,8 @@ extension QueryExpression where QueryValue: QueryRepresentable & _OptionalProtoc
 @_documentation(visibility: private)
 public func == <QueryValue>(
     lhs: any QueryExpression<QueryValue>,
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     rhs: some QueryExpression<QueryValue?>
 ) -> some QueryExpression<Bool> {
     BinaryOperator(lhs: lhs, operator: isNull(rhs) ? "IS" : "=", rhs: rhs)
@@ -266,6 +268,8 @@ public func == <QueryValue>(
 @_documentation(visibility: private)
 public func != <QueryValue>(
     lhs: any QueryExpression<QueryValue>,
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     rhs: some QueryExpression<QueryValue?>
 ) -> some QueryExpression<Bool> {
     BinaryOperator(lhs: lhs, operator: isNull(rhs) ? "IS NOT" : "<>", rhs: rhs)
@@ -276,6 +280,8 @@ public func != <QueryValue>(
 @_disfavoredOverload
 public func == <QueryValue: _OptionalProtocol>(
     lhs: any QueryExpression<QueryValue>,
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     rhs: some QueryExpression<QueryValue.Wrapped>
 ) -> some QueryExpression<Bool> {
     BinaryOperator(lhs: lhs, operator: "=", rhs: rhs)
@@ -286,6 +292,8 @@ public func == <QueryValue: _OptionalProtocol>(
 @_disfavoredOverload
 public func != <QueryValue: _OptionalProtocol>(
     lhs: any QueryExpression<QueryValue>,
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     rhs: some QueryExpression<QueryValue.Wrapped>
 ) -> some QueryExpression<Bool> {
     BinaryOperator(lhs: lhs, operator: "<>", rhs: rhs)
@@ -295,6 +303,8 @@ public func != <QueryValue: _OptionalProtocol>(
 @_documentation(visibility: private)
 public func == <QueryValue: _OptionalProtocol>(
     lhs: any QueryExpression<QueryValue>,
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     rhs: some QueryExpression<QueryValue>
 ) -> some QueryExpression<Bool> {
     BinaryOperator(lhs: lhs, operator: isNull(rhs) ? "IS" : "=", rhs: rhs)
@@ -304,6 +314,8 @@ public func == <QueryValue: _OptionalProtocol>(
 @_documentation(visibility: private)
 public func != <QueryValue: _OptionalProtocol>(
     lhs: any QueryExpression<QueryValue>,
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     rhs: some QueryExpression<QueryValue>
 ) -> some QueryExpression<Bool> {
     BinaryOperator(lhs: lhs, operator: isNull(rhs) ? "IS NOT" : "<>", rhs: rhs)
@@ -313,6 +325,8 @@ public func != <QueryValue: _OptionalProtocol>(
 @_documentation(visibility: private)
 public func == <QueryValue: QueryBindable>(
     lhs: any QueryExpression<QueryValue>,
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     rhs: _Null<QueryValue>
 ) -> some QueryExpression<Bool> {
     SQLQueryExpression(lhs).is(rhs)
@@ -322,6 +336,8 @@ public func == <QueryValue: QueryBindable>(
 @_documentation(visibility: private)
 public func != <QueryValue: QueryBindable>(
     lhs: any QueryExpression<QueryValue>,
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     rhs: _Null<QueryValue>
 ) -> some QueryExpression<Bool> {
     SQLQueryExpression(lhs).isNot(rhs)
@@ -333,6 +349,8 @@ public func != <QueryValue: QueryBindable>(
 public func == <QueryValue: QueryBindable>(
     lhs: _Null<QueryValue>,
     rhs: any QueryExpression<QueryValue>
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 ) -> some QueryExpression<Bool> {
     SQLQueryExpression(rhs).is(lhs)
 }
@@ -341,6 +359,8 @@ public func == <QueryValue: QueryBindable>(
 public func != <QueryValue: QueryBindable>(
     lhs: _Null<QueryValue>,
     rhs: any QueryExpression<QueryValue>
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 ) -> some QueryExpression<Bool> {
     SQLQueryExpression(rhs).isNot(lhs)
 }

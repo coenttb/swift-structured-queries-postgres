@@ -75,6 +75,8 @@ extension _JSONBRepresentation: QueryBindable {
 
 extension _JSONBRepresentation: QueryDecodable {
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         self.init(
             queryOutput: try jsonDecoder.decode(
                 QueryOutput.self,

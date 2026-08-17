@@ -14,6 +14,8 @@ public struct Values<QueryValue>: PartialSelectStatement {
     public typealias From = Never
 
     let values: [any QueryExpression]
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 
     public init(_ value: QueryValue) where QueryValue: QueryExpression {
         self.values = [value]

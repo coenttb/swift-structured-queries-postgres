@@ -27,6 +27,8 @@ extension JSONB.Index {
     /// See [PostgreSQL Documentation](https://www.postgresql.org/docs/current/datatype-json.html#JSON-INDEXING)
     /// for detailed information about JSONB indexing strategies.
     public enum GIN: String, Sendable {
+        // Mirrors PostgreSQL's operator-class name `jsonb_ops` verbatim.
+        // swift-format-ignore: AlwaysUseLowerCamelCase
         /// Default operator class - indexes all keys and values
         ///
         /// **Supports operators:** `@>`, `@?`, `@@`, `?`, `?|`, `?&`
@@ -42,6 +44,8 @@ extension JSONB.Index {
         /// - More flexible querying capabilities
         case jsonb_ops
 
+        // Mirrors PostgreSQL's operator-class name `jsonb_path_ops` verbatim.
+        // swift-format-ignore: AlwaysUseLowerCamelCase
         /// Path operator class - indexes only values (more specific)
         ///
         /// **Supports operators:** `@>`, `@?`, `@@`

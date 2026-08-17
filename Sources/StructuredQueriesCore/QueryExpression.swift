@@ -13,6 +13,8 @@ public protocol QueryExpression<QueryValue> {
     static var _columnWidth: Int { get }
 
     var _allColumns: [any QueryExpression] { get }
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 }
 
 extension QueryExpression {
@@ -21,6 +23,8 @@ extension QueryExpression {
     }
 
     public var _allColumns: [any QueryExpression] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         [self]
     }
 }

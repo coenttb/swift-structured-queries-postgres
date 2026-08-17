@@ -23,6 +23,8 @@ extension QueryExpression {
     public func arrayAgg(
         distinct isDistinct: Bool = false,
         order: (any QueryExpression)? = nil,
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         filter: (some QueryExpression<Bool>)? = Bool?.none
     ) -> some QueryExpression<String?> {
         AggregateFunction<String?>(

@@ -6,9 +6,13 @@
 public protocol TableDefinition<QueryValue>: QueryExpression where QueryValue: Table {
     /// An array of this table's columns.
     static var allColumns: [any TableColumnExpression] { get }
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 
     /// An array of this table's writable (non-generated) columns.
     static var writableColumns: [any WritableTableColumnExpression] { get }
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
 }
 
 extension TableDefinition {
@@ -32,6 +36,8 @@ extension TableDefinition {
     }
 
     public var _allColumns: [any QueryExpression] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         Self.allColumns
     }
 }

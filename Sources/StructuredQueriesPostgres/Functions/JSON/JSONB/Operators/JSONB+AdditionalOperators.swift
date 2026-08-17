@@ -39,6 +39,8 @@ extension JSONB.AdditionalOperators {
         init(lhs: LHS, rhs: some Encodable) {
             self.lhs = lhs
             if let data = try? jsonbEncoder.encode(rhs) {
+                // swiftlint:disable:previous no_try_optional
+                // reason: untyped callee JSONEncoder.encode; empty payload is the fallback
                 self.rhs = data
             } else {
                 self.rhs = Data()
@@ -69,6 +71,8 @@ extension JSONB.AdditionalOperators {
         init(lhs: LHS, rhs: some Encodable) {
             self.lhs = lhs
             if let data = try? jsonbEncoder.encode(rhs) {
+                // swiftlint:disable:previous no_try_optional
+                // reason: untyped callee JSONEncoder.encode; empty payload is the fallback
                 self.rhs = data
             } else {
                 self.rhs = Data()
@@ -190,6 +194,8 @@ extension JSONB.AdditionalOperators {
         init(lhs: LHS, rhs: some Encodable) {
             self.lhs = lhs
             if let data = try? jsonbEncoder.encode(rhs) {
+                // swiftlint:disable:previous no_try_optional
+                // reason: untyped callee JSONEncoder.encode; empty payload is the fallback
                 self.rhs = data
             } else {
                 self.rhs = Data()
@@ -224,6 +230,8 @@ extension JSONB.AdditionalOperators {
         init(lhs: LHS, rhs: some Encodable) {
             self.lhs = lhs
             if let data = try? jsonbEncoder.encode(rhs) {
+                // swiftlint:disable:previous no_try_optional
+                // reason: untyped callee JSONEncoder.encode; empty payload is the fallback
                 self.rhs = data
             } else {
                 self.rhs = Data()

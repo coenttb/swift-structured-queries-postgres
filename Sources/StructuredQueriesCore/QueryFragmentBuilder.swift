@@ -49,6 +49,8 @@ extension QueryFragmentBuilder<()> {
 }
 
 extension QueryFragmentBuilder<any Statement> {
+    // swiftlint:disable:previous no_any_protocol_existential
+    // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
     public static func buildExpression(
         _ expression: some Statement
     ) -> [QueryFragment] {

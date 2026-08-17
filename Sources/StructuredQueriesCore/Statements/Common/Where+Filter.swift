@@ -33,18 +33,6 @@ extension Where {
         return `where`
     }
 
-    /// Adds a condition to a where clause.
-    ///
-    /// - Parameter predicate: A predicate to add.
-    /// - Returns: A where clause with the added predicate.
-    public func `where`(
-        @QueryFragmentBuilder<Bool> _ predicate: (From.TableColumns) -> [QueryFragment]
-    ) -> Self {
-        var `where` = self
-        `where`.predicates.append(contentsOf: predicate(From.columns))
-        return `where`
-    }
-
     /// Combines the predicates of two where clauses together using `AND`.
     ///
     /// - Parameters:
@@ -117,6 +105,20 @@ extension Where {
         `where`.predicates = [
             "NOT (\(predicates.isEmpty ? "1" : predicates.joined(separator: " AND ")))"
         ]
+        return `where`
+    }
+}
+
+extension Where {
+    /// Adds a condition to a where clause.
+    ///
+    /// - Parameter predicate: A predicate to add.
+    /// - Returns: A where clause with the added predicate.
+    public func `where`(
+        @QueryFragmentBuilder<Bool> _ predicate: (From.TableColumns) -> [QueryFragment]
+    ) -> Self {
+        var `where` = self
+        `where`.predicates.append(contentsOf: predicate(From.columns))
         return `where`
     }
 }

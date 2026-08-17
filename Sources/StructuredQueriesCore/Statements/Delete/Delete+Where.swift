@@ -34,6 +34,9 @@ extension Delete {
         return update
     }
 
+}
+
+extension Delete {
     /// Adds a condition to a delete statement.
     ///
     /// - Parameter predicate: A result builder closure that returns a Boolean expression to filter

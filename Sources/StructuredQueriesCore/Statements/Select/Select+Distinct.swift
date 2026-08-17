@@ -36,6 +36,9 @@ extension Select {
         return select
     }
 
+}
+
+extension Select {
     /// Creates a new select statement from this one by setting its `DISTINCT ON` clause with joins.
     ///
     /// PostgreSQL-specific feature that returns the first row of each group determined by the
@@ -51,7 +54,9 @@ extension Select {
         select.distinct = .on(expressions(From.columns, repeat (each J).columns))
         return select
     }
+}
 
+extension Select {
     /// Creates a new select statement from this one by setting its `DISTINCT ON` clause with joins (single join).
     ///
     /// - Parameter on: A result builder closure that returns expressions from joined tables.

@@ -6,6 +6,8 @@ extension Data: QueryBindable {
     }
 
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         // Decode as blob/bytea
         guard let bytes = try decoder.decode([UInt8].self)
         else { throw QueryDecodingError.missingRequiredColumn }
@@ -19,6 +21,8 @@ extension URL: QueryBindable {
     }
 
     public init(decoder: inout some QueryDecoder) throws {
+        // swiftlint:disable:previous typed_throws_required
+        // reason: fork-heritage untyped-throws surface (pointfreeco/swift-structured-queries)
         guard let url = Self(string: try String(decoder: &decoder)) else {
             throw InvalidURL()
         }

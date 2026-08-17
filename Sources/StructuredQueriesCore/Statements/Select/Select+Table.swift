@@ -25,27 +25,6 @@ extension Table {
         Where().select(selection)
     }
 
-    /// A select statement for columns of this table.
-    ///
-    /// See <doc:SelectStatements> for more info.
-    ///
-    /// - Parameter selection: A closure that selects result columns from this table's columns.
-    /// - Returns: A select statement that selects the given columns.
-    public static func select<
-        C1: QueryExpression,
-        C2: QueryExpression,
-        each C3: QueryExpression
-    >(
-        _ selection: (TableColumns) -> (C1, C2, repeat each C3)
-    ) -> Select<(C1.QueryValue, C2.QueryValue, repeat (each C3).QueryValue), Self, ()>
-    where
-        C1.QueryValue: QueryRepresentable,
-        C2.QueryValue: QueryRepresentable,
-        repeat (each C3).QueryValue: QueryRepresentable
-    {
-        Where().select(selection)
-    }
-
     /// A distinct select statement for this table.
     ///
     /// - Parameter isDistinct: Whether or not to `SELECT DISTINCT`.
@@ -230,20 +209,6 @@ extension Table {
         Where().group(by: grouping)
     }
 
-    /// A select statement for this table grouped by the given columns.
-    ///
-    /// - Parameter grouping: A closure that returns columns to group by from this table's columns.
-    /// - Returns: A select statement that groups by the given column.
-    public static func group<
-        C1: QueryExpression,
-        C2: QueryExpression,
-        each C3: QueryExpression
-    >(
-        by grouping: (TableColumns) -> (C1, C2, repeat each C3)
-    ) -> SelectOf<Self> {
-        Where().group(by: grouping)
-    }
-
     /// A select statement for this table with the given `HAVING` clause.
     ///
     /// - Parameter predicate: A closure that produces a Boolean query expression from this table's
@@ -299,4 +264,43 @@ extension Table {
         Where().limit(maxLength, offset: offset)
     }
 
+}
+
+extension Table {
+    /// A select statement for columns of this table.
+    ///
+    /// See <doc:SelectStatements> for more info.
+    ///
+    /// - Parameter selection: A closure that selects result columns from this table's columns.
+    /// - Returns: A select statement that selects the given columns.
+    public static func select<
+        C1: QueryExpression,
+        C2: QueryExpression,
+        each C3: QueryExpression
+    >(
+        _ selection: (TableColumns) -> (C1, C2, repeat each C3)
+    ) -> Select<(C1.QueryValue, C2.QueryValue, repeat (each C3).QueryValue), Self, ()>
+    where
+        C1.QueryValue: QueryRepresentable,
+        C2.QueryValue: QueryRepresentable,
+        repeat (each C3).QueryValue: QueryRepresentable
+    {
+        Where().select(selection)
+    }
+}
+
+extension Table {
+    /// A select statement for this table grouped by the given columns.
+    ///
+    /// - Parameter grouping: A closure that returns columns to group by from this table's columns.
+    /// - Returns: A select statement that groups by the given column.
+    public static func group<
+        C1: QueryExpression,
+        C2: QueryExpression,
+        each C3: QueryExpression
+    >(
+        by grouping: (TableColumns) -> (C1, C2, repeat each C3)
+    ) -> SelectOf<Self> {
+        Where().group(by: grouping)
+    }
 }

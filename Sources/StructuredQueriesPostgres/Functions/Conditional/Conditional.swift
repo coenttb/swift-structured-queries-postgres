@@ -17,6 +17,9 @@ public enum Conditional {}
 
 // MARK: - Convenience Constructors
 
+// `Case` mirrors the SQL `CASE` keyword; lowercasing it would collide with
+// the Swift `case` keyword and break the DSL's spec correspondence.
+// swift-format-ignore: AlwaysUseLowerCamelCase
 /// Creates a SQL `CASE` expression builder with a base expression.
 ///
 /// ```swift
@@ -28,6 +31,7 @@ public func Case<Base, QueryValue: _OptionalPromotable>(
     Conditional.Case(base)
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 /// Creates a SQL `CASE` expression builder without a base expression.
 ///
 /// ```swift

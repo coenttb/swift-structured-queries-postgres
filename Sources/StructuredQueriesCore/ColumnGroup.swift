@@ -53,10 +53,14 @@ where Values.QueryOutput == Values {
     }
 
     public var _allColumns: [any TableColumnExpression] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         Values.TableColumns.allColumns.map { column in
             func open<R, V>(
                 _ column: some TableColumnExpression<R, V>
             ) -> any TableColumnExpression {
+                // swiftlint:disable:previous no_any_protocol_existential
+                // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
                 let keyPath = keyPath.appending(
                     path: unsafeDowncast(column.keyPath, to: KeyPath<Values, V.QueryOutput>.self)
                 )
@@ -71,10 +75,14 @@ where Values.QueryOutput == Values {
     }
 
     public var _writableColumns: [any WritableTableColumnExpression] {
+        // swiftlint:disable:previous no_any_protocol_existential
+        // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
         Values.TableColumns.writableColumns.map { column in
             func open<R, V>(
                 _ column: some WritableTableColumnExpression<R, V>
             ) -> any WritableTableColumnExpression {
+                // swiftlint:disable:previous no_any_protocol_existential
+                // reason: fork-heritage type-erased DSL (pointfreeco/swift-structured-queries)
                 let keyPath = keyPath.appending(
                     path: unsafeDowncast(column.keyPath, to: KeyPath<Values, V.QueryOutput>.self)
                 )
