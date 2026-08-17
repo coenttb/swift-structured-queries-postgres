@@ -28,7 +28,11 @@ extension TableDraft {
     public static subscript(
         dynamicMember keyPath: KeyPath<PrimaryTable.Type, some Statement<PrimaryTable>>
     ) -> some Statement<Self> {
-        SQLQueryExpression("\(PrimaryTable.self[keyPath: keyPath])")
+        // Hoisting the key-path application out of the interpolation avoids a
+        // swift-frontend crash (constraint-solver abort in
+        // `addKeyPathApplicationRootConstraint`) on the Linux 6.4 toolchain.
+        let statement = PrimaryTable.self[keyPath: keyPath]
+        return SQLQueryExpression("\(statement)")
     }
 
     public static subscript(
