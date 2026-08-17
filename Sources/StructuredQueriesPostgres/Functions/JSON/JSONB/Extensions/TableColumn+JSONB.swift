@@ -378,7 +378,11 @@ extension TableColumn where Value: _JSONBRepresentationProtocol {
         createIfMissing: Bool = true
     ) -> some QueryExpression<Value> {
         JSONB.Processing.TypedSet(
-            jsonb: self, path: path, value: value, createIfMissing: createIfMissing)
+            jsonb: self,
+            path: path,
+            value: value,
+            createIfMissing: createIfMissing
+        )
     }
 
     /// PostgreSQL's jsonb_insert function - Insert into JSONB at path

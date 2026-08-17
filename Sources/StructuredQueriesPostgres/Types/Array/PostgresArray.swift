@@ -73,24 +73,34 @@ extension Array: QueryBindable, QueryExpression where Element: QueryBindable {
         switch Element.self {
         case is Bool.Type:
             return .boolArray(self as! [Bool])
+
         case is String.Type:
             return .stringArray(self as! [String])
+
         case is Int.Type:
             return .intArray(self as! [Int])
+
         case is Int16.Type:
             return .int16Array(self as! [Int16])
+
         case is Int32.Type:
             return .int32Array(self as! [Int32])
+
         case is Int64.Type:
             return .int64Array(self as! [Int64])
+
         case is Float.Type:
             return .floatArray(self as! [Float])
+
         case is Double.Type:
             return .doubleArray(self as! [Double])
+
         case is UUID.Type:
             return .uuidArray(self as! [UUID])
+
         case is Date.Type:
             return .dateArray(self as! [Date])
+
         default:
             // Fallback: Use genericArray for any other QueryBindable element type
             // This supports custom types like enums with RawRepresentable conformance

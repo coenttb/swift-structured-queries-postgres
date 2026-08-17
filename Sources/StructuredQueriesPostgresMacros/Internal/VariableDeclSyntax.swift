@@ -10,6 +10,7 @@ extension VariableDeclSyntax {
                 ] {
                     return true
                 }
+
             default:
                 break
             }
@@ -22,12 +23,14 @@ extension VariableDeclSyntax {
             switch binding.accessorBlock?.accessors {
             case .getter:
                 return true
+
             case .accessors(let accessors):
                 for accessor in accessors {
                     if accessor.accessorSpecifier.tokenKind == .keyword(.get) {
                         return true
                     }
                 }
+
             default:
                 continue
             }
@@ -48,7 +51,8 @@ extension VariableDeclSyntax {
                 var binding = $0
                 binding.accessorBlock = nil
                 return binding
-            })
+            }
+        )
         return variable
     }
 }

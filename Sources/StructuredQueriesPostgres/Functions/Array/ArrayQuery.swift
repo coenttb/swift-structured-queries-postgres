@@ -77,7 +77,10 @@ extension QueryExpression where QueryValue: Collection, QueryValue.Element: Quer
     ///   - element: The element to search for
     ///   - start: The 1-based index to start searching from
     /// - Returns: The 1-based index of the element, or NULL if not found
-    public func arrayPosition(_ element: QueryValue.Element, startingFrom start: Int)
+    public func arrayPosition(
+        _ element: QueryValue.Element,
+        startingFrom start: Int
+    )
         -> some QueryExpression<Int?>
     {
         SQLQueryExpression(

@@ -14,7 +14,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// Product.where { $0.price.lessThanAny(competitorPrices) }
     /// // WHERE "products"."price" < ANY (SELECT price FROM competitors)
     /// ```
-    public func lessThanAny(_ subquery: some QueryExpression<[QueryValue]>) -> some QueryExpression<
+    public func lessThanAny(
+        _ subquery: some QueryExpression<[QueryValue]>
+    ) -> some QueryExpression<
         Bool
     > {
         SQLQueryExpression(
@@ -26,7 +28,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// Tests if this value is less than or equal to any value in the subquery
     ///
     /// PostgreSQL's `<= ANY` operator.
-    public func lessThanOrEqualToAny(_ subquery: some QueryExpression<[QueryValue]>)
+    public func lessThanOrEqualToAny(
+        _ subquery: some QueryExpression<[QueryValue]>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(
@@ -43,7 +47,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// User.where { $0.score.greaterThanAny(benchmarkScores) }
     /// // WHERE "users"."score" > ANY (SELECT score FROM benchmarks)
     /// ```
-    public func greaterThanAny(_ subquery: some QueryExpression<[QueryValue]>)
+    public func greaterThanAny(
+        _ subquery: some QueryExpression<[QueryValue]>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(
@@ -55,7 +61,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// Tests if this value is greater than or equal to any value in the subquery
     ///
     /// PostgreSQL's `>= ANY` operator.
-    public func greaterThanOrEqualToAny(_ subquery: some QueryExpression<[QueryValue]>)
+    public func greaterThanOrEqualToAny(
+        _ subquery: some QueryExpression<[QueryValue]>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(
@@ -74,7 +82,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// Product.where { $0.price.lessThanAll(competitorPrices) }
     /// // WHERE "products"."price" < ALL (SELECT price FROM competitors)
     /// ```
-    public func lessThanAll(_ subquery: some QueryExpression<[QueryValue]>) -> some QueryExpression<
+    public func lessThanAll(
+        _ subquery: some QueryExpression<[QueryValue]>
+    ) -> some QueryExpression<
         Bool
     > {
         SQLQueryExpression(
@@ -86,7 +96,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// Tests if this value is less than or equal to all values in the subquery
     ///
     /// PostgreSQL's `<= ALL` operator.
-    public func lessThanOrEqualToAll(_ subquery: some QueryExpression<[QueryValue]>)
+    public func lessThanOrEqualToAll(
+        _ subquery: some QueryExpression<[QueryValue]>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(
@@ -103,7 +115,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// User.where { $0.score.greaterThanAll(teamScores) }
     /// // WHERE "users"."score" > ALL (SELECT score FROM team_members)
     /// ```
-    public func greaterThanAll(_ subquery: some QueryExpression<[QueryValue]>)
+    public func greaterThanAll(
+        _ subquery: some QueryExpression<[QueryValue]>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(
@@ -115,7 +129,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// Tests if this value is greater than or equal to all values in the subquery
     ///
     /// PostgreSQL's `>= ALL` operator.
-    public func greaterThanOrEqualToAll(_ subquery: some QueryExpression<[QueryValue]>)
+    public func greaterThanOrEqualToAll(
+        _ subquery: some QueryExpression<[QueryValue]>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(
@@ -129,7 +145,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// Tests if this value is less than some value in the subquery
     ///
     /// PostgreSQL's `< SOME` operator (synonym for `< ANY`).
-    public func lessThanSome(_ subquery: some QueryExpression<[QueryValue]>)
+    public func lessThanSome(
+        _ subquery: some QueryExpression<[QueryValue]>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(
@@ -141,7 +159,9 @@ extension QueryExpression where QueryValue: Comparable & QueryBindable {
     /// Tests if this value is greater than some value in the subquery
     ///
     /// PostgreSQL's `> SOME` operator (synonym for `> ANY`).
-    public func greaterThanSome(_ subquery: some QueryExpression<[QueryValue]>)
+    public func greaterThanSome(
+        _ subquery: some QueryExpression<[QueryValue]>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(
@@ -164,7 +184,9 @@ extension QueryExpression where QueryValue: Equatable & QueryBindable {
     /// ```
     ///
     /// > Note: This is equivalent to using IN, but may be clearer in some contexts.
-    public func equalsAny(_ subquery: some QueryExpression<[QueryValue]>) -> some QueryExpression<
+    public func equalsAny(
+        _ subquery: some QueryExpression<[QueryValue]>
+    ) -> some QueryExpression<
         Bool
     > {
         SQLQueryExpression(
@@ -183,7 +205,9 @@ extension QueryExpression where QueryValue: Equatable & QueryBindable {
     /// ```
     ///
     /// > Note: Returns true if the value differs from at least one value in the subquery.
-    public func notEqualsAny(_ subquery: some QueryExpression<[QueryValue]>)
+    public func notEqualsAny(
+        _ subquery: some QueryExpression<[QueryValue]>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(
@@ -202,7 +226,9 @@ extension QueryExpression where QueryValue: Equatable & QueryBindable {
     /// ```
     ///
     /// > Note: Only returns true if all values in the subquery are equal to this value.
-    public func equalsAll(_ subquery: some QueryExpression<[QueryValue]>) -> some QueryExpression<
+    public func equalsAll(
+        _ subquery: some QueryExpression<[QueryValue]>
+    ) -> some QueryExpression<
         Bool
     > {
         SQLQueryExpression(
@@ -221,7 +247,9 @@ extension QueryExpression where QueryValue: Equatable & QueryBindable {
     /// ```
     ///
     /// > Note: This is equivalent to using NOT IN.
-    public func notEqualsAll(_ subquery: some QueryExpression<[QueryValue]>)
+    public func notEqualsAll(
+        _ subquery: some QueryExpression<[QueryValue]>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(

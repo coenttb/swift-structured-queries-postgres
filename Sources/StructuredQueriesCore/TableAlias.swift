@@ -348,7 +348,8 @@ extension TableAlias: Encodable where Base: Encodable {
 
 extension QueryFragment {
     fileprivate func replacingOccurrences<T: Table, A: AliasName>(
-        of _: T.Type, with _: A.Type
+        of _: T.Type,
+        with _: A.Type
     ) -> QueryFragment {
         var query = self
         for index in query.segments.indices {
@@ -357,6 +358,7 @@ extension QueryFragment {
                 query.segments[index] = .sql(
                     sql.replacingOccurrences(of: T.tableName.quoted(), with: A.aliasName.quoted())
                 )
+
             case .binding:
                 continue
             }

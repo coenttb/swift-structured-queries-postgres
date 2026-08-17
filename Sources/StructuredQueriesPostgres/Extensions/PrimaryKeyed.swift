@@ -91,7 +91,9 @@ extension Where where From: TableDraft {
     ///
     /// - Parameter primaryKey: A primary key.
     /// - Returns: A where clause with the added primary key.
-    public func find(_ primaryKey: some QueryExpression<From.PrimaryKey>)
+    public func find(
+        _ primaryKey: some QueryExpression<From.PrimaryKey>
+    )
         -> Self
     {
         find([primaryKey])
@@ -175,7 +177,9 @@ extension Update where From: TableDraft {
     ///
     /// - Parameter primaryKey: A primary key identifying a table row.
     /// - Returns: An update statement filtered by the given key.
-    public func find(_ primaryKey: some QueryExpression<From.PrimaryKey>)
+    public func find(
+        _ primaryKey: some QueryExpression<From.PrimaryKey>
+    )
         -> Self
     {
         find([primaryKey])
@@ -217,7 +221,9 @@ extension Delete where From: TableDraft {
     ///
     /// - Parameter primaryKey: A primary key identifying a table row.
     /// - Returns: A delete statement filtered by the given key.
-    public func find(_ primaryKey: some QueryExpression<From.PrimaryKey>)
+    public func find(
+        _ primaryKey: some QueryExpression<From.PrimaryKey>
+    )
         -> Self
     {
         find([primaryKey])

@@ -36,7 +36,8 @@ extension Conditional {
                 base: base,
                 cases: [
                     Conditional.When(
-                        predicate: condition.queryFragment, expression: expression.queryFragment
+                        predicate: condition.queryFragment,
+                        expression: expression.queryFragment
                     )
                     .queryFragment
                 ]
@@ -57,7 +58,8 @@ extension Conditional {
                 base: base,
                 cases: [
                     Conditional.When(
-                        predicate: condition.queryFragment, expression: expression.queryFragment
+                        predicate: condition.queryFragment,
+                        expression: expression.queryFragment
                     )
                     .queryFragment
                 ]

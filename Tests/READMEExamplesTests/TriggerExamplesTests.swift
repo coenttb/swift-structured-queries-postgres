@@ -293,7 +293,9 @@ struct TriggerExamplesTests {
         let trigger = Product.createTrigger(
             name: "audit_all_changes",
             timing: .after,
-            event: .insert, .update(), .delete(),
+            event: .insert,
+            .update(),
+            .delete(),
             function: .plpgsql(
                 "audit_changes",
                 """

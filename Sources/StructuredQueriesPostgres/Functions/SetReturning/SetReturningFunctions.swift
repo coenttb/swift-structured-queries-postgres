@@ -82,7 +82,11 @@ public func generateSeries(_ start: Int, _ stop: Int, step: Int) -> SQLQueryExpr
 /// - `"1 week"` - One week
 /// - `"1 month"` - One month
 /// - `"1 year"` - One year
-public func generateSeriesTimestamp(_ start: Date, _ stop: Date, interval: String)
+public func generateSeriesTimestamp(
+    _ start: Date,
+    _ stop: Date,
+    interval: String
+)
     -> SQLQueryExpression<Date>
 {
     SQLQueryExpression(
@@ -203,7 +207,9 @@ public func jsonbArrayElements(_ jsonb: some QueryExpression<Data>) -> SQLQueryE
 /// let elements = jsonbArrayElementsText($0.jsonbArray)
 /// // SELECT jsonb_array_elements_text("data"."jsonbArray") FROM "data"
 /// ```
-public func jsonbArrayElementsText(_ jsonb: some QueryExpression<Data>) -> SQLQueryExpression<
+public func jsonbArrayElementsText(
+    _ jsonb: some QueryExpression<Data>
+) -> SQLQueryExpression<
     String
 > {
     SQLQueryExpression(
@@ -236,7 +242,10 @@ extension QueryExpression where QueryValue == String {
     /// - `"n"` - Newline-sensitive
     ///
     /// > Note: Returns a set of rows, each containing an array of captured groups
-    public func regexpMatches(_ pattern: String, flags: String = "g") -> some QueryExpression<
+    public func regexpMatches(
+        _ pattern: String,
+        flags: String = "g"
+    ) -> some QueryExpression<
         [String]
     > {
         SQLQueryExpression(
@@ -264,7 +273,10 @@ extension QueryExpression where QueryValue == String {
     /// - Returns: A set of text values
     ///
     /// > Note: This is a set-returning function that returns one row per split element
-    public func regexpSplitToTable(_ pattern: String, flags: String? = nil) -> some QueryExpression<
+    public func regexpSplitToTable(
+        _ pattern: String,
+        flags: String? = nil
+    ) -> some QueryExpression<
         String
     > {
         if let flags {

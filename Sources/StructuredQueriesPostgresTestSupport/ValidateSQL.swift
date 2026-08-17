@@ -104,7 +104,7 @@ import Testing
     private let sharedValidationClient = SharedValidationClient()
 
     /// Register shutdown handler on first use
-    private nonisolated(unsafe) var shutdownHandlerRegistered = false
+    nonisolated(unsafe) private var shutdownHandlerRegistered = false
 #endif
 
 // MARK: - SQL Validation
@@ -221,7 +221,9 @@ public func assertSQL<T>(
 
         // Normalize whitespace to handle newlines and multiple spaces
         let normalizedSQL = sql.replacingOccurrences(
-            of: "\\s+", with: " ", options: .regularExpression
+            of: "\\s+",
+            with: " ",
+            options: .regularExpression
         )
         .trimmingCharacters(in: .whitespaces)
         .uppercased()

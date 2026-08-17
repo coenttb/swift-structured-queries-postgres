@@ -110,7 +110,8 @@ extension TableColumn {
     /// // SELECT string_agg("users"."name", ', ') FROM "users"
     /// ```
     @available(
-        *, deprecated,
+        *,
+        deprecated,
         message:
             "Use QueryExpression.stringAgg(_:order:filter:) instead for DISTINCT, ORDER BY, and FILTER support"
     )

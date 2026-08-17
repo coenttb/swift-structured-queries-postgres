@@ -19,7 +19,8 @@ extension Conditional {
             var cases = self
             cases.cases.append(
                 Conditional.When(
-                    predicate: condition.queryFragment, expression: expression.queryFragment
+                    predicate: condition.queryFragment,
+                    expression: expression.queryFragment
                 )
                 .queryFragment
             )
@@ -39,7 +40,8 @@ extension Conditional {
             var cases = self
             cases.cases.append(
                 Conditional.When(
-                    predicate: condition.queryFragment, expression: expression.queryFragment
+                    predicate: condition.queryFragment,
+                    expression: expression.queryFragment
                 )
                 .queryFragment
             )

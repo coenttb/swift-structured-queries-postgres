@@ -92,7 +92,8 @@ extension SnapshotTests {
             await assertSQL(
                 of: #sql(
                     #"SELECT "title", "isCompleted" FROM "reminders" LIMIT 4"#,
-                    as: ReminderResult.self)
+                    as: ReminderResult.self
+                )
             ) {
                 """
                 SELECT "title", "isCompleted" FROM "reminders" LIMIT 4

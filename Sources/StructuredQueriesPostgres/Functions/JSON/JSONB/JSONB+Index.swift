@@ -138,7 +138,7 @@ extension Table {
         let opClass = operatorClass == .jsonb_ops ? "" : " \(operatorClass.rawValue)"
 
         var fragment: QueryFragment = "CREATE INDEX \(quote: indexName) ON "
-        if let schemaName = schemaName {
+        if let schemaName {
             fragment.append("\(quote: schemaName).")
         }
         fragment.append("\(quote: tableName) USING GIN (\(quote: col.name)\(raw: opClass))")
@@ -191,7 +191,7 @@ extension Table {
         let opClass = operatorClass == .jsonb_ops ? "" : " \(operatorClass.rawValue)"
 
         var fragment: QueryFragment = "CREATE INDEX \(quote: indexName) ON "
-        if let schemaName = schemaName {
+        if let schemaName {
             fragment.append("\(quote: schemaName).")
         }
         fragment.append(
@@ -238,7 +238,7 @@ extension Table {
         let indexName = name ?? "idx_\(tableName)_\(col.name)_btree"
 
         var fragment: QueryFragment = "CREATE INDEX \(quote: indexName) ON "
-        if let schemaName = schemaName {
+        if let schemaName {
             fragment.append("\(quote: schemaName).")
         }
         fragment.append("\(quote: tableName) USING BTREE (\(quote: col.name))")
@@ -264,7 +264,7 @@ extension Table {
         if ifExists {
             fragment.append("IF EXISTS ")
         }
-        if let schemaName = schemaName {
+        if let schemaName {
             fragment.append("\(quote: schemaName).")
         }
         fragment.append("\(quote: name)")
@@ -301,7 +301,7 @@ extension Table {
         let opClass = operatorClass == .jsonb_ops ? "" : " \(operatorClass.rawValue)"
 
         var fragment: QueryFragment = "CREATE INDEX \(quote: indexName) ON "
-        if let schemaName = schemaName {
+        if let schemaName {
             fragment.append("\(quote: schemaName).")
         }
         fragment.append("\(quote: tableName) USING GIN (\(quote: col.name)\(raw: opClass))")
@@ -333,7 +333,7 @@ extension Table {
         let opClass = operatorClass == .jsonb_ops ? "" : " \(operatorClass.rawValue)"
 
         var fragment: QueryFragment = "CREATE INDEX \(quote: indexName) ON "
-        if let schemaName = schemaName {
+        if let schemaName {
             fragment.append("\(quote: schemaName).")
         }
         fragment.append(
@@ -354,7 +354,7 @@ extension Table {
         let indexName = name ?? "idx_\(tableName)_\(col.name)_btree"
 
         var fragment: QueryFragment = "CREATE INDEX \(quote: indexName) ON "
-        if let schemaName = schemaName {
+        if let schemaName {
             fragment.append("\(quote: schemaName).")
         }
         fragment.append("\(quote: tableName) USING BTREE (\(quote: col.name))")

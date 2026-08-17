@@ -22,10 +22,12 @@ extension AttributeListSyntax.Element {
             if let availability = attribute.availability {
                 return .attribute(availability)
             }
+
         case .ifConfigDecl(let ifConfig):
             if let availability = ifConfig.availability {
                 return .ifConfigDecl(availability)
             }
+
         @unknown default: return nil
         }
         return nil
@@ -65,6 +67,7 @@ extension IfConfigClauseSyntax.Elements {
             } else {
                 return nil
             }
+
         default:
             return nil
         }
@@ -98,6 +101,7 @@ extension TypeSyntax {
             case .identifier(let identifier)
             where !["Optional", "Swift.Optional"].contains(identifier):
                 return identifier
+
             default:
                 break
             }

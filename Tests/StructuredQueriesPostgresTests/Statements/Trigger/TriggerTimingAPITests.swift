@@ -543,11 +543,20 @@ extension SnapshotTests.TriggerTests {
             // Audit all changes
             let auditFunc = Trigger<Order>.Function.audit(to: OrderAudit.self)
             let auditInsert = Order.createTrigger(
-                timing: .after, event: .insert, function: auditFunc)
+                timing: .after,
+                event: .insert,
+                function: auditFunc
+            )
             let auditUpdate = Order.createTrigger(
-                timing: .after, event: .update, function: auditFunc)
+                timing: .after,
+                event: .update,
+                function: auditFunc
+            )
             let auditDelete = Order.createTrigger(
-                timing: .after, event: .delete, function: auditFunc)
+                timing: .after,
+                event: .delete,
+                function: auditFunc
+            )
 
             // Verify timing is explicit and correct
             #expect(createTrigger.timing == .before)

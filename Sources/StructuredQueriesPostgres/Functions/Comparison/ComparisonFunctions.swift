@@ -251,7 +251,9 @@ extension QueryExpression where QueryValue: Equatable & QueryBindable {
     /// User.where { $0.currentStatus.isDistinctFrom($0.previousStatus) }
     /// // WHERE "users"."currentStatus" IS DISTINCT FROM "users"."previousStatus"
     /// ```
-    public func isDistinctFrom(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<
+    public func isDistinctFrom(
+        _ other: some QueryExpression<QueryValue>
+    ) -> some QueryExpression<
         Bool
     > {
         SQLQueryExpression(
@@ -285,7 +287,9 @@ extension QueryExpression where QueryValue: Equatable & QueryBindable {
     /// Tests if two expressions are not distinct (treats NULL as a comparable value)
     ///
     /// PostgreSQL's `IS NOT DISTINCT FROM` operator.
-    public func isNotDistinctFrom(_ other: some QueryExpression<QueryValue>)
+    public func isNotDistinctFrom(
+        _ other: some QueryExpression<QueryValue>
+    )
         -> some QueryExpression<Bool>
     {
         SQLQueryExpression(
@@ -364,7 +368,9 @@ extension QueryExpression where QueryValue: Equatable & QueryBindable {
     /// Returns NULL if this value equals another expression, otherwise returns this value
     ///
     /// PostgreSQL's `NULLIF()` function.
-    public func nullif(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<
+    public func nullif(
+        _ other: some QueryExpression<QueryValue>
+    ) -> some QueryExpression<
         QueryValue?
     > {
         SQLQueryExpression(

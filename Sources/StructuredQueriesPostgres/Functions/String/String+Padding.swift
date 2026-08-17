@@ -76,7 +76,10 @@ extension QueryExpression where QueryValue == Swift.String {
     ///   - length: Target length
     ///   - fill: Fill string (defaults to space)
     /// - Returns: The padded string
-    public func lpad(to length: Int, with fill: Swift.String = " ") -> some QueryExpression<
+    public func lpad(
+        to length: Int,
+        with fill: Swift.String = " "
+    ) -> some QueryExpression<
         Swift.String
     > {
         PostgreSQL.String.lpad(self, to: length, with: fill)
@@ -95,7 +98,10 @@ extension QueryExpression where QueryValue == Swift.String {
     ///   - length: Target length
     ///   - fill: Fill string (defaults to space)
     /// - Returns: The padded string
-    public func rpad(to length: Int, with fill: Swift.String = " ") -> some QueryExpression<
+    public func rpad(
+        to length: Int,
+        with fill: Swift.String = " "
+    ) -> some QueryExpression<
         Swift.String
     > {
         PostgreSQL.String.rpad(self, to: length, with: fill)

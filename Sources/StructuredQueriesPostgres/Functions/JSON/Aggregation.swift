@@ -42,7 +42,9 @@ public func jsonBuildObject(_ pairs: (String, any QueryExpression)...) -> some Q
 
 /// PostgreSQL's jsonb_build_object function
 /// Creates a JSONB object from a variadic list of key-value pairs
-public func jsonbBuildObject(_ pairs: (String, any QueryExpression)...) -> some QueryExpression<
+public func jsonbBuildObject(
+    _ pairs: (String, any QueryExpression)...
+) -> some QueryExpression<
     Data
 > {
     JSONBuildObject(pairs: pairs, format: .jsonb)
@@ -176,7 +178,9 @@ where JSON.QueryValue == Data {
 extension QueryExpression {
     /// PostgreSQL's FILTER clause for aggregate functions
     /// Example: json_agg(column) FILTER (WHERE condition)
-    public func filter(where condition: some QueryExpression<Bool>) -> some QueryExpression<
+    public func filter(
+        where condition: some QueryExpression<Bool>
+    ) -> some QueryExpression<
         QueryValue
     > {
         FilteredAggregation(aggregate: self, condition: condition)

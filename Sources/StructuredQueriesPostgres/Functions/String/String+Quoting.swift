@@ -22,7 +22,9 @@ extension PostgreSQL.String {
     /// - Returns: An expression wrapped with the `quote` function.
     ///
     /// > Note: For PostgreSQL-specific `quote_literal` and `quote_ident`, see `quoteLiteral()` and `quoteIdent()`
-    public static func quote(_ value: some QueryExpression<Swift.String>) -> some QueryExpression<
+    public static func quote(
+        _ value: some QueryExpression<Swift.String>
+    ) -> some QueryExpression<
         Swift.String
     > {
         QueryFunction("quote", value)
@@ -31,7 +33,9 @@ extension PostgreSQL.String {
     /// Quotes an optional string value
     ///
     /// PostgreSQL's `quote_literal()` function (mapped as `quote` for compatibility).
-    public static func quote(_ value: some QueryExpression<Swift.String?>) -> some QueryExpression<
+    public static func quote(
+        _ value: some QueryExpression<Swift.String?>
+    ) -> some QueryExpression<
         Swift.String?
     > {
         QueryFunction("quote", value)
@@ -52,7 +56,9 @@ extension PostgreSQL.String {
     /// - Returns: The quoted and escaped string
     ///
     /// > Note: SQLite equivalent: `QUOTE`
-    public static func quoteLiteral(_ value: some QueryExpression<Swift.String>)
+    public static func quoteLiteral(
+        _ value: some QueryExpression<Swift.String>
+    )
         -> some QueryExpression<Swift.String>
     {
         SQLQueryExpression(
@@ -74,7 +80,9 @@ extension PostgreSQL.String {
     ///
     /// - Parameter value: The string expression representing an identifier
     /// - Returns: The quoted identifier
-    public static func quoteIdent(_ value: some QueryExpression<Swift.String>)
+    public static func quoteIdent(
+        _ value: some QueryExpression<Swift.String>
+    )
         -> some QueryExpression<Swift.String>
     {
         SQLQueryExpression(

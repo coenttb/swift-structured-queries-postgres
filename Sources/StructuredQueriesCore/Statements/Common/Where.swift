@@ -48,8 +48,10 @@ extension Where: SelectStatement {
         switch scope {
         case .default:
             select = Select(clauses: From.all._selectClauses)
+
         case .empty:
             select = Select(isEmpty: true, where: predicates)
+
         case .unscoped:
             select = Select()
         }

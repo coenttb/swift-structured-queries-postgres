@@ -8,7 +8,9 @@ public enum TableMacro {}
 
 extension TableMacro: ExtensionMacro {
     public static func expansion<
-        D: DeclGroupSyntax, T: TypeSyntaxProtocol, C: MacroExpansionContext
+        D: DeclGroupSyntax,
+        T: TypeSyntaxProtocol,
+        C: MacroExpansionContext
     >(
         of node: AttributeSyntax,
         attachedTo declaration: D,
@@ -150,7 +152,8 @@ extension TableMacro: ExtensionMacro {
                                 Diagnostic(
                                     node: argument.expression,
                                     message: MacroExpansionErrorMessage(
-                                        "Argument must be a non-empty string literal")
+                                        "Argument must be a non-empty string literal"
+                                    )
                                 )
                             )
                         }
@@ -169,7 +172,8 @@ extension TableMacro: ExtensionMacro {
                                 Diagnostic(
                                     node: argument.expression,
                                     message: MacroExpansionErrorMessage(
-                                        "Argument must be a non-empty string literal")
+                                        "Argument must be a non-empty string literal"
+                                    )
                                 )
                             )
                         }
@@ -261,7 +265,8 @@ extension TableMacro: ExtensionMacro {
                         case .some(let label) where label.text == "as":
                             guard
                                 let memberAccess = argument.expression.as(
-                                    MemberAccessExprSyntax.self),
+                                    MemberAccessExprSyntax.self
+                                ),
                                 memberAccess.declName.baseName.tokenKind == .keyword(.self),
                                 let base = memberAccess.base
                             else {
@@ -269,7 +274,8 @@ extension TableMacro: ExtensionMacro {
                                     Diagnostic(
                                         node: argument.expression,
                                         message: MacroExpansionErrorMessage(
-                                            "Argument 'as' must be a type literal")
+                                            "Argument 'as' must be a type literal"
+                                        )
                                     )
                                 )
                                 continue
@@ -309,11 +315,15 @@ extension TableMacro: ExtensionMacro {
                                         ],
                                         fixIt: .replace(
                                             message: MacroExpansionFixItMessage(
-                                                "Remove 'primaryKey: true'"),
+                                                "Remove 'primaryKey: true'"
+                                            ),
                                             oldNode: Syntax(attribute),
                                             newNode: Syntax(
                                                 attribute.with(
-                                                    \.arguments, .argumentList(newArguments)))
+                                                    \.arguments,
+                                                    .argumentList(newArguments)
+                                                )
+                                            )
                                         )
                                     )
                                 )
@@ -330,7 +340,8 @@ extension TableMacro: ExtensionMacro {
                         case .some(let label) where label.text == "generated":
                             guard
                                 let memberName = argument.expression.as(
-                                    MemberAccessExprSyntax.self)?.declName
+                                    MemberAccessExprSyntax.self
+                                )?.declName
                                     .baseName.text,
                                 ["stored", "virtual"].contains(memberName)
                             else {
@@ -346,11 +357,14 @@ extension TableMacro: ExtensionMacro {
                                         ),
                                         fixIt: .replace(
                                             message: MacroExpansionFixItMessage(
-                                                "Replace 'var' with 'let'"),
+                                                "Replace 'var' with 'let'"
+                                            ),
                                             oldNode: Syntax(property.bindingSpecifier),
                                             newNode: Syntax(
                                                 property.bindingSpecifier.with(
-                                                    \.tokenKind, .keyword(.let))
+                                                    \.tokenKind,
+                                                    .keyword(.let)
+                                                )
                                             )
                                         )
                                     )
@@ -464,10 +478,12 @@ extension TableMacro: ExtensionMacro {
                         for attributeIndex in property.attributes.indices {
                             guard
                                 var attribute = property.attributes[attributeIndex].as(
-                                    AttributeSyntax.self)?
-                                    .trimmed,
+                                    AttributeSyntax.self
+                                )?
+                                .trimmed,
                                 let attributeName = attribute.attributeName.as(
-                                    IdentifierTypeSyntax.self)?.name
+                                    IdentifierTypeSyntax.self
+                                )?.name
                                     .text,
                                 ["Column", "Columns"].contains(attributeName)
                             else { continue }
@@ -482,8 +498,8 @@ extension TableMacro: ExtensionMacro {
                                 switch argument.label?.text {
                                 case "as":
                                     if var expression = argument.expression.as(
-                                        MemberAccessExprSyntax.self)
-                                    {
+                                        MemberAccessExprSyntax.self
+                                    ) {
                                         expression.base = "\(expression.base)?"
                                         argument.expression = ExprSyntax(expression)
                                     }
@@ -491,7 +507,8 @@ extension TableMacro: ExtensionMacro {
                                 case "primaryKey":
                                     hasPrimaryKeyArgument = true
                                     argument.expression = ExprSyntax(
-                                        BooleanLiteralExprSyntax(false))
+                                        BooleanLiteralExprSyntax(false)
+                                    )
 
                                 default:
                                     break
@@ -599,7 +616,8 @@ extension TableMacro: ExtensionMacro {
                             Diagnostic(
                                 node: attribute,
                                 message: MacroExpansionErrorMessage(
-                                    "Table case cannot be ephemeral"),
+                                    "Table case cannot be ephemeral"
+                                ),
                                 fixIt: .replace(
                                     message: MacroExpansionFixItMessage("Remove '@Ephemeral'"),
                                     oldNode: attribute,
@@ -636,7 +654,8 @@ extension TableMacro: ExtensionMacro {
                         case .some(let label) where label.text == "as":
                             guard
                                 let memberAccess = argument.expression.as(
-                                    MemberAccessExprSyntax.self),
+                                    MemberAccessExprSyntax.self
+                                ),
                                 memberAccess.declName.baseName.tokenKind == .keyword(.self),
                                 let base = memberAccess.base
                             else {
@@ -644,7 +663,8 @@ extension TableMacro: ExtensionMacro {
                                     Diagnostic(
                                         node: argument.expression,
                                         message: MacroExpansionErrorMessage(
-                                            "Argument 'as' must be a type literal")
+                                            "Argument 'as' must be a type literal"
+                                        )
                                     )
                                 )
                                 continue
@@ -1022,7 +1042,8 @@ extension TableMacro: MemberMacro {
                         case .some(let label) where label.text == "as":
                             guard
                                 let memberAccess = argument.expression.as(
-                                    MemberAccessExprSyntax.self),
+                                    MemberAccessExprSyntax.self
+                                ),
                                 memberAccess.declName.baseName.tokenKind == .keyword(.self),
                                 let base = memberAccess.base
                             else {
@@ -1060,7 +1081,8 @@ extension TableMacro: MemberMacro {
                         case .some(let label) where label.text == "generated":
                             guard
                                 let memberName = argument.expression.as(
-                                    MemberAccessExprSyntax.self)?.declName
+                                    MemberAccessExprSyntax.self
+                                )?.declName
                                     .baseName.text,
                                 ["stored", "virtual"].contains(memberName)
                             else { continue }
@@ -1139,10 +1161,12 @@ extension TableMacro: MemberMacro {
                         for attributeIndex in property.attributes.indices {
                             guard
                                 var attribute = property.attributes[attributeIndex].as(
-                                    AttributeSyntax.self)?
-                                    .trimmed,
+                                    AttributeSyntax.self
+                                )?
+                                .trimmed,
                                 let attributeName = attribute.attributeName.as(
-                                    IdentifierTypeSyntax.self)?.name
+                                    IdentifierTypeSyntax.self
+                                )?.name
                                     .text,
                                 ["Column", "Columns"].contains(attributeName)
                             else { continue }
@@ -1157,8 +1181,8 @@ extension TableMacro: MemberMacro {
                                 switch argument.label?.text {
                                 case "as":
                                     if var expression = argument.expression.as(
-                                        MemberAccessExprSyntax.self)
-                                    {
+                                        MemberAccessExprSyntax.self
+                                    ) {
                                         expression.base = "\(expression.base)?"
                                         argument.expression = ExprSyntax(expression)
                                     }
@@ -1166,7 +1190,8 @@ extension TableMacro: MemberMacro {
                                 case "primaryKey":
                                     hasPrimaryKeyArgument = true
                                     argument.expression = ExprSyntax(
-                                        BooleanLiteralExprSyntax(false))
+                                        BooleanLiteralExprSyntax(false)
+                                    )
 
                                 default:
                                     break
@@ -1295,7 +1320,8 @@ extension TableMacro: MemberMacro {
                         case .some(let label) where label.text == "as":
                             guard
                                 let memberAccess = argument.expression.as(
-                                    MemberAccessExprSyntax.self),
+                                    MemberAccessExprSyntax.self
+                                ),
                                 memberAccess.declName.baseName.tokenKind == .keyword(.self),
                                 let base = memberAccess.base
                             else {
@@ -1543,7 +1569,9 @@ extension TableMacro: MemberMacro {
 
 extension TableMacro: MemberAttributeMacro {
     public static func expansion<
-        D: DeclGroupSyntax, T: DeclSyntaxProtocol, C: MacroExpansionContext
+        D: DeclGroupSyntax,
+        T: DeclSyntaxProtocol,
+        C: MacroExpansionContext
     >(
         of node: AttributeSyntax,
         attachedTo declaration: D,

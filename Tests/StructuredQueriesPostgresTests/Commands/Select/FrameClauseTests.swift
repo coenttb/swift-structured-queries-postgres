@@ -23,7 +23,8 @@ extension SnapshotTests.Commands.Select {
                                     .order(by: id)
                                     .rows(
                                         between: FrameBound.unboundedPreceding,
-                                        and: FrameBound.currentRow)
+                                        and: FrameBound.currentRow
+                                    )
                             }
                         )
                     }
@@ -46,7 +47,8 @@ extension SnapshotTests.Commands.Select {
                             rowNumber().over {
                                 $0.order(by: id)
                                     .rows(
-                                        between: FrameBound.preceding(2), and: FrameBound.currentRow
+                                        between: FrameBound.preceding(2),
+                                        and: FrameBound.currentRow
                                     )
                             }
                         )
@@ -70,7 +72,8 @@ extension SnapshotTests.Commands.Select {
                             rank().over {
                                 $0.order(by: id)
                                     .rows(
-                                        between: FrameBound.currentRow, and: FrameBound.following(3)
+                                        between: FrameBound.currentRow,
+                                        and: FrameBound.following(3)
                                     )
                             }
                         )
@@ -95,7 +98,8 @@ extension SnapshotTests.Commands.Select {
                                 $0.order(by: id)
                                     .rows(
                                         between: FrameBound.currentRow,
-                                        and: FrameBound.unboundedFollowing)
+                                        and: FrameBound.unboundedFollowing
+                                    )
                             }
                         )
                     }
@@ -121,7 +125,8 @@ extension SnapshotTests.Commands.Select {
                                     .order(by: id)
                                     .rows(
                                         between: FrameBound.unboundedPreceding,
-                                        and: FrameBound.unboundedFollowing)
+                                        and: FrameBound.unboundedFollowing
+                                    )
                             }
                         )
                     }
@@ -145,7 +150,8 @@ extension SnapshotTests.Commands.Select {
                                 $0.order(by: id)
                                     .rows(
                                         between: FrameBound.preceding(2),
-                                        and: FrameBound.following(2))
+                                        and: FrameBound.following(2)
+                                    )
                             }
                         )
                     }
@@ -239,7 +245,8 @@ extension SnapshotTests.Commands.Select {
                                 $0.order(by: id)
                                     .range(
                                         between: FrameBound.unboundedPreceding,
-                                        and: FrameBound.currentRow)
+                                        and: FrameBound.currentRow
+                                    )
                             }
                         )
                     }
@@ -265,7 +272,8 @@ extension SnapshotTests.Commands.Select {
                                     .order(by: id)
                                     .range(
                                         between: FrameBound.unboundedPreceding,
-                                        and: FrameBound.unboundedFollowing)
+                                        and: FrameBound.unboundedFollowing
+                                    )
                             }
                         )
                     }
@@ -313,7 +321,8 @@ extension SnapshotTests.Commands.Select {
                                 $0.order(by: priority)
                                     .groups(
                                         between: FrameBound.unboundedPreceding,
-                                        and: FrameBound.currentRow)
+                                        and: FrameBound.currentRow
+                                    )
                             }
                         )
                     }
@@ -336,7 +345,8 @@ extension SnapshotTests.Commands.Select {
                             denseRank().over {
                                 $0.order(by: priority)
                                     .groups(
-                                        between: FrameBound.preceding(1), and: FrameBound.currentRow
+                                        between: FrameBound.preceding(1),
+                                        and: FrameBound.currentRow
                                     )
                             }
                         )
@@ -388,7 +398,8 @@ extension SnapshotTests.Commands.Select {
                                     .order(by: id)
                                     .rows(
                                         between: FrameBound.unboundedPreceding,
-                                        and: FrameBound.unboundedFollowing)
+                                        and: FrameBound.unboundedFollowing
+                                    )
                             }
                         )
                     }
@@ -415,7 +426,8 @@ extension SnapshotTests.Commands.Select {
                                     .order(by: id)
                                     .rows(
                                         between: FrameBound.unboundedPreceding,
-                                        and: FrameBound.currentRow)
+                                        and: FrameBound.currentRow
+                                    )
                             }
                         )
                     }
@@ -442,7 +454,8 @@ extension SnapshotTests.Commands.Select {
                                     .order(by: id)
                                     .rows(
                                         between: FrameBound.unboundedPreceding,
-                                        and: FrameBound.unboundedFollowing)
+                                        and: FrameBound.unboundedFollowing
+                                    )
                             }
                         )
                     }
@@ -464,7 +477,9 @@ extension SnapshotTests.Commands.Select {
                         spec.partition(by: cols.remindersListID)
                             .order(by: cols.id)
                             .rows(
-                                between: FrameBound.unboundedPreceding, and: FrameBound.currentRow)
+                                between: FrameBound.unboundedPreceding,
+                                and: FrameBound.currentRow
+                            )
                     }
                     .select { ($0.title, rowNumber().over("frame_window")) }
             ) {
@@ -488,7 +503,8 @@ extension SnapshotTests.Commands.Select {
                                 $0.order(by: id)
                                     .rows(
                                         between: FrameBound.unboundedPreceding,
-                                        and: FrameBound.currentRow)
+                                        and: FrameBound.currentRow
+                                    )
                             }
                         )
                     }
@@ -512,7 +528,8 @@ extension SnapshotTests.Commands.Select {
                                 $0.partition(by: listID)
                                     .rows(
                                         between: FrameBound.unboundedPreceding,
-                                        and: FrameBound.unboundedFollowing)
+                                        and: FrameBound.unboundedFollowing
+                                    )
                             }
                         )
                     }
@@ -537,7 +554,9 @@ extension SnapshotTests.Commands.Select {
                             rank().over {
                                 $0.order(by: id)
                                     .rows(
-                                        between: FrameBound.currentRow, and: FrameBound.currentRow)
+                                        between: FrameBound.currentRow,
+                                        and: FrameBound.currentRow
+                                    )
                             }
                         )
                     }
@@ -563,7 +582,8 @@ extension SnapshotTests.Commands.Select {
                                     .order(by: priority.desc())
                                     .rows(
                                         between: FrameBound.preceding(3),
-                                        and: FrameBound.following(1))
+                                        and: FrameBound.following(1)
+                                    )
                             }
                         )
                     }

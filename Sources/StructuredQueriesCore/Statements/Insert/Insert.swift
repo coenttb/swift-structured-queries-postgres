@@ -161,7 +161,8 @@ extension Insert: Statement {
             if !conflictTargetColumnNames.isEmpty {
                 query.append("(")
                 query.append(
-                    conflictTargetColumnNames.map { "\(quote: $0)" }.joined(separator: ", "))
+                    conflictTargetColumnNames.map { "\(quote: $0)" }.joined(separator: ", ")
+                )
                 query.append(")\(.newlineOrSpace)")
                 if !conflictTargetFilter.isEmpty {
                     query.append(
@@ -177,7 +178,8 @@ extension Insert: Statement {
                 query.append("UPDATE \(bind: updates)")
                 if !updateFilter.isEmpty {
                     query.append(
-                        "\(.newlineOrSpace)WHERE \(updateFilter.joined(separator: " AND "))")
+                        "\(.newlineOrSpace)WHERE \(updateFilter.joined(separator: " AND "))"
+                    )
                 }
             }
         } else {

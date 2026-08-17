@@ -17,7 +17,9 @@ extension QueryExpression where QueryValue == Bool {
     /// ```
     public func toJSONBoolean() -> some QueryExpression<String> {
         SQLQueryExpression(
-            "CASE WHEN \(self.queryFragment) THEN 'true' ELSE 'false' END", as: String.self)
+            "CASE WHEN \(self.queryFragment) THEN 'true' ELSE 'false' END",
+            as: String.self
+        )
     }
 }
 

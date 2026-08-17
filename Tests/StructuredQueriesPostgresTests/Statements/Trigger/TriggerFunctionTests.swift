@@ -240,11 +240,20 @@ extension SnapshotTests.TriggerTests {
             let auditFunc = Trigger<User>.Function.audit(to: AuditLog.self)
 
             let insertTrigger = User.createTrigger(
-                timing: .after, event: .insert, function: auditFunc)
+                timing: .after,
+                event: .insert,
+                function: auditFunc
+            )
             let updateTrigger = User.createTrigger(
-                timing: .after, event: .update, function: auditFunc)
+                timing: .after,
+                event: .update,
+                function: auditFunc
+            )
             let deleteTrigger = User.createTrigger(
-                timing: .after, event: .delete, function: auditFunc)
+                timing: .after,
+                event: .delete,
+                function: auditFunc
+            )
 
             // All triggers use the same function
             #expect(insertTrigger.function.name == updateTrigger.function.name)
@@ -264,7 +273,8 @@ extension SnapshotTests.TriggerTests {
                     IF NEW.email !~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$' THEN
                         RAISE EXCEPTION 'Invalid email format: %', NEW.email;
                     END IF;
-                    """)
+                    """
+                )
             )
 
             await assertSQL(of: trigger) {
@@ -444,11 +454,23 @@ extension SnapshotTests.TriggerTests {
             let auditFunc = Trigger<User>.Function.audit(to: AuditLog.self)
 
             let insertTrigger = User.createTrigger(
-                name: "audit_user_insert", timing: .after, event: .insert, function: auditFunc)
+                name: "audit_user_insert",
+                timing: .after,
+                event: .insert,
+                function: auditFunc
+            )
             let updateTrigger = User.createTrigger(
-                name: "audit_user_update", timing: .after, event: .update, function: auditFunc)
+                name: "audit_user_update",
+                timing: .after,
+                event: .update,
+                function: auditFunc
+            )
             let deleteTrigger = User.createTrigger(
-                name: "audit_user_delete", timing: .after, event: .delete, function: auditFunc)
+                name: "audit_user_delete",
+                timing: .after,
+                event: .delete,
+                function: auditFunc
+            )
 
             // Verify all triggers use same function (efficient - one function, multiple triggers)
             #expect(insertTrigger.function.name == "audit_users_to_audit_log")

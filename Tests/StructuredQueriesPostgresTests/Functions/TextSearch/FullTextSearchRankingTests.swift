@@ -52,7 +52,9 @@ extension SnapshotTests.FullTextSearch {
                         (
                             $0,
                             $0.rank(
-                                by: "swift", normalization: [.divideByLogLength, .divideByLength])
+                                by: "swift",
+                                normalization: [.divideByLogLength, .divideByLength]
+                            )
                         )
                     }
             ) {
@@ -108,8 +110,10 @@ extension SnapshotTests.FullTextSearch {
                         (
                             $0.id,
                             $0.rank(
-                                by: "swift", weights: [0.1, 0.2, 0.4, 1.0],
-                                normalization: .divideByLogLength)
+                                by: "swift",
+                                weights: [0.1, 0.2, 0.4, 1.0],
+                                normalization: .divideByLogLength
+                            )
                         )
                     }
             ) {
@@ -131,8 +135,10 @@ extension SnapshotTests.FullTextSearch {
                         (
                             $0.id,
                             $0.rank(
-                                by: "développement", weights: [0.2, 0.3, 0.5, 1.0],
-                                language: "french")
+                                by: "développement",
+                                weights: [0.2, 0.3, 0.5, 1.0],
+                                language: "french"
+                            )
                         )
                     }
             ) {
@@ -175,8 +181,10 @@ extension SnapshotTests.FullTextSearch {
                         (
                             $0.id,
                             $0.rank(
-                                byCoverage: "swift & postgresql", weights: [0.1, 0.2, 0.4, 1.0],
-                                normalization: .divideByLength)
+                                byCoverage: "swift & postgresql",
+                                weights: [0.1, 0.2, 0.4, 1.0],
+                                normalization: .divideByLength
+                            )
                         )
                     }
             ) {

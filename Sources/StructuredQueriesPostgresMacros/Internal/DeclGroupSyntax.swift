@@ -23,6 +23,7 @@ extension DeclGroupSyntax {
                 ] {
                     return attr
                 }
+
             default:
                 break
             }

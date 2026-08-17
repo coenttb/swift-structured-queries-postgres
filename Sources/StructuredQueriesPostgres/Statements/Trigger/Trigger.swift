@@ -1119,7 +1119,7 @@ extension Table {
         let events = event.map(\.event)
 
         let triggerName: String
-        if let name = name {
+        if let name {
             triggerName = name
         } else {
             let timingStr: String

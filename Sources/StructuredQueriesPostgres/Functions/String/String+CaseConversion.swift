@@ -20,7 +20,9 @@ extension PostgreSQL.String {
     ///
     /// - Parameter value: The string expression to convert
     /// - Returns: The string in uppercase
-    public static func upper(_ value: some QueryExpression<Swift.String>) -> some QueryExpression<
+    public static func upper(
+        _ value: some QueryExpression<Swift.String>
+    ) -> some QueryExpression<
         Swift.String
     > {
         SQLQueryExpression(
@@ -32,7 +34,9 @@ extension PostgreSQL.String {
     /// Converts an optional string to uppercase
     ///
     /// PostgreSQL's `upper(string)` function.
-    public static func upper(_ value: some QueryExpression<Swift.String?>) -> some QueryExpression<
+    public static func upper(
+        _ value: some QueryExpression<Swift.String?>
+    ) -> some QueryExpression<
         Swift.String?
     > {
         SQLQueryExpression(
@@ -52,7 +56,9 @@ extension PostgreSQL.String {
     ///
     /// - Parameter value: The string expression to convert
     /// - Returns: The string in lowercase
-    public static func lower(_ value: some QueryExpression<Swift.String>) -> some QueryExpression<
+    public static func lower(
+        _ value: some QueryExpression<Swift.String>
+    ) -> some QueryExpression<
         Swift.String
     > {
         SQLQueryExpression(
@@ -64,7 +70,9 @@ extension PostgreSQL.String {
     /// Converts an optional string to lowercase
     ///
     /// PostgreSQL's `lower(string)` function.
-    public static func lower(_ value: some QueryExpression<Swift.String?>) -> some QueryExpression<
+    public static func lower(
+        _ value: some QueryExpression<Swift.String?>
+    ) -> some QueryExpression<
         Swift.String?
     > {
         SQLQueryExpression(
@@ -85,7 +93,9 @@ extension PostgreSQL.String {
     ///
     /// - Parameter value: The string expression to convert
     /// - Returns: The string with title case (initial capitals)
-    public static func initcap(_ value: some QueryExpression<Swift.String>) -> some QueryExpression<
+    public static func initcap(
+        _ value: some QueryExpression<Swift.String>
+    ) -> some QueryExpression<
         Swift.String
     > {
         SQLQueryExpression(
@@ -97,7 +107,9 @@ extension PostgreSQL.String {
     /// Converts the first letter of each word to uppercase, rest to lowercase (optional string)
     ///
     /// PostgreSQL's `initcap(string)` function.
-    public static func initcap(_ value: some QueryExpression<Swift.String?>)
+    public static func initcap(
+        _ value: some QueryExpression<Swift.String?>
+    )
         -> some QueryExpression<
             Swift.String?
         >

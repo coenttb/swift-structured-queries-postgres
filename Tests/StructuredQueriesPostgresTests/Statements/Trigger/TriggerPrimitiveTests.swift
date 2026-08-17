@@ -416,7 +416,11 @@ extension SnapshotTests.TriggerTests {
         func dropTrigger() async {
             let function = Trigger<Reminder>.Function.plpgsql("my_func", "RETURN NEW;")
             let trigger = Reminder.createTrigger(
-                name: "my_trigger", timing: .after, event: .insert, function: function)
+                name: "my_trigger",
+                timing: .after,
+                event: .insert,
+                function: function
+            )
 
             let dropStatement = trigger.dropTrigger()
 
@@ -431,7 +435,11 @@ extension SnapshotTests.TriggerTests {
         func dropTriggerIfExists() async {
             let function = Trigger<Reminder>.Function.plpgsql("my_func", "RETURN NEW;")
             let trigger = Reminder.createTrigger(
-                name: "my_trigger", timing: .after, event: .insert, function: function)
+                name: "my_trigger",
+                timing: .after,
+                event: .insert,
+                function: function
+            )
 
             let dropStatement = trigger.dropTrigger(ifExists: true)
 
@@ -446,7 +454,11 @@ extension SnapshotTests.TriggerTests {
         func dropTriggerCascade() async {
             let function = Trigger<Reminder>.Function.plpgsql("my_func", "RETURN NEW;")
             let trigger = Reminder.createTrigger(
-                name: "my_trigger", timing: .after, event: .insert, function: function)
+                name: "my_trigger",
+                timing: .after,
+                event: .insert,
+                function: function
+            )
 
             let dropStatement = trigger.dropTrigger(cascade: true)
 
@@ -461,7 +473,11 @@ extension SnapshotTests.TriggerTests {
         func dropBoth() async {
             let function = Trigger<Reminder>.Function.plpgsql("my_func", "RETURN NEW;")
             let trigger = Reminder.createTrigger(
-                name: "my_trigger", timing: .after, event: .insert, function: function)
+                name: "my_trigger",
+                timing: .after,
+                event: .insert,
+                function: function
+            )
 
             let dropStatements = trigger.drop(ifExists: true, cascade: false)
 
@@ -735,7 +751,9 @@ extension SnapshotTests.TriggerTests {
             let trigger = Product.createTrigger(
                 name: "audit_all_changes",
                 timing: .after,
-                event: .insert, .update(), .delete(),
+                event: .insert,
+                .update(),
+                .delete(),
                 function: function
             )
 

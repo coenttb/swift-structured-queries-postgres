@@ -262,7 +262,9 @@ extension SnapshotTests.Commands.Select {
                 of: Metadata.find(
                     MetadataID(
                         recordID: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                        recordType: "reminders"))
+                        recordType: "reminders"
+                    )
+                )
             ) {
                 """
                 SELECT "metadatas"."recordID", "metadatas"."recordType", "metadatas"."userModificationDate"

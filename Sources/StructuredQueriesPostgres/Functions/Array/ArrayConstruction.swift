@@ -58,7 +58,9 @@ extension QueryExpression where QueryValue: Collection, QueryValue.Element: Quer
     ///
     /// - Parameter other: The array to concatenate
     /// - Returns: A new array containing elements from both arrays
-    public func concatenating(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<
+    public func concatenating(
+        _ other: some QueryExpression<QueryValue>
+    ) -> some QueryExpression<
         QueryValue
     > {
         SQLQueryExpression(

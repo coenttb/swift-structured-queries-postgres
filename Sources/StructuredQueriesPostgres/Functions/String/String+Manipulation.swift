@@ -119,7 +119,9 @@ extension PostgreSQL.String {
     ///
     /// - Parameter value: The string expression
     /// - Returns: The string with characters in reverse order
-    public static func reverse(_ value: some QueryExpression<Swift.String>) -> some QueryExpression<
+    public static func reverse(
+        _ value: some QueryExpression<Swift.String>
+    ) -> some QueryExpression<
         Swift.String
     > {
         SQLQueryExpression(
@@ -168,7 +170,10 @@ extension QueryExpression where QueryValue == Swift.String {
     ///   - substring: The substring to find
     ///   - newSubstring: The replacement substring
     /// - Returns: The string with all occurrences replaced
-    public func replacing(_ substring: Swift.String, with newSubstring: Swift.String)
+    public func replacing(
+        _ substring: Swift.String,
+        with newSubstring: Swift.String
+    )
         -> some QueryExpression<Swift.String>
     {
         PostgreSQL.String.replace(self, substring, newSubstring)
@@ -212,7 +217,10 @@ extension QueryExpression where QueryValue == Swift.String {
     ///
     /// > Note: If `to` is shorter than `from`, characters in `from` with no corresponding
     /// > character in `to` are deleted from the result.
-    public func translate(from: Swift.String, to: Swift.String) -> some QueryExpression<
+    public func translate(
+        from: Swift.String,
+        to: Swift.String
+    ) -> some QueryExpression<
         Swift.String
     > {
         PostgreSQL.String.translate(self, from: from, to: to)

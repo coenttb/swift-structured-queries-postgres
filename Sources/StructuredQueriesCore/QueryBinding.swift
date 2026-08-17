@@ -75,47 +75,68 @@ extension QueryBinding: CustomDebugStringConvertible {
                 .dropLast()
                 .dropFirst()
                 .quoted(.text)
+
         case .date(let date):
             return date.iso8601String.quoted(.text)
+
         case .double(let value):
             return "\(value)"
+
         case .int(let value):
             return "\(value)"
+
         case .null:
             return "NULL"
+
         case .text(let string):
             return string.quoted(.text)
+
         case .uuid(let uuid):
             return uuid.uuidString.lowercased().quoted(.text)
+
         case .jsonb(let data):
             return String(decoding: data, as: UTF8.self).quoted(.text)
+
         case .decimal(let value):
             return "\(value)"
+
         case .boolArray(let values):
             return "ARRAY[\(values.map { $0 ? "true" : "false" }.joined(separator: ", "))]"
+
         case .stringArray(let values):
             return "ARRAY[\(values.map { $0.quoted(.text) }.joined(separator: ", "))]"
+
         case .intArray(let values):
             return "ARRAY[\(values.map { "\($0)" }.joined(separator: ", "))]"
+
         case .int16Array(let values):
             return "ARRAY[\(values.map { "\($0)" }.joined(separator: ", "))]"
+
         case .int32Array(let values):
             return "ARRAY[\(values.map { "\($0)" }.joined(separator: ", "))]"
+
         case .int64Array(let values):
             return "ARRAY[\(values.map { "\($0)" }.joined(separator: ", "))]"
+
         case .floatArray(let values):
             return "ARRAY[\(values.map { "\($0)" }.joined(separator: ", "))]"
+
         case .doubleArray(let values):
             return "ARRAY[\(values.map { "\($0)" }.joined(separator: ", "))]"
+
         case .uuidArray(let values):
             return
                 "ARRAY[\(values.map { $0.uuidString.lowercased().quoted(.text) }.joined(separator: ", "))]"
+
         case .dateArray(let values):
             return "ARRAY[\(values.map { $0.iso8601String.quoted(.text) }.joined(separator: ", "))]"
+
         case .genericArray(let bindings):
             return "ARRAY[\(bindings.map { $0.debugDescription }.joined(separator: ", "))]"
+
         case .invalid(let error):
             return "<invalid: \(error.underlyingError.localizedDescription)>"
+
         case .bool(let bool):
             return bool ? "true" : "false"
         }

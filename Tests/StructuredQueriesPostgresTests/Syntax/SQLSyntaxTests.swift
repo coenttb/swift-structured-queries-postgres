@@ -46,7 +46,8 @@ extension SnapshotTests {
                     """
                     INSERT INTO "reminders" ("id", "remindersListID", "title")
                     VALUES (DEFAULT, 1, 'Default ID test')
-                    """)
+                    """
+                )
             ) {
                 """
                 INSERT INTO "reminders" ("id", "remindersListID", "title")
@@ -95,7 +96,8 @@ extension SnapshotTests {
                         RETURNING "id"
                     )
                     SELECT * FROM inserted
-                    """)
+                    """
+                )
             ) {
                 """
                 WITH inserted AS (
@@ -118,7 +120,8 @@ extension SnapshotTests {
                         "title",
                         ROW_NUMBER() OVER (PARTITION BY "remindersListID" ORDER BY "updatedAt" DESC) as rn
                     FROM "reminders"
-                    """)
+                    """
+                )
             ) {
                 """
                 SELECT
@@ -138,7 +141,8 @@ extension SnapshotTests {
                         RANK() OVER (ORDER BY "priority" DESC) as rank,
                         DENSE_RANK() OVER (ORDER BY "priority" DESC) as dense_rank
                     FROM "reminders"
-                    """)
+                    """
+                )
             ) {
                 """
                 SELECT
@@ -174,7 +178,8 @@ extension SnapshotTests {
                         WHERE "position" > 0
                     )
                     SELECT * FROM active_lists
-                    """)
+                    """
+                )
             ) {
                 """
                 WITH active_lists AS (

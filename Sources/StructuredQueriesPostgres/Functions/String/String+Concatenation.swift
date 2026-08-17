@@ -145,7 +145,9 @@ extension QueryExpression where QueryValue == Swift.String {
     ///
     /// - Parameter other: The string expression to append
     /// - Returns: The concatenated string
-    public func concat(_ other: some QueryExpression<Swift.String>) -> some QueryExpression<
+    public func concat(
+        _ other: some QueryExpression<Swift.String>
+    ) -> some QueryExpression<
         Swift.String
     > {
         PostgreSQL.String.concat(self, other)

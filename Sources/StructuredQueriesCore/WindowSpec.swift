@@ -18,7 +18,8 @@ public struct WindowSpec: Sendable {
     public init() {}
 
     public init(
-        partitions: [QueryFragment] = [], orderings: [QueryFragment] = [],
+        partitions: [QueryFragment] = [],
+        orderings: [QueryFragment] = [],
         frameClause: QueryFragment? = nil
     ) {
         self.partitions = partitions

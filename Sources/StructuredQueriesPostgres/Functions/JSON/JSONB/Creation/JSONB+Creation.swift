@@ -158,7 +158,9 @@ extension JSONB.Creation {
     ///
     /// - Parameter values: Variable number of query expressions to include in the array
     /// - Returns: JSON array containing all values (text format)
-    public static func buildJsonArray(_ values: any QueryExpression...) -> some QueryExpression<
+    public static func buildJsonArray(
+        _ values: any QueryExpression...
+    ) -> some QueryExpression<
         Data
     > {
         JSONBuildArray(values: values, format: .json)

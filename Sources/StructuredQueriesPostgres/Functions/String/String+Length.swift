@@ -22,7 +22,9 @@ extension PostgreSQL.String {
     /// - Returns: The number of characters in the string
     ///
     /// > Note: For byte length, use `octetLength()`
-    public static func length(_ value: some QueryExpression<Swift.String>) -> some QueryExpression<
+    public static func length(
+        _ value: some QueryExpression<Swift.String>
+    ) -> some QueryExpression<
         Int
     > {
         QueryFunction("length", value)
@@ -31,7 +33,9 @@ extension PostgreSQL.String {
     /// Returns the number of characters in an optional string
     ///
     /// PostgreSQL's `length(string)` function.
-    public static func length(_ value: some QueryExpression<Swift.String?>) -> some QueryExpression<
+    public static func length(
+        _ value: some QueryExpression<Swift.String?>
+    ) -> some QueryExpression<
         Int?
     > {
         QueryFunction("length", value)
@@ -48,7 +52,9 @@ extension PostgreSQL.String {
     ///
     /// - Parameter value: The string expression
     /// - Returns: The number of characters in the string
-    public static func charLength(_ value: some QueryExpression<Swift.String>)
+    public static func charLength(
+        _ value: some QueryExpression<Swift.String>
+    )
         -> some QueryExpression<Int>
     {
         SQLQueryExpression(
@@ -60,7 +66,9 @@ extension PostgreSQL.String {
     /// Returns the number of characters in an optional string
     ///
     /// PostgreSQL's `char_length(string)` function.
-    public static func charLength(_ value: some QueryExpression<Swift.String?>)
+    public static func charLength(
+        _ value: some QueryExpression<Swift.String?>
+    )
         -> some QueryExpression<Int?>
     {
         SQLQueryExpression(
@@ -80,7 +88,9 @@ extension PostgreSQL.String {
     ///
     /// - Parameter value: The string expression
     /// - Returns: The number of bits in the string (8 × byte length)
-    public static func bitLength(_ value: some QueryExpression<Swift.String>)
+    public static func bitLength(
+        _ value: some QueryExpression<Swift.String>
+    )
         -> some QueryExpression<
             Int
         >
@@ -94,7 +104,9 @@ extension PostgreSQL.String {
     /// Returns the number of bits in an optional string
     ///
     /// PostgreSQL's `bit_length(string)` function.
-    public static func bitLength(_ value: some QueryExpression<Swift.String?>)
+    public static func bitLength(
+        _ value: some QueryExpression<Swift.String?>
+    )
         -> some QueryExpression<Int?>
     {
         SQLQueryExpression(
@@ -116,7 +128,9 @@ extension PostgreSQL.String {
     /// - Returns: The number of bytes in the string
     ///
     /// > Note: For UTF-8 strings, byte count may differ from character count
-    public static func octetLength(_ value: some QueryExpression<Swift.String>)
+    public static func octetLength(
+        _ value: some QueryExpression<Swift.String>
+    )
         -> some QueryExpression<Int>
     {
         QueryFunction("octet_length", value)
@@ -125,7 +139,9 @@ extension PostgreSQL.String {
     /// Returns the number of bytes in an optional string
     ///
     /// PostgreSQL's `octet_length(string)` function.
-    public static func octetLength(_ value: some QueryExpression<Swift.String?>)
+    public static func octetLength(
+        _ value: some QueryExpression<Swift.String?>
+    )
         -> some QueryExpression<Int?>
     {
         QueryFunction("octet_length", value)

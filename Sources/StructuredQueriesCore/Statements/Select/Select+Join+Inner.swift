@@ -63,7 +63,10 @@ extension Select {
     @_documentation(visibility: private)
     @_disfavoredOverload
     public func join<
-        each C1: QueryRepresentable, each C2: QueryRepresentable, F: Table, each J: Table
+        each C1: QueryRepresentable,
+        each C2: QueryRepresentable,
+        F: Table,
+        each J: Table
     >(
         _ other: some SelectStatement<(repeat each C2), F, ()>,
         on constraint: (

@@ -178,7 +178,10 @@ extension QueryExpression where QueryValue == Swift.String {
     ///   - start: The starting position (1-indexed)
     ///   - length: The length of the substring (optional)
     /// - Returns: The extracted substring
-    public func substring(from start: Int, for length: Int? = nil) -> some QueryExpression<
+    public func substring(
+        from start: Int,
+        for length: Int? = nil
+    ) -> some QueryExpression<
         Swift.String
     > {
         PostgreSQL.String.substring(self, from: start, for: length)

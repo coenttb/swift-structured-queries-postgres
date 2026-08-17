@@ -32,6 +32,7 @@ extension QueryFragment {
             switch segment {
             case .sql(let sql):
                 result.append(QueryFragment(stringLiteral: sql))
+
             case .binding(let binding):
                 result.append(QueryFragment(stringLiteral: binding.debugDescription))
             }

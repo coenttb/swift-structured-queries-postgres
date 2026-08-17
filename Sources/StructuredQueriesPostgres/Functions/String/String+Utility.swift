@@ -40,7 +40,9 @@ extension PostgreSQL.String {
     /// - Returns: The ASCII code of the first character, or NULL if empty
     ///
     /// > Note: SQLite equivalent: `UNICODE` (partial - only ASCII range)
-    public static func ascii(_ value: some QueryExpression<Swift.String>) -> some QueryExpression<
+    public static func ascii(
+        _ value: some QueryExpression<Swift.String>
+    ) -> some QueryExpression<
         Int?
     > {
         SQLQueryExpression(
@@ -63,7 +65,9 @@ extension PostgreSQL.String {
     ///
     /// > Warning: MD5 is cryptographically broken. Use only for non-security purposes
     /// > like checksums or cache keys.
-    public static func md5(_ value: some QueryExpression<Swift.String>) -> some QueryExpression<
+    public static func md5(
+        _ value: some QueryExpression<Swift.String>
+    ) -> some QueryExpression<
         Swift.String
     > {
         SQLQueryExpression(

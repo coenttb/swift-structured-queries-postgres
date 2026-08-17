@@ -31,7 +31,10 @@ extension Where {
     /// - Returns: A select statement that selects the aggregated result with filter applied from the filtered table.
     @usableFromInline
     internal func _aggregateSelect<
-        Value, Result, Expr: QueryExpression<Value>, Filter: QueryExpression<Bool>
+        Value,
+        Result,
+        Expr: QueryExpression<Value>,
+        Filter: QueryExpression<Bool>
     >(
         of expression: (From.TableColumns) -> Expr,
         filter: @escaping (From.TableColumns) -> Filter,

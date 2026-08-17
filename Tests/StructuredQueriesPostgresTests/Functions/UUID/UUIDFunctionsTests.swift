@@ -46,8 +46,11 @@ extension SnapshotTests.UUIDFunctions {
             await assertSQL(
                 of: UUIDEvent.insert {
                     UUIDEvent.Columns(
-                        id: UUID.timeOrdered, title: #sql("'Login'"), userId: #sql("NULL"),
-                        timestamp: #sql("NULL"))
+                        id: UUID.timeOrdered,
+                        title: #sql("'Login'"),
+                        userId: #sql("NULL"),
+                        timestamp: #sql("NULL")
+                    )
                 }
             ) {
                 """
@@ -64,8 +67,11 @@ extension SnapshotTests.UUIDFunctions {
             await assertSQL(
                 of: UUIDEvent.insert {
                     UUIDEvent.Columns(
-                        id: UUID.v7, title: #sql("'Logout'"), userId: #sql("NULL"),
-                        timestamp: #sql("NULL"))
+                        id: UUID.v7,
+                        title: #sql("'Logout'"),
+                        userId: #sql("NULL"),
+                        timestamp: #sql("NULL")
+                    )
                 }
             ) {
                 """
@@ -82,8 +88,11 @@ extension SnapshotTests.UUIDFunctions {
             await assertSQL(
                 of: UUIDEvent.insert {
                     UUIDEvent.Columns(
-                        id: UUID.timeOrdered(shift: "-1 hour"), title: #sql("'Historical Event'"),
-                        userId: #sql("NULL"), timestamp: #sql("NULL"))
+                        id: UUID.timeOrdered(shift: "-1 hour"),
+                        title: #sql("'Historical Event'"),
+                        userId: #sql("NULL"),
+                        timestamp: #sql("NULL")
+                    )
                 }
             ) {
                 """
@@ -216,14 +225,23 @@ extension SnapshotTests.UUIDFunctions {
             await assertSQL(
                 of: UUIDEvent.insert {
                     UUIDEvent.Columns(
-                        id: UUID.timeOrdered, title: #sql("'Event 1'"), userId: #sql("NULL"),
-                        timestamp: #sql("NULL"))
+                        id: UUID.timeOrdered,
+                        title: #sql("'Event 1'"),
+                        userId: #sql("NULL"),
+                        timestamp: #sql("NULL")
+                    )
                     UUIDEvent.Columns(
-                        id: UUID.timeOrdered, title: #sql("'Event 2'"), userId: #sql("NULL"),
-                        timestamp: #sql("NULL"))
+                        id: UUID.timeOrdered,
+                        title: #sql("'Event 2'"),
+                        userId: #sql("NULL"),
+                        timestamp: #sql("NULL")
+                    )
                     UUIDEvent.Columns(
-                        id: UUID.timeOrdered, title: #sql("'Event 3'"), userId: #sql("NULL"),
-                        timestamp: #sql("NULL"))
+                        id: UUID.timeOrdered,
+                        title: #sql("'Event 3'"),
+                        userId: #sql("NULL"),
+                        timestamp: #sql("NULL")
+                    )
                 }
             ) {
                 """

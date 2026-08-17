@@ -16,6 +16,7 @@ extension ColumnGroup {
     /// - Returns: A predicate expression.
     public func eq(_ other: Values) -> some QueryExpression<Bool> {
         SQLQueryExpression<Bool>(
-            "(\(queryFragment)) = (\(Values(queryOutput: other).queryFragment))")
+            "(\(queryFragment)) = (\(Values(queryOutput: other).queryFragment))"
+        )
     }
 }

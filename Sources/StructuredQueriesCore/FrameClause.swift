@@ -35,14 +35,18 @@ public enum FrameBound: Sendable {
         switch self {
         case .unboundedPreceding:
             return "UNBOUNDED PRECEDING"
+
         case .preceding(let offset):
             precondition(offset > 0, "PRECEDING offset must be positive, got \(offset)")
             return "\(raw: String(offset)) PRECEDING"
+
         case .currentRow:
             return "CURRENT ROW"
+
         case .following(let offset):
             precondition(offset > 0, "FOLLOWING offset must be positive, got \(offset)")
             return "\(raw: String(offset)) FOLLOWING"
+
         case .unboundedFollowing:
             return "UNBOUNDED FOLLOWING"
         }
@@ -68,6 +72,7 @@ public enum FrameBounds: Sendable {
         switch self {
         case .between(let start, let end):
             return "\(raw: frameType) BETWEEN \(start.queryFragment) AND \(end.queryFragment)"
+
         case .start(let bound):
             // Shorthand: ROWS <bound> is same as ROWS BETWEEN <bound> AND CURRENT ROW
             return "\(raw: frameType) \(bound.queryFragment)"

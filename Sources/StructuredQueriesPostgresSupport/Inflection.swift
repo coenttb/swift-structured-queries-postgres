@@ -17,6 +17,7 @@ extension String {
             switch bytes.last {
             case UInt8(ascii: "c"), UInt8(ascii: "s"):
                 return "\(self)es"
+
             default:
                 break
             }
@@ -33,6 +34,7 @@ extension String {
                 UInt8(ascii: "u"),
                 UInt8(ascii: "y"):
                 break
+
             default:
                 return "\(dropLast())ies"
             }

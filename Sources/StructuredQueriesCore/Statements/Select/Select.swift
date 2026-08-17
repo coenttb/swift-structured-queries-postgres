@@ -359,6 +359,7 @@ extension Select: SelectStatement {
             switch distinct {
             case .all:
                 query.append(" DISTINCT")
+
             case .on(let expressions):
                 query.append(" DISTINCT ON (\(expressions.joined(separator: ", ")))")
             }
@@ -386,9 +387,8 @@ extension Select: SelectStatement {
         }
         if !windows.isEmpty {
             query.append("\(.newlineOrSpace)WINDOW ")
-            let windowClauses = windows.map { (name, spec) in
-                let fragment: QueryFragment = "\(raw: name) AS (\(spec))"
-                return fragment
+            let windowClauses = windows.map { name, spec in
+                return "\(raw: name) AS (\(spec))" as QueryFragment
             }
             query.append(windowClauses.joined(separator: ", "))
         }
@@ -446,7 +446,7 @@ public struct _JoinClause: QueryExpression, Sendable {
             query.append("\(quote: schemaName).")
         }
         query.append("\(quote: tableName) ")
-        if let tableAlias = tableAlias {
+        if let tableAlias {
             query.append("AS \(quote: tableAlias) ")
         }
         query.append("ON \(constraint)")

@@ -113,7 +113,9 @@ extension QueryExpression where QueryValue == String {
     ///
     /// - Parameter pattern: The POSIX regex pattern to match against (case-insensitive)
     /// - Returns: A boolean expression indicating whether the string matches the pattern
-    public func regexMatchCaseInsensitive(_ pattern: some StringProtocol) -> some QueryExpression<
+    public func regexMatchCaseInsensitive(
+        _ pattern: some StringProtocol
+    ) -> some QueryExpression<
         Bool
     > {
         RegexMatchCaseInsensitiveOperator(string: self, pattern: "\(pattern)")
@@ -141,7 +143,9 @@ extension QueryExpression where QueryValue == String {
     ///
     /// - Parameter pattern: The POSIX regex pattern that should NOT match (case-insensitive)
     /// - Returns: A boolean expression indicating whether the string does NOT match the pattern
-    public func regexNotMatchCaseInsensitive(_ pattern: some StringProtocol)
+    public func regexNotMatchCaseInsensitive(
+        _ pattern: some StringProtocol
+    )
         -> some QueryExpression<Bool>
     {
         RegexNotMatchCaseInsensitiveOperator(string: self, pattern: "\(pattern)")

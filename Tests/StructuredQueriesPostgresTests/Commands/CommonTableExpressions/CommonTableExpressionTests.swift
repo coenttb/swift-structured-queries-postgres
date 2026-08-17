@@ -179,7 +179,10 @@ extension SnapshotTests {
                             Fibonacci
                                 .select {
                                     Fibonacci.Columns(
-                                        n: $0.n + 1, prevFib: $0.fib, fib: $0.prevFib + $0.fib)
+                                        n: $0.n + 1,
+                                        prevFib: $0.fib,
+                                        fib: $0.prevFib + $0.fib
+                                    )
                                 }
                         )
                 } query: {
@@ -210,7 +213,10 @@ extension SnapshotTests {
                             Fibonacci
                                 .select {
                                     Fibonacci.Columns(
-                                        n: $0.n + 1, prevFib: $0.fib, fib: $0.prevFib + $0.fib)
+                                        n: $0.n + 1,
+                                        prevFib: $0.fib,
+                                        fib: $0.prevFib + $0.fib
+                                    )
                                 }
                         )
                 } query: {

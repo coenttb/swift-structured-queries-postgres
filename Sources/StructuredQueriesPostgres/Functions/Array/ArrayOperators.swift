@@ -76,7 +76,9 @@ extension QueryExpression where QueryValue: Collection, QueryValue.Element: Quer
     /// Post.where { $0.tags.isContainedBy($0.allowedTags) }
     /// // SELECT … FROM "posts" WHERE "posts"."tags" <@ "posts"."allowedTags"
     /// ```
-    public func isContainedBy(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<
+    public func isContainedBy(
+        _ other: some QueryExpression<QueryValue>
+    ) -> some QueryExpression<
         Bool
     > {
         SQLQueryExpression(
@@ -146,7 +148,9 @@ extension QueryExpression where QueryValue: Collection, QueryValue.Element: Quer
     /// Post.select { $0.tags.arrayConcat($0.extraTags) }
     /// // SELECT ("posts"."tags" || "posts"."extraTags") FROM "posts"
     /// ```
-    public func arrayConcat(_ other: some QueryExpression<QueryValue>) -> some QueryExpression<
+    public func arrayConcat(
+        _ other: some QueryExpression<QueryValue>
+    ) -> some QueryExpression<
         QueryValue
     > {
         SQLQueryExpression(

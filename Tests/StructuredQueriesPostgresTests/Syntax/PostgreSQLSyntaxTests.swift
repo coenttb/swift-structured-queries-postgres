@@ -16,7 +16,8 @@ extension SnapshotTests {
                     "id", "title", "updatedAt"
                     FROM "reminders"
                     ORDER BY "remindersListID", "updatedAt" DESC
-                    """)
+                    """
+                )
             ) {
                 """
                 SELECT DISTINCT ON ("remindersListID")
@@ -46,7 +47,8 @@ extension SnapshotTests {
                 of: #sql(
                     """
                     SELECT unnest(ARRAY['a', 'b', 'c']) as element
-                    """)
+                    """
+                )
             ) {
                 """
                 SELECT unnest(ARRAY['a', 'b', 'c']) as element
@@ -61,7 +63,8 @@ extension SnapshotTests {
                     """
                     INSERT INTO "reminders" ("id", "remindersListID", "title")
                     VALUES (gen_random_uuid(), 1, 'Random UUID')
-                    """)
+                    """
+                )
             ) {
                 """
                 INSERT INTO "reminders" ("id", "remindersListID", "title")
@@ -75,7 +78,8 @@ extension SnapshotTests {
                     """
                     SELECT * FROM "reminders"
                     WHERE "dueDate" > NOW() - INTERVAL '7 days'
-                    """)
+                    """
+                )
             ) {
                 """
                 SELECT * FROM "reminders"
@@ -96,7 +100,8 @@ extension SnapshotTests {
                         COUNT(*) FILTER (WHERE "isCompleted" = true) as completed
                     FROM "reminders"
                     GROUP BY "remindersListID"
-                    """)
+                    """
+                )
             ) {
                 """
                 SELECT
@@ -145,7 +150,8 @@ extension SnapshotTests {
                         ORDER BY "updatedAt" DESC
                         LIMIT 1
                     ) latest ON true
-                    """)
+                    """
+                )
             ) {
                 """
                 SELECT r.*, latest.*
@@ -171,7 +177,8 @@ extension SnapshotTests {
                         "id",
                         currval(pg_get_serial_sequence('reminders', 'id')) as current_sequence,
                         to_char("updatedAt", 'YYYY-MM-DD') as formatted_date
-                    """)
+                    """
+                )
             ) {
                 """
                 INSERT INTO "reminders" ("remindersListID", "title")

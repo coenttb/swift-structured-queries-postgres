@@ -42,7 +42,10 @@ extension QueryExpression where QueryValue: Collection, QueryValue.Element: Quer
     ///   - element: The element to replace
     ///   - replacement: The replacement element
     /// - Returns: A new array with all occurrences replaced
-    public func replacing(_ element: QueryValue.Element, with replacement: QueryValue.Element)
+    public func replacing(
+        _ element: QueryValue.Element,
+        with replacement: QueryValue.Element
+    )
         -> some QueryExpression<QueryValue>
     {
         SQLQueryExpression(

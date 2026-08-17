@@ -30,8 +30,7 @@ extension Where {
         From,
         (F._Optionalized, repeat (each J)._Optionalized)
     > {
-        let joined = asSelect().leftJoin(other, on: constraint)
-        return joined
+        return asSelect().leftJoin(other, on: constraint)
     }
 
     /// A select statement for the filtered table right-joined to another table.
@@ -46,8 +45,7 @@ extension Where {
             (From.TableColumns, F.TableColumns, repeat (each J).TableColumns)
         ) -> some QueryExpression<Bool>
     ) -> Select<(repeat each C), From._Optionalized, (F, repeat each J)> {
-        let joined = asSelect().rightJoin(other, on: constraint)
-        return joined
+        return asSelect().rightJoin(other, on: constraint)
     }
 
     /// A select statement for the filtered table full-joined to another table.
@@ -66,8 +64,7 @@ extension Where {
         From._Optionalized,
         (F._Optionalized, repeat (each J)._Optionalized)
     > {
-        let joined = asSelect().fullJoin(other, on: constraint)
-        return joined
+        return asSelect().fullJoin(other, on: constraint)
     }
 
 }

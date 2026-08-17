@@ -131,7 +131,9 @@ extension QueryExpression where QueryValue == Swift.String {
     ) -> some QueryExpression<Swift.String> {
         if let characters {
             return SQLQueryExpression(
-                "ltrim(\(self.queryFragment), \(characters.queryFragment))", as: Swift.String.self)
+                "ltrim(\(self.queryFragment), \(characters.queryFragment))",
+                as: Swift.String.self
+            )
         } else {
             return SQLQueryExpression("ltrim(\(self.queryFragment))", as: Swift.String.self)
         }
@@ -168,7 +170,9 @@ extension QueryExpression where QueryValue == Swift.String {
     ) -> some QueryExpression<Swift.String> {
         if let characters {
             return SQLQueryExpression(
-                "rtrim(\(self.queryFragment), \(characters.queryFragment))", as: Swift.String.self)
+                "rtrim(\(self.queryFragment), \(characters.queryFragment))",
+                as: Swift.String.self
+            )
         } else {
             return SQLQueryExpression("rtrim(\(self.queryFragment))", as: Swift.String.self)
         }
@@ -208,7 +212,9 @@ extension QueryExpression where QueryValue == Swift.String {
     ) -> some QueryExpression<Swift.String> {
         if let characters {
             return SQLQueryExpression(
-                "trim(\(self.queryFragment), \(characters.queryFragment))", as: Swift.String.self)
+                "trim(\(self.queryFragment), \(characters.queryFragment))",
+                as: Swift.String.self
+            )
         } else {
             return SQLQueryExpression("trim(\(self.queryFragment))", as: Swift.String.self)
         }
