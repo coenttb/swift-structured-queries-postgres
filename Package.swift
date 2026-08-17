@@ -12,10 +12,10 @@ import PackageDescription
 let package = Package(
     name: "swift-structured-queries-postgres",
     platforms: [
-        .iOS(.v26),
-        .macOS(.v26),
-        //        .tvOS(.v26),
-        //        .watchOS(.v26)
+        .iOS("27"),
+        .macOS("27"),
+        //        .tvOS("27"),
+        //        .watchOS("27")
     ],
     products: [
         .library(
