@@ -22,5 +22,3 @@ jobs:
     if: ${{ !github.event.repository.private }}
     name: ci / matrix
     uses: swift-institute/.github/.github/workflows/swift-ci.yml@main
-    with:
-      lint-bundle: institute
