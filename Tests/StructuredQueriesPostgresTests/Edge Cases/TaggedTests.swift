@@ -5,8 +5,8 @@ import StructuredQueriesPostgresTestSupport
 import Testing
 
 // NOTE: rewritten from the wildcard `import Tagged`. The transitive dependency graph also
-// pulls in the unrelated Institute `Tagged_Primitives` module (re-exported into this test
-// target's scope via `Ordinal_Primitives`'s `@_exported import Tagged_Primitives`), which
+// pulls in the unrelated Institute `Tagged` module (re-exported into this test
+// target's scope via `Ordinal`'s `@_exported import Tagged`), which
 // declares its own bare top-level `Tagged<Tag, Underlying>` type -- a pre-existing,
 // unrelated-to-this-branch collision that makes the wildcard import's `Tagged` ambiguous for
 // type lookup. The declaration-specific `import struct Tagged.Tagged` form imports exactly the

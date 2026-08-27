@@ -61,7 +61,7 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.7.2"),
         .package(url: "https://github.com/pointfreeco/swift-custom-dump.git", from: "1.3.3"),
         .package(
-            url: "https://github.com/swift-foundations/swift-dependencies.git", branch: "main"),
+            url: "https://github.com/swift-compositions/swift-dependencies.git", branch: "main"),
         .package(url: "https://github.com/pointfreeco/swift-macro-testing.git", from: "0.6.3"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.4"),
         .package(url: "https://github.com/pointfreeco/swift-tagged.git", from: "0.10.0"),

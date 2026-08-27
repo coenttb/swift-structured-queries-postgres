@@ -1,6 +1,6 @@
 # swift-structured-queries-postgres
 
-[![CI](https://github.com/swift-foundations/swift-structured-queries-postgres/workflows/CI/badge.svg)](https://github.com/swift-foundations/swift-structured-queries-postgres/actions/workflows/ci.yml)
+[![CI](https://github.com/swift-compositions/swift-structured-queries-postgres/workflows/CI/badge.svg)](https://github.com/swift-compositions/swift-structured-queries-postgres/actions/workflows/ci.yml)
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
 Type-safe PostgreSQL query builder for Swift. Build complex SQL queries with compile-time validation and zero runtime overhead.
@@ -44,7 +44,7 @@ let users = try await statement.fetchAll(db)
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-foundations/swift-structured-queries-postgres.git", from: "0.23.0")
+    .package(url: "https://github.com/swift-compositions/swift-structured-queries-postgres.git", from: "0.23.0")
 ]
 ```
 
@@ -535,7 +535,7 @@ Key differences from Point-Free's swift-structured-queries (SQLite):
 
 ## Integration with swift-records
 
-This package provides **query building only**. For complete database functionality, use it with [**swift-records**](https://github.com/swift-foundations/swift-records.git):
+This package provides **query building only**. For complete database functionality, use it with [**swift-records**](https://github.com/swift-compositions/swift-records.git):
 
 ### What swift-records Provides
 
@@ -584,7 +584,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Related Projects
 
-- [**swift-records**](https://github.com/swift-foundations/swift-records.git) - High-level database operations layer (connection pooling, transactions, migrations)
+- [**swift-records**](https://github.com/swift-compositions/swift-records.git) - High-level database operations layer (connection pooling, transactions, migrations)
 - [**swift-structured-queries**](https://github.com/pointfreeco/swift-structured-queries) - Upstream SQLite-focused query builder by Point-Free
 
 ## Support
